@@ -1,0 +1,68 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backend", "backend", "{6B534779-456E-450B-B8C9-74532ED359E5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2734C236-3938-4634-90E4-DCB165281D94}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BabyPlanner.Domain", "backend\src\BabyPlanner.Domain\BabyPlanner.Domain.csproj", "{53A4D9EF-31E5-4D1A-9AFD-35899F0772EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BabyPlanner.Application", "backend\src\BabyPlanner.Application\BabyPlanner.Application.csproj", "{F7B3A4BE-41EF-4A15-B742-416A642FA0E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BabyPlanner.Infrastructure", "backend\src\BabyPlanner.Infrastructure\BabyPlanner.Infrastructure.csproj", "{47035AC2-52F5-408E-8E7A-89F28D73B201}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BabyPlanner.Api", "backend\src\BabyPlanner.Api\BabyPlanner.Api.csproj", "{24CF7DCA-1021-4AE2-9B97-EEF25BAF991E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{D7E26E7C-4B09-4BD2-8AD1-B3F49CAA599A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BabyPlanner.UnitTests", "backend\tests\BabyPlanner.UnitTests\BabyPlanner.UnitTests.csproj", "{D84425F5-D3AD-417A-9AB3-70C0D95D13C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BabyPlanner.IntegrationTests", "backend\tests\BabyPlanner.IntegrationTests\BabyPlanner.IntegrationTests.csproj", "{92673C9E-7788-40B0-A77F-CDA33D04768E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{53A4D9EF-31E5-4D1A-9AFD-35899F0772EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53A4D9EF-31E5-4D1A-9AFD-35899F0772EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53A4D9EF-31E5-4D1A-9AFD-35899F0772EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53A4D9EF-31E5-4D1A-9AFD-35899F0772EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7B3A4BE-41EF-4A15-B742-416A642FA0E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7B3A4BE-41EF-4A15-B742-416A642FA0E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7B3A4BE-41EF-4A15-B742-416A642FA0E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7B3A4BE-41EF-4A15-B742-416A642FA0E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47035AC2-52F5-408E-8E7A-89F28D73B201}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47035AC2-52F5-408E-8E7A-89F28D73B201}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47035AC2-52F5-408E-8E7A-89F28D73B201}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47035AC2-52F5-408E-8E7A-89F28D73B201}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24CF7DCA-1021-4AE2-9B97-EEF25BAF991E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24CF7DCA-1021-4AE2-9B97-EEF25BAF991E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24CF7DCA-1021-4AE2-9B97-EEF25BAF991E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24CF7DCA-1021-4AE2-9B97-EEF25BAF991E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D84425F5-D3AD-417A-9AB3-70C0D95D13C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D84425F5-D3AD-417A-9AB3-70C0D95D13C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D84425F5-D3AD-417A-9AB3-70C0D95D13C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D84425F5-D3AD-417A-9AB3-70C0D95D13C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92673C9E-7788-40B0-A77F-CDA33D04768E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92673C9E-7788-40B0-A77F-CDA33D04768E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92673C9E-7788-40B0-A77F-CDA33D04768E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92673C9E-7788-40B0-A77F-CDA33D04768E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2734C236-3938-4634-90E4-DCB165281D94} = {6B534779-456E-450B-B8C9-74532ED359E5}
+		{53A4D9EF-31E5-4D1A-9AFD-35899F0772EB} = {2734C236-3938-4634-90E4-DCB165281D94}
+		{F7B3A4BE-41EF-4A15-B742-416A642FA0E9} = {2734C236-3938-4634-90E4-DCB165281D94}
+		{47035AC2-52F5-408E-8E7A-89F28D73B201} = {2734C236-3938-4634-90E4-DCB165281D94}
+		{24CF7DCA-1021-4AE2-9B97-EEF25BAF991E} = {2734C236-3938-4634-90E4-DCB165281D94}
+		{D7E26E7C-4B09-4BD2-8AD1-B3F49CAA599A} = {6B534779-456E-450B-B8C9-74532ED359E5}
+		{D84425F5-D3AD-417A-9AB3-70C0D95D13C9} = {D7E26E7C-4B09-4BD2-8AD1-B3F49CAA599A}
+		{92673C9E-7788-40B0-A77F-CDA33D04768E} = {D7E26E7C-4B09-4BD2-8AD1-B3F49CAA599A}
+	EndGlobalSection
+EndGlobal
