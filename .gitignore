@@ -497,3 +497,8 @@ npm-debug.log*
 ## Word temp files
 ##
 ~WRL*.tmp
+
+# Baza de date SQLite locala (BabyPlanner)
+*.db
+*.db-shm
+*.db-wal
