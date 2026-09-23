@@ -12,7 +12,7 @@ public class Activity : BaseEntity
 
     public ActivityType Type { get; set; }
 
-    /// <summary>Momentul in care a avut loc activitatea, cu fus orar pastrat.</summary>
+    /// <summary>Momentul in care a avut loc activitatea. Se persista in UTC.</summary>
     public DateTimeOffset OccurredAt { get; set; }
 
     public string? Notes { get; set; }

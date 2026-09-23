@@ -1,4 +1,7 @@
+using BabyPlanner.Application.Common.Interfaces;
 using BabyPlanner.Infrastructure.Persistence;
+using BabyPlanner.Infrastructure.Persistence.Repositories;
+using BabyPlanner.Infrastructure.Services;
 
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +18,8 @@ public static class DependencyInjection
     private const string ConnectionStringName = "BabyPlannerDb";
 
     /// <summary>
-    /// Adauga contextul EF Core si providerul de baza de date.
+    /// Adauga contextul EF Core, providerul de baza de date si implementarile
+    /// concrete ale interfetelor definite in Application.
     /// Astfel, stratul Api nu depinde direct de providerul folosit.
     /// </summary>
     /// <param name="basePath">
@@ -33,6 +37,13 @@ public static class DependencyInjection
 
         services.AddDbContext<BabyPlannerDbContext>(options =>
             options.UseSqlite(ResolveSqlitePath(connectionString, basePath)));
+
+        // Repository-urile traiesc cat o cerere HTTP, la fel ca DbContext-ul pe care il folosesc.
+        services.AddScoped<IBabyRepository, BabyRepository>();
+        services.AddScoped<IActivityRepository, ActivityRepository>();
+
+        // Sursa de timp nu are stare, deci o singura instanta e suficienta.
+        services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
 
         return services;
     }

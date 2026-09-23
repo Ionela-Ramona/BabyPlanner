@@ -21,8 +21,14 @@ public class ActivityConfiguration : IEntityTypeConfiguration<Activity>
             .IsRequired()
             .HasConversion<int>();
 
+        // SQLite nu poate sorta sau compara DateTimeOffset in SQL (l-ar stoca drept text
+        // cu offset cu tot). Il salvam ca numar de ticks in UTC: comparabil, sortabil si
+        // fara ambiguitati. La citire revine ca DateTimeOffset cu offset zero.
         builder.Property(a => a.OccurredAt)
-            .IsRequired();
+            .IsRequired()
+            .HasConversion(
+                occurredAt => occurredAt.UtcDateTime.Ticks,
+                ticks => new DateTimeOffset(ticks, TimeSpan.Zero));
 
         builder.Property(a => a.Notes)
             .HasMaxLength(500);
