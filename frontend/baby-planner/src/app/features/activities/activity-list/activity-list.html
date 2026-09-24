@@ -1,18 +1,63 @@
-<h1>Activități</h1>
-<p class="text-muted">Activitățile bebelușului cu id-ul {{ babyId() }}.</p>
+<a class="back-link" routerLink="/babies">← Toți bebelușii</a>
 
-<div class="card placeholder">
-  <h2>În construcție</h2>
-  <p>
-    Lista va fi alimentată de <code>GET /api/babies/{{ babyId() }}/activities</code>, cu filtrare
-    după tipul activității.
-  </p>
-  <p class="text-muted">Se construiește în Etapa 4.</p>
+<h1>
+  <!-- hasValue() este garda corecta: value() arunca prin design cand resursa e in eroare
+       (de exemplu bebelus inexistent), iar exceptia ar opri randarea intregii pagini. -->
+  Activități@if (baby.hasValue()) {<span class="subject"> — {{ baby.value().name }}</span>}
+</h1>
 
-  <p>
-    Valoarea <code>{{ babyId() }}</code> de mai sus vine din URL, legată automat de
-    <code>input()</code> — deci routingul transmite deja date către componentă.
-  </p>
+<div class="filter">
+  <label class="filter__label" for="type-filter">Filtrează după tip</label>
 
-  <a routerLink="/babies">Înapoi la bebeluși</a>
+  <!-- Variabila de template ne dă valoarea tipată, fără cast din $event.target. -->
+  <select
+    id="type-filter"
+    class="filter__select"
+    #typeSelect
+    (change)="onTypeChange(typeSelect.value)"
+  >
+    <option value="" [selected]="!type()">Toate tipurile</option>
+    @for (activityType of activityTypes; track activityType) {
+      <option [value]="activityType" [selected]="activityType === type()">
+        {{ typeLabels[activityType] }}
+      </option>
+    }
+  </select>
 </div>
+
+@if (activities.isLoading()) {
+  <p role="status">Se încarcă…</p>
+} @else if (activities.error()) {
+  <div class="card feedback" role="alert">
+    <h2>Nu am putut încărca activitățile</h2>
+    <p class="text-muted">Verifică dacă API-ul rulează și dacă bebelușul există.</p>
+    <button class="button" type="button" (click)="activities.reload()">Reîncarcă</button>
+  </div>
+} @else if (activities.value().length === 0) {
+  <div class="card feedback">
+    @if (type()) {
+      <h2>Nicio activitate de acest tip</h2>
+      <p class="text-muted">Alege „Toate tipurile” ca să vezi întreg istoricul.</p>
+    } @else {
+      <h2>Nicio activitate înregistrată</h2>
+      <p class="text-muted">Formularul de adăugare se construiește în Etapa 6.</p>
+    }
+  </div>
+} @else {
+  <ul class="activity-list">
+    @for (activity of activities.value(); track activity.id) {
+      <li class="card activity">
+        <span class="activity__type" [attr.data-type]="activity.type">
+          {{ typeLabels[activity.type] }}
+        </span>
+
+        <div class="activity__details">
+          <p class="activity__time">{{ activity.occurredAt | date: 'd MMMM, HH:mm' }}</p>
+          @if (activity.notes) {
+            <p class="activity__notes text-muted">{{ activity.notes }}</p>
+          }
+        </div>
+      </li>
+    }
+  </ul>
+}

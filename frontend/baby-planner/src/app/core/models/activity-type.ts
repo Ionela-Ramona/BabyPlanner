@@ -18,3 +18,11 @@ export const ACTIVITY_TYPE_LABELS: Readonly<Record<ActivityType, string>> = {
   Medicine: 'Medicamente',
   Other: 'Altele',
 };
+
+/**
+ * Verifica daca o valoare venita din exterior (query string, formular) este un
+ * tip valid. Orice altceva e tratat ca „fara filtru", nu trimis mai departe la API.
+ */
+export function isActivityType(value: unknown): value is ActivityType {
+  return typeof value === 'string' && (ACTIVITY_TYPES as readonly string[]).includes(value);
+}

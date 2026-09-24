@@ -2,18 +2,109 @@
   display: block;
 }
 
-.placeholder {
+.back-link {
+  display: inline-block;
+  margin-bottom: var(--space-3);
+  font-size: 0.9375rem;
+}
+
+.subject {
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+  margin-bottom: var(--space-6);
+}
+
+.filter__label {
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+.filter__select {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
+
+.feedback {
   max-width: 34rem;
 }
 
-.placeholder a {
-  display: inline-block;
-  margin-top: var(--space-2);
+.activity-list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-code {
-  padding: 0.125rem 0.375rem;
-  border-radius: var(--radius-sm);
-  background-color: var(--color-surface-muted);
-  font-size: 0.875em;
+.activity {
+  display: flex;
+  gap: var(--space-4);
+  align-items: baseline;
+  padding: var(--space-3) var(--space-4);
+}
+
+/* Fiecare tip isi are nuanta lui, ca lista sa poata fi parcursa din ochi.
+   Eticheta ramane text: culoarea adauga informatie, nu o inlocuieste. */
+.activity__type {
+  flex: none;
+  min-width: 7.5rem;
+  padding: var(--space-1) var(--space-3);
+  border-radius: 999px;
+  background-color: hsl(var(--badge-hue) 60% 93%);
+  color: hsl(var(--badge-hue) 55% 27%);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.activity__type[data-type='Feeding'] {
+  --badge-hue: 145;
+}
+
+.activity__type[data-type='Sleep'] {
+  --badge-hue: 250;
+}
+
+.activity__type[data-type='Diaper'] {
+  --badge-hue: 35;
+}
+
+.activity__type[data-type='Medicine'] {
+  --badge-hue: 340;
+}
+
+.activity__type[data-type='Other'] {
+  --badge-hue: 200;
+}
+
+@media (prefers-color-scheme: dark) {
+  .activity__type {
+    background-color: hsl(var(--badge-hue) 35% 21%);
+    color: hsl(var(--badge-hue) 65% 80%);
+  }
+}
+
+.activity__details {
+  min-width: 0;
+}
+
+.activity__time {
+  margin: 0;
+  font-weight: 500;
+}
+
+.activity__notes {
+  margin: var(--space-1) 0 0;
+  font-size: 0.9375rem;
 }
