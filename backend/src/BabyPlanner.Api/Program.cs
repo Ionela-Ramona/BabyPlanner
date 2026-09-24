@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using BabyPlanner.Api.Middleware;
 using BabyPlanner.Application;
 using BabyPlanner.Infrastructure;
+using BabyPlanner.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +45,10 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    // Aducem baza la zi si o populam inainte de a accepta cereri, ca un "git clone"
+    // urmat de "dotnet run" sa fie suficient — fara "dotnet ef database update" manual.
+    await app.Services.InitializeDatabaseAsync();
+
     app.UseSwagger();
     app.UseSwaggerUI();
 }
