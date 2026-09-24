@@ -1,0 +1,14 @@
+:host {
+  display: block;
+}
+
+.placeholder {
+  max-width: 34rem;
+}
+
+code {
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-muted);
+  font-size: 0.875em;
+}

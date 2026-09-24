@@ -1,1 +1,150 @@
-/* You can add global styles to this file, and also import other style files */
+/* Stiluri globale: tokens de design, reset si cateva clase utilitare.
+   Tot ce e specific unei componente sta in fisierul .scss al componentei. */
+
+:root {
+  /* Culori — tema deschisa. Fiecare pereche text/fundal respecta WCAG AA (min. 4.5:1). */
+  --color-bg: #faf8f6;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f2efec;
+  --color-border: #e2ddd8;
+  --color-text: #1f1d29;
+  --color-text-muted: #5c5769;
+  --color-primary: #5b53d3;
+  --color-primary-hover: #4a42c4;
+  --color-primary-soft: #eeecfb;
+  --color-on-primary: #ffffff;
+  --color-focus: #5b53d3;
+
+  /* Spatieri — scara de 4px, ca sa nu inventam valori la intamplare. */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 1rem;
+
+  --shadow-sm: 0 1px 2px rgb(31 29 41 / 6%);
+  --shadow-md: 0 4px 16px rgb(31 29 41 / 8%);
+
+  --font-sans:
+    'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+
+  --layout-max-width: 64rem;
+
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #15141a;
+    --color-surface: #1e1d25;
+    --color-surface-muted: #272631;
+    --color-border: #35333f;
+    --color-text: #ece9f2;
+    --color-text-muted: #a8a3b5;
+    --color-primary: #9b94ff;
+    --color-primary-hover: #b3adff;
+    --color-primary-soft: #272440;
+    --color-on-primary: #15141a;
+    --color-focus: #9b94ff;
+
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 40%);
+    --shadow-md: 0 4px 16px rgb(0 0 0 / 45%);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* Respectam preferinta de sistem "reduce motion" pentru scroll-ul dintre rute. */
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0 0 var(--space-3);
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+
+h1 {
+  font-size: clamp(1.5rem, 1.2rem + 1.4vw, 2rem);
+}
+
+h2 {
+  font-size: 1.25rem;
+}
+
+p {
+  margin: 0 0 var(--space-4);
+}
+
+a {
+  color: var(--color-primary);
+}
+
+/* Un singur stil de focus, vizibil pe orice fundal — cerinta WCAG. */
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Utilitare */
+
+.card {
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+/* Ascuns vizual, dar citit de screen reader. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

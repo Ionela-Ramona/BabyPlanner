@@ -1,0 +1,18 @@
+<h1>Activități</h1>
+<p class="text-muted">Activitățile bebelușului cu id-ul {{ babyId() }}.</p>
+
+<div class="card placeholder">
+  <h2>În construcție</h2>
+  <p>
+    Lista va fi alimentată de <code>GET /api/babies/{{ babyId() }}/activities</code>, cu filtrare
+    după tipul activității.
+  </p>
+  <p class="text-muted">Se construiește în Etapa 4.</p>
+
+  <p>
+    Valoarea <code>{{ babyId() }}</code> de mai sus vine din URL, legată automat de
+    <code>input()</code> — deci routingul transmite deja date către componentă.
+  </p>
+
+  <a routerLink="/babies">Înapoi la bebeluși</a>
+</div>
