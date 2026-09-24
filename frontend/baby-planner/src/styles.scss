@@ -148,3 +148,36 @@ a {
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* Butoane si linkuri care arata ca butoane. Aceeasi clasa pentru <button> si <a>,
+   ca sa alegem elementul dupa ce face (actiune vs navigare), nu dupa cum arata. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.button:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.button--ghost {
+  border-color: var(--color-border);
+  background-color: transparent;
+  color: var(--color-primary);
+}
+
+.button--ghost:hover {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-soft);
+}

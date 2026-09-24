@@ -1,16 +1,35 @@
 <h1>Bebeluși</h1>
 <p class="text-muted">Lista bebelușilor și datele lor de bază.</p>
 
-<div class="card placeholder">
-  <h2>În construcție</h2>
-  <p>
-    Lista va fi alimentată de <code>GET /api/babies</code>, iar adăugarea și editarea vor folosi
-    <code>POST</code> și <code>PUT</code> pe aceeași resursă.
-  </p>
-  <p class="text-muted">Se construiește în Etapa 3.</p>
+@if (babies.isLoading()) {
+  <!-- role="status" anunță discret schimbarea, fără să întrerupă cititorul de ecran. -->
+  <p role="status">Se încarcă…</p>
+} @else if (babies.error()) {
+  <div class="card feedback" role="alert">
+    <h2>Nu am putut încărca lista</h2>
+    <p class="text-muted">Verifică dacă API-ul rulează, apoi încearcă din nou.</p>
+    <button class="button" type="button" (click)="babies.reload()">Reîncarcă</button>
+  </div>
+} @else if (babies.value().length === 0) {
+  <div class="card feedback">
+    <h2>Niciun bebeluș înregistrat</h2>
+    <p class="text-muted">Formularul de adăugare se construiește în Etapa 6.</p>
+  </div>
+} @else {
+  <ul class="baby-list">
+    @for (baby of babies.value(); track baby.id) {
+      <li class="card baby">
+        <div class="baby__details">
+          <h2 class="baby__name">{{ baby.name }}</h2>
+          <p class="baby__birth text-muted">
+            Data nașterii: {{ baby.dateOfBirth | date: 'longDate' }}
+          </p>
+        </div>
 
-  <p>
-    Ruta imbricată funcționează deja — poți verifica navigarea către
-    <a routerLink="/babies/1/activities">activitățile bebelușului 1</a>.
-  </p>
-</div>
+        <a class="button button--ghost" [routerLink]="['/babies', baby.id, 'activities']">
+          Vezi activitățile
+        </a>
+      </li>
+    }
+  </ul>
+}
