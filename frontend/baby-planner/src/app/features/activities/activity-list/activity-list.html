@@ -1,63 +1,66 @@
-<a class="back-link" routerLink="/babies">← Toți bebelușii</a>
+<a class="back-link" appButton variant="ghost" routerLink="/babies">
+  <app-icon name="back" />
+  Toți bebelușii
+</a>
 
-<h1>
-  <!-- hasValue() este garda corecta: value() arunca prin design cand resursa e in eroare
-       (de exemplu bebelus inexistent), iar exceptia ar opri randarea intregii pagini. -->
-  Activități@if (baby.hasValue()) {<span class="subject"> — {{ baby.value().name }}</span>}
-</h1>
+<header class="page-header">
+  <h1>Istoric</h1>
+  @if (babyName(); as name) {
+    <p class="page-header__baby">
+      <app-avatar [name]="name" [size]="32" />
+      <span>{{ name }}</span>
+    </p>
+  }
+</header>
 
-<div class="filter">
-  <label class="filter__label" for="type-filter">Filtrează după tip</label>
-
-  <!-- Variabila de template ne dă valoarea tipată, fără cast din $event.target. -->
-  <select
-    id="type-filter"
-    class="filter__select"
-    #typeSelect
-    (change)="onTypeChange(typeSelect.value)"
-  >
-    <option value="" [selected]="!type()">Toate tipurile</option>
-    @for (activityType of activityTypes; track activityType) {
-      <option [value]="activityType" [selected]="activityType === type()">
-        {{ typeLabels[activityType] }}
-      </option>
-    }
-  </select>
-</div>
+<app-filter-chips class="filter" [value]="type()" (valueChange)="onTypeChange($event)" />
 
 @if (activities.isLoading()) {
-  <p role="status">Se încarcă…</p>
+  <app-card padding="sm">
+    <app-skeleton variant="row" [count]="6" />
+  </app-card>
 } @else if (activities.error()) {
-  <div class="card feedback" role="alert">
-    <h2>Nu am putut încărca activitățile</h2>
-    <p class="text-muted">Verifică dacă API-ul rulează și dacă bebelușul există.</p>
-    <button class="button" type="button" (click)="activities.reload()">Reîncarcă</button>
-  </div>
-} @else if (activities.value().length === 0) {
-  <div class="card feedback">
-    @if (type()) {
-      <h2>Nicio activitate de acest tip</h2>
-      <p class="text-muted">Alege „Toate tipurile” ca să vezi întreg istoricul.</p>
-    } @else {
-      <h2>Nicio activitate înregistrată</h2>
-      <p class="text-muted">Formularul de adăugare se construiește în Etapa 6.</p>
-    }
-  </div>
+  <app-error-state
+    message="Verifică dacă API-ul rulează și dacă bebelușul există."
+    (retry)="activities.reload()"
+  />
+} @else if (!type() && activities.value().length === 0) {
+  <app-empty-state
+    illustration="blocks.svg"
+    title="Niciun moment notat încă"
+    message="Adaugă prima activitate ca să înceapă istoricul."
+  >
+    <button actions appButton type="button" (click)="addFirstActivity()">
+      ＋ Adaugă prima activitate
+    </button>
+  </app-empty-state>
+} @else if (type() && activities.value().length === 0) {
+  <app-empty-state
+    illustration="sleepy-star.svg"
+    [title]="emptyTypeMessage()"
+    message="Alege alt tip sau arată tot istoricul."
+  >
+    <button actions appButton variant="secondary" type="button" (click)="clearFilter()">
+      Arată toate
+    </button>
+  </app-empty-state>
 } @else {
-  <ul class="activity-list">
-    @for (activity of activities.value(); track activity.id) {
-      <li class="card activity">
-        <span class="activity__type" [attr.data-type]="activity.type">
-          {{ typeLabels[activity.type] }}
-        </span>
+  @for (group of dayGroups(); track group.key) {
+    <section class="day">
+      <div class="day__header">
+        <h2 class="day__heading">
+          <app-ribbon size="sm">{{ group.heading }}</app-ribbon>
+        </h2>
+        <p class="day__summary text-muted">{{ group.summary }}</p>
+      </div>
 
-        <div class="activity__details">
-          <p class="activity__time">{{ activity.occurredAt | date: 'd MMMM, HH:mm' }}</p>
-          @if (activity.notes) {
-            <p class="activity__notes text-muted">{{ activity.notes }}</p>
+      <app-card padding="none">
+        <ul class="day__list">
+          @for (activity of group.activities; track activity.id) {
+            <li><app-activity-row [activity]="activity" (edit)="launcher.edit($event)" /></li>
           }
-        </div>
-      </li>
-    }
-  </ul>
+        </ul>
+      </app-card>
+    </section>
+  }
 }

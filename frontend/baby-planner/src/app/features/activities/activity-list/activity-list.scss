@@ -3,108 +3,75 @@
 }
 
 .back-link {
-  display: inline-block;
-  margin-bottom: var(--space-3);
-  font-size: 0.9375rem;
+  margin-bottom: var(--space-4);
 }
 
-.subject {
-  color: var(--color-text-muted);
-  font-weight: 400;
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.page-header h1 {
+  margin: 0;
+}
+
+.page-header__baby {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  color: var(--color-text-strong);
+  font-weight: 600;
 }
 
 .filter {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2) var(--space-3);
-  align-items: center;
+  display: block;
   margin-bottom: var(--space-6);
 }
 
-.filter__label {
-  font-size: 0.9375rem;
-  font-weight: 500;
+.day {
+  margin-bottom: var(--space-6);
 }
 
-.filter__select {
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background-color: var(--color-surface);
-  color: var(--color-text);
-  font: inherit;
+.day:last-child {
+  margin-bottom: 0;
 }
 
-.feedback {
-  max-width: 34rem;
+/* Antetul de zi ramane vizibil cat timp cardul lui defileaza pe sub el — ca intr-o
+   agenda cu file — asa ca zilele lungi raman usor de urmarit cu privirea. */
+.day__header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--space-3);
+  row-gap: var(--space-1);
+  padding-block: var(--space-2);
+  background-color: var(--color-bg);
 }
 
-.activity-list {
-  display: grid;
-  gap: var(--space-2);
+.day__heading {
   margin: 0;
-  padding: 0;
+}
+
+.day__summary {
+  margin: 0;
+}
+
+.day__list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: var(--space-2);
   list-style: none;
 }
 
-.activity {
-  display: flex;
-  gap: var(--space-4);
-  align-items: baseline;
-  padding: var(--space-3) var(--space-4);
-}
-
-/* Fiecare tip isi are nuanta lui, ca lista sa poata fi parcursa din ochi.
-   Eticheta ramane text: culoarea adauga informatie, nu o inlocuieste. */
-.activity__type {
-  flex: none;
-  min-width: 7.5rem;
-  padding: var(--space-1) var(--space-3);
-  border-radius: 999px;
-  background-color: hsl(var(--badge-hue) 60% 93%);
-  color: hsl(var(--badge-hue) 55% 27%);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  text-align: center;
-}
-
-.activity__type[data-type='Feeding'] {
-  --badge-hue: 145;
-}
-
-.activity__type[data-type='Sleep'] {
-  --badge-hue: 250;
-}
-
-.activity__type[data-type='Diaper'] {
-  --badge-hue: 35;
-}
-
-.activity__type[data-type='Medicine'] {
-  --badge-hue: 340;
-}
-
-.activity__type[data-type='Other'] {
-  --badge-hue: 200;
-}
-
-@media (prefers-color-scheme: dark) {
-  .activity__type {
-    background-color: hsl(var(--badge-hue) 35% 21%);
-    color: hsl(var(--badge-hue) 65% 80%);
-  }
-}
-
-.activity__details {
-  min-width: 0;
-}
-
-.activity__time {
-  margin: 0;
-  font-weight: 500;
-}
-
-.activity__notes {
-  margin: var(--space-1) 0 0;
-  font-size: 0.9375rem;
+.day__list li + li {
+  margin-top: var(--space-1);
 }

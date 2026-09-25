@@ -2,22 +2,23 @@
      Utilizatorii de tastatura nu mai trebuie sa treaca prin navigare la fiecare pagina. -->
 <a class="skip-link" href="#continut">Sari la conținut</a>
 
-<header class="app-header">
-  <div class="app-header__inner">
-    <a class="brand" routerLink="/dashboard">
-      <span class="brand__mark" aria-hidden="true">🍼</span>
-      <span class="brand__name">BabyPlanner</span>
-    </a>
+<header class="topbar">
+  <a class="topbar__home" routerLink="/dashboard" aria-label="BabyPlanner, pagina Azi">
+    <app-wordmark [compact]="narrow()" />
+  </a>
 
-    <app-nav-bar />
+  <div class="topbar__tools">
+    <app-baby-switcher />
+    <app-theme-toggle />
   </div>
 </header>
 
-<!-- tabindex="-1" face <main> focusabil programatic, ca skip-link-ul sa aiba unde ateriza. -->
-<main id="continut" class="app-main" tabindex="-1">
+<!-- tabindex="-1" face <main> focusabil programatic, ca skip-link-ul (si mutarea
+     focusului dupa navigare) sa aiba unde ateriza. -->
+<main id="continut" class="app-main" [class.app-main--wide]="wide()" tabindex="-1" #main>
   <router-outlet />
 </main>
 
-<footer class="app-footer">
-  <p class="text-muted">Proiect de învățare — .NET 8 Web API + Angular {{ angularVersion }}</p>
-</footer>
+<app-main-nav class="app-nav" />
+
+<app-toast-outlet />

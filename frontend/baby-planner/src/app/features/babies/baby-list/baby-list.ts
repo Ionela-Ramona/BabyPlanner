@@ -1,30 +1,48 @@
-import { DatePipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { Component, VERSION, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { BabyApi } from '../../../core/services/baby-api';
+import { ActiveBaby } from '../../../core/services/active-baby';
+import { Clock } from '../../../core/services/clock';
+import { Avatar } from '../../../shared/components/avatar/avatar';
+import { Button } from '../../../shared/components/button/button';
+import { Card } from '../../../shared/components/card/card';
+import { EmptyState } from '../../../shared/components/empty-state/empty-state';
+import { ErrorState } from '../../../shared/components/error-state/error-state';
+import { Icon } from '../../../shared/components/icon/icon';
+import { Skeleton } from '../../../shared/components/skeleton/skeleton';
+import { ageLabel } from '../../../shared/utils/ro-time';
+import { birthDateLabel } from '../baby-format';
 
 /**
  * Lista bebelusilor.
  *
- * Datele vin prin `rxResource`, care impacheteaza cererea HTTP in semnale:
- * `value()`, `isLoading()`, `error()` si `reload()`. Nu ne abonam manual si nu
- * avem nevoie de `ngOnDestroy` — resursa se opreste odata cu componenta.
+ * Citeste lista comuna din `ActiveBaby` (aceeasi pe care o foloseste selectorul
+ * din bara de sus), nu face o cerere proprie: dupa o adaugare sau o stergere,
+ * un singur `reload()` actualizeaza ambele locuri.
  */
 @Component({
   selector: 'app-baby-list',
-  imports: [DatePipe, RouterLink],
+  imports: [Avatar, Button, Card, EmptyState, ErrorState, Icon, RouterLink, Skeleton],
   styleUrl: './baby-list.scss',
   templateUrl: './baby-list.html',
 })
 export class BabyList {
-  private readonly babyApi = inject(BabyApi);
+  protected readonly active = inject(ActiveBaby);
+  private readonly clock = inject(Clock);
 
-  // `defaultValue` face ca `value()` sa fie mereu un array, si inainte de primul
-  // raspuns si dupa o eroare — asa template-ul nu are de tratat `undefined`.
-  protected readonly babies = rxResource({
-    stream: () => this.babyApi.getAll(),
-    defaultValue: [],
+  protected readonly angularVersion = VERSION.major;
+
+  /**
+   * Cardurile gata de afisat. `babies()` arunca in starea de eroare (asa face
+   * rxResource), deci template-ul verifica `error()` inainte sa ajunga aici.
+   */
+  protected readonly cards = computed(() => {
+    const today = this.clock.today();
+    return this.active.babies().map((baby) => ({
+      id: baby.id,
+      name: baby.name,
+      age: ageLabel(baby.dateOfBirth, today),
+      birthDate: birthDateLabel(baby.dateOfBirth),
+    }));
   });
 }

@@ -74,7 +74,7 @@ export class FilterChips {
     })),
   ];
 
-  protected readonly valueArray = computed<Array<ActivityType | undefined>>(() => [this.value()]);
+  protected readonly valueArray = computed<(ActivityType | undefined)[]>(() => [this.value()]);
 
   protected onListboxChange(values: readonly (ActivityType | undefined)[]): void {
     this.value.set(values[0]);

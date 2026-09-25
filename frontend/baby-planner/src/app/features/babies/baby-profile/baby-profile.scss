@@ -1,0 +1,214 @@
+@use 'styles/mixins' as m;
+
+/* Telefon: o coloana centrata. Desktop: compozitia din referinta, rama + bula
+   in stanga, titlul + fisa in dreapta. Decoratiunile stau in spatele continutului. */
+.profile {
+  --profile-frame: min(17rem, 74vw);
+
+  position: relative;
+  /* Context propriu: decoratiunile (z-index -1) raman peste hartia paginii. */
+  isolation: isolate;
+  display: grid;
+  grid-template-areas: 'frame' 'title' 'facts' 'actions' 'bubble';
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+  justify-items: center;
+  padding-top: var(--space-6);
+}
+
+.profile__title {
+  grid-area: title;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  text-align: center;
+}
+
+.profile__name {
+  margin: 0;
+  font-size: var(--text-script);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+/* Numele "Moments" din referinta: scris de pensula, mare, cerneala de miere. */
+.profile__name.script {
+  color: var(--honey-ink);
+  font-size: 3.25rem;
+  line-height: 1;
+}
+
+.profile__frame {
+  grid-area: frame;
+}
+
+.profile__facts {
+  grid-area: facts;
+  width: 100%;
+  max-width: 30rem;
+}
+
+.profile__bubble {
+  grid-area: bubble;
+}
+
+.profile__actions {
+  grid-area: actions;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+.profile__state {
+  grid-area: facts;
+  width: 100%;
+}
+
+.facts {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+}
+
+/* "Label: ........" : eticheta, apoi valoarea scrisa pe linia punctata. */
+.fact {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: end;
+  column-gap: var(--space-3);
+
+  dt {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--color-text);
+    font-weight: 700;
+  }
+
+  dd {
+    @include m.baseline(var(--caramel));
+
+    min-height: 1.75rem;
+    margin: 0;
+    padding: 0 var(--space-1) 0.1875rem;
+    color: var(--color-text-strong);
+    font-family: var(--font-display);
+    font-size: var(--text-lead);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+}
+
+.fact__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-md);
+  background: var(--block-soft);
+  color: var(--block-ink);
+}
+
+.fact__quiet {
+  color: var(--color-text-muted);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: 400;
+}
+
+.counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  app-icon {
+    color: var(--block-ink);
+  }
+}
+
+.deco {
+  position: absolute;
+  z-index: -1;
+  height: auto;
+  pointer-events: none;
+}
+
+.deco--bunting {
+  top: 0;
+  right: 0;
+  width: 7rem;
+}
+
+.deco--star {
+  top: var(--space-6);
+  left: 0;
+  width: 2.25rem;
+}
+
+.deco--balloon {
+  right: var(--space-2);
+  bottom: var(--space-2);
+  width: 2.75rem;
+}
+
+@media (min-width: 56rem) {
+  .profile {
+    --profile-frame: 24rem;
+
+    grid-template-areas:
+      'frame title'
+      'frame facts'
+      'bubble actions';
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    grid-template-rows: auto 1fr auto;
+    column-gap: var(--space-12);
+    row-gap: var(--space-6);
+    align-items: start;
+    padding-top: var(--space-12);
+  }
+
+  .profile__title {
+    justify-items: start;
+    padding-top: var(--space-8);
+    text-align: start;
+  }
+
+  .profile__name.script {
+    font-size: 4.5rem;
+  }
+
+  .profile__facts {
+    max-width: none;
+  }
+
+  .profile__actions {
+    justify-content: flex-start;
+  }
+
+  .deco--bunting {
+    width: 15rem;
+  }
+
+  .deco--star {
+    top: var(--space-4);
+    width: 3rem;
+  }
+
+  .deco--balloon {
+    right: auto;
+    bottom: var(--space-4);
+    left: calc(50% - var(--space-12));
+    width: 3.75rem;
+  }
+}

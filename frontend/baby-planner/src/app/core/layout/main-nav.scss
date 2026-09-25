@@ -1,0 +1,165 @@
+/* ---- Telefon si tableta: bara de jos ---- */
+
+:host {
+  position: fixed;
+  z-index: var(--z-nav);
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: block;
+}
+
+.nav {
+  --edge-color: var(--paper-card);
+
+  position: relative;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background-color: var(--paper-card);
+  /* Umbra in sus: bara sta deasupra paginii, nu langa ea. */
+  box-shadow: 0 -6px 18px -10px rgb(var(--shadow-rgb) / 26%);
+}
+
+.nav__list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+  max-width: var(--layout-max-width);
+  height: var(--bottom-nav-height);
+  margin: 0 auto;
+  padding: 0 var(--space-2);
+  list-style: none;
+}
+
+.nav__slot {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  min-width: 0;
+}
+
+.nav__link {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  min-height: var(--tap-lg);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  font-size: var(--text-caption);
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.nav__link:hover {
+  color: var(--color-text);
+}
+
+/* Starea activa: cerneala de miere + o "bila" moale in spatele iconitei, ca un
+   cub apasat. Nu doar culoarea (WCAG 1.4.1): si fundalul, si greutatea. */
+.nav__link.is-active {
+  color: var(--honey-ink);
+}
+
+.nav__link.is-active app-icon {
+  border-radius: var(--radius-pill);
+  background-color: var(--honey-soft);
+  box-shadow: 0 0 0 5px var(--honey-soft);
+}
+
+.nav__link--disabled,
+.nav__link--disabled:hover {
+  color: var(--color-text-muted);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.nav__label {
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Cubul "＋ Adaugă" iese deasupra barei: e tinta principala, la degetul mare. */
+.nav__slot--add {
+  align-items: flex-start;
+}
+
+.nav__add {
+  margin-top: calc(var(--space-6) * -1);
+}
+
+.nav__add-wide {
+  display: none;
+}
+
+/* ---- Desktop: rail in stanga ---- */
+
+@media (min-width: 64rem) {
+  :host {
+    position: sticky;
+    top: 0;
+    bottom: auto;
+    align-self: start;
+  }
+
+  .nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    padding: var(--space-6) var(--space-4);
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  .nav__edge,
+  .nav__slot--add {
+    display: none;
+  }
+
+  .nav__add-wide {
+    display: inline-flex;
+  }
+
+  .nav__list {
+    grid-template-columns: 1fr;
+    align-content: start;
+    gap: var(--space-1);
+    height: auto;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav__link {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: var(--space-3);
+    padding: 0 var(--space-4);
+    font-size: var(--text-body);
+  }
+
+  .nav__link.is-active {
+    background-color: var(--paper-card);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .nav__link.is-active app-icon {
+    box-shadow: none;
+    background-color: transparent;
+  }
+}
+
+@media (forced-colors: active) {
+  .nav {
+    border-top: 1px solid CanvasText;
+  }
+
+  .nav__link.is-active {
+    outline: 2px solid Highlight;
+  }
+}

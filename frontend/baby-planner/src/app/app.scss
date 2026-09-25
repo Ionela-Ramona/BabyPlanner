@@ -1,21 +1,31 @@
+/* Shell-ul: bara de sus, continutul si navigarea.
+   Telefon: coloana simpla, navigarea e bara fixa de jos.
+   Desktop (>= 64rem): rail in stanga, continutul in dreapta, bara de sus peste ambele. */
+
 :host {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-areas:
+    'top'
+    'main';
+  /* minmax(0, 1fr): continutul care defileaza lateral (chip-uri) nu poate
+     largi coloana peste ecran. */
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
   min-height: 100dvh;
 }
 
 /* Vizibil doar cand primeste focus — altfel sta ascuns deasupra paginii. */
 .skip-link {
   position: absolute;
+  z-index: var(--z-skip);
   top: var(--space-2);
   left: var(--space-2);
-  z-index: 10;
   padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-md);
-  background-color: var(--color-primary);
-  color: var(--color-on-primary);
-  font-weight: 600;
-  text-decoration: none;
+  background-color: var(--paper-card);
+  box-shadow: var(--shadow-md);
+  color: var(--color-text-strong);
+  font-weight: 700;
   transform: translateY(-200%);
 }
 
@@ -23,65 +33,69 @@
   transform: translateY(0);
 }
 
-.app-header {
-  border-bottom: 1px solid var(--color-border);
-  background-color: var(--color-surface);
-}
-
-.app-header__inner {
+.topbar {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3) var(--space-6);
+  grid-area: top;
   align-items: center;
   justify-content: space-between;
-  max-width: var(--layout-max-width);
-  margin-inline: auto;
-  padding: var(--space-3) var(--space-4);
-}
-
-.brand {
-  display: inline-flex;
-  gap: var(--space-2);
-  align-items: center;
-  color: var(--color-text);
-  font-size: 1.125rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  text-decoration: none;
-}
-
-.brand__mark {
-  font-size: 1.375rem;
-  line-height: 1;
-}
-
-.app-main {
-  flex: 1;
+  gap: var(--space-3);
   width: 100%;
   max-width: var(--layout-max-width);
   margin-inline: auto;
-  padding: var(--space-8) var(--space-4);
+  padding: calc(var(--space-3) + env(safe-area-inset-top, 0px)) var(--space-4) var(--space-2);
 }
 
-/* Fara contur la focusul programatic venit din skip-link: mutarea focusului
-   e deja semnalata de faptul ca urmatorul Tab continua din continut. */
-.app-main:focus {
-  outline: none;
+.topbar__home {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  min-height: var(--tap-min);
+  border-radius: var(--radius-md);
+  color: inherit;
+  text-decoration: none;
 }
 
-.app-footer {
-  border-top: 1px solid var(--color-border);
+.topbar__tools {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  min-width: 0;
 }
 
-.app-footer p {
+.app-main {
+  grid-area: main;
+  width: 100%;
   max-width: var(--layout-max-width);
-  margin: 0 auto;
-  padding: var(--space-4);
-  font-size: 0.875rem;
+  margin-inline: auto;
+  /* Loc pentru bara de jos (+ cubul "Adaugă" care iese deasupra ei). */
+  padding: var(--space-4) var(--space-4)
+    calc(var(--bottom-nav-height) + var(--space-12) + env(safe-area-inset-bottom, 0px));
 }
 
-@media (max-width: 30rem) {
-  .app-header__inner {
-    justify-content: center;
+.app-main--wide {
+  max-width: var(--layout-wide);
+}
+
+@media (min-width: 64rem) {
+  :host {
+    grid-template-areas:
+      'top top'
+      'nav main';
+    grid-template-columns: var(--rail-width) minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+  }
+
+  .topbar {
+    max-width: none;
+    padding: var(--space-5) var(--space-6) var(--space-3);
+  }
+
+  .app-nav {
+    grid-area: nav;
+  }
+
+  .app-main {
+    padding: var(--space-6) var(--space-8) var(--space-16);
   }
 }

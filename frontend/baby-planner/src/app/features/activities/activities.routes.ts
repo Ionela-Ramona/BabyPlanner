@@ -6,6 +6,6 @@ export const activitiesRoutes: Routes = [
   {
     path: '',
     component: ActivityList,
-    title: 'Activități · BabyPlanner',
+    title: 'Istoric · BabyPlanner',
   },
 ];

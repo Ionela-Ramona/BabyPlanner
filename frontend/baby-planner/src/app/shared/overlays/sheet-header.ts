@@ -51,5 +51,8 @@ import { Icon } from '../components/icon/icon';
 export class SheetHeader {
   readonly title = input.required<string>();
   readonly subtitle = input<string>();
+  // `close` e numele asteptat de toate foile; evenimentul nativ `close` vine doar
+  // de la <dialog> si nu urca pana aici, deci nu se amesteca.
+  // eslint-disable-next-line @angular-eslint/no-output-native
   readonly close = output<void>();
 }

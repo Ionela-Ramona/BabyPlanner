@@ -1,12 +1,130 @@
-<h1>Dashboard</h1>
-<p class="text-muted">Activitățile de azi, cu filtrare după tip.</p>
+<div class="page">
+  <!-- Singurul moment "de poveste" al paginii: numele in script, ca "Moments" din
+       referinta, cu panglica zilei dedesubt. Restul paginii e unealta de lucru. -->
+  <header class="greeting">
+    <h1 class="greeting__title">
+      @if (baby(); as baby) {
+        <span class="script greeting__name">{{ baby.name }}</span>
+      } @else if (hasBabies() === undefined && !babiesError()) {
+        <span class="visually-hidden">Azi</span>
+        <span class="greeting__placeholder" aria-hidden="true"></span>
+      } @else {
+        Azi
+      }
+    </h1>
+    @if (age()) {
+      <p class="greeting__age">{{ age() }}</p>
+    }
+    <app-ribbon class="greeting__date" size="sm" decorated>
+      <time [attr.datetime]="dateValue()">Azi · {{ dateLabel() }}</time>
+    </app-ribbon>
+  </header>
 
-<div class="card placeholder">
-  <h2>În construcție</h2>
-  <p>
-    Aici va apărea rezumatul zilei curente, alimentat de
-    <code>GET /api/babies/&#123;babyId&#125;/activities/today</code>.
-  </p>
-  <p class="text-muted">Se construiește în Etapa 5, după serviciul de API și paginile de listă.</p>
-  <a routerLink="/babies">Vezi bebelușii</a>
+  @if (babiesError()) {
+    <app-error-state
+      class="page__full"
+      title="Nu am putut încărca bebelușii"
+      message="Verifică conexiunea și încearcă din nou."
+      (retry)="reloadBabies()"
+    />
+  } @else if (hasBabies() === false) {
+    <app-empty-state
+      class="page__full"
+      title="Niciun bebeluș încă"
+      message="Adaugă un bebeluș ca să poți nota mesele, somnul și scutecele lui."
+      illustration="balloon.svg"
+    >
+      <a actions appButton routerLink="/babies">
+        <app-icon name="plus" />
+        Adaugă un bebeluș
+      </a>
+    </app-empty-state>
+  } @else if (today.error() && !activities()) {
+    <app-error-state
+      class="page__full"
+      title="Nu am putut încărca ziua de azi"
+      message="Verifică conexiunea și încearcă din nou."
+      (retry)="today.reload()"
+    />
+  } @else {
+    <section class="summary" aria-labelledby="summary-title">
+      <h2 id="summary-title" class="visually-hidden">Pe scurt</h2>
+      @if (activities()) {
+        <ul class="summary__tiles" [class.is-stale]="isStale()">
+          @for (summary of summaries(); track summary.type) {
+            <li>
+              <app-summary-tile
+                [summary]="summary"
+                [now]="now()"
+                [active]="type() === summary.type"
+                (filter)="toggleFilter($event)"
+                (log)="launcher.open($event)"
+              />
+            </li>
+          }
+        </ul>
+      } @else {
+        <app-skeleton class="summary__skeleton" variant="tile" [count]="3" />
+      }
+    </section>
+
+    <section class="timeline" aria-labelledby="timeline-title" [attr.aria-busy]="isStale() || null">
+      <h2 id="timeline-title" class="visually-hidden">Cronologia zilei</h2>
+
+      <app-filter-chips
+        class="timeline__chips"
+        ariaLabel="Filtrează cronologia după tip"
+        [value]="type()"
+        (valueChange)="setFilter($event)"
+      />
+
+      @if (today.error()) {
+        <!-- Aici ajungem doar cu o lista deja primita: o pastram vizibila sub eroare. -->
+        <app-error-state
+          title="Nu am putut reîmprospăta ziua"
+          message="Lista de mai jos poate fi veche. Încearcă din nou."
+          (retry)="today.reload()"
+        />
+      }
+
+      <app-card class="timeline__card" padding="sm" [class.is-stale]="isStale()">
+        @if (!activities()) {
+          <app-skeleton variant="row" [count]="4" />
+        } @else if (activities()!.length === 0) {
+          <app-empty-state
+            title="Nicio activitate azi."
+            message="Prima masă, primul somn sau primul scutec notat apare aici, cu ora lui."
+            illustration="sleepy-star.svg"
+            [headingLevel]="3"
+          >
+            <button actions appButton type="button" (click)="launcher.open()">
+              <app-icon name="plus" />
+              Adaugă prima activitate
+            </button>
+          </app-empty-state>
+        } @else if (visible().length === 0 && filteredEmpty()) {
+          <app-empty-state [title]="filteredEmpty()!.none" [headingLevel]="3">
+            <button actions appButton variant="secondary" type="button" (click)="setFilter(undefined)">
+              Arată toate
+            </button>
+            <button actions appButton type="button" (click)="launcher.open(type())">
+              <app-icon name="plus" />
+              {{ filteredEmpty()!.add }}
+            </button>
+          </app-empty-state>
+        } @else {
+          @for (group of groups(); track group.label) {
+            <app-divider class="timeline__divider">{{ group.label }}</app-divider>
+            <ul class="timeline__list" [attr.aria-label]="group.label">
+              @for (activity of group.activities; track activity.id) {
+                <li [class.timeline__item--new]="fresh().has(activity.id)">
+                  <app-activity-row [activity]="activity" (edit)="launcher.edit($event)" />
+                </li>
+              }
+            </ul>
+          }
+        }
+      </app-card>
+    </section>
+  }
 </div>

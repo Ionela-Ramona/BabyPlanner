@@ -154,7 +154,7 @@ export class FeedbackSection {
       message: 'Masă înregistrată',
       tone: 'success',
       action: { label: 'Anulează', run: () => this.toasts.show({ message: 'Anulat.', tone: 'info' }) },
-      secondaryAction: { label: 'Adaugă detalii', run: () => {} },
+      secondaryAction: { label: 'Adaugă detalii', run: () => this.toasts.show({ message: 'Aici s-ar deschide detaliile.', tone: 'info' }) },
     });
   }
 
