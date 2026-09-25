@@ -1,0 +1,37 @@
+/* Stiluri globale pentru foi (bottom sheet), confirmari si toasturi (BP-UI-10).
+   Globale pentru ca tintesc elemente pe care CDK le creeaza in afara arborelui
+   de componente Angular: `.cdk-overlay-backdrop` si `.cdk-overlay-pane`.
+   Restul aspectului (foaia insasi, dialogul de confirmare, toast-ul) sta in
+   stilurile proprii ale componentelor din shared/overlays. */
+
+/* Fundalul (scrim): cacao calda, niciodata negru. Opacitatea si tranzitia vin
+   deja din @angular/cdk/overlay-prebuilt (clasa .cdk-overlay-backdrop-showing). */
+.bp-scrim {
+  background-color: var(--scrim);
+}
+
+/* Foaia (sheet): panou ancorat jos pe telefon, panou centrat de la 48rem in sus.
+   GlobalPositionStrategy seteaza `position: static` pe pane, deci elementul
+   participa la flexbox-ul din .cdk-global-overlay-wrapper; `align-self` aici
+   ii suprascrie alinierea verticala fara sa intre in conflict cu stilurile
+   inline puse de strategie pe wrapper. */
+.bp-sheet-pane {
+  align-self: flex-end;
+  width: 100%;
+  max-width: 100%;
+}
+
+@media (min-width: 48rem) {
+  .bp-sheet-pane {
+    align-self: center;
+    width: auto;
+    max-width: 32rem;
+  }
+}
+
+/* Confirmarea: mic dialog centrat pe orice ecran. */
+.bp-confirm-pane {
+  align-self: center;
+  width: calc(100% - var(--space-8));
+  max-width: 26rem;
+}

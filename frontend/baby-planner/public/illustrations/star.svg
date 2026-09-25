@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <!-- Stea decorativa simpla (fara fata), pentru colturi de pagina si confetti.
+       Hex: treapta sage din _tokens.scss (Paper). -->
+  <path
+    d="M11.34 4.61 Q12 3 12.66 4.61 L13.69 7.15 Q14.35 8.76 16.09 8.89 L18.82 9.09
+       Q20.56 9.22 19.23 10.34 L17.14 12.11 Q15.8 13.24 16.22 14.93 L16.87 17.59
+       Q17.29 19.28 15.81 18.36 L13.48 16.92 Q12 16 10.52 16.92 L8.19 18.36
+       Q6.71 19.28 7.13 17.59 L7.78 14.93 Q8.2 13.24 6.86 12.11 L4.77 10.34
+       Q3.44 9.22 5.18 9.09 L7.91 8.89 Q9.65 8.76 10.31 7.15 Z"
+    fill="#c1ae7e"
+    stroke="#827c5c"
+    stroke-width="1"
+    stroke-linejoin="round"
+  />
+</svg>

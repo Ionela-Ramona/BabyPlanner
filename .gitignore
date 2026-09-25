@@ -432,8 +432,10 @@ test-results/
 .AppleDouble
 .LSOverride
 
-# Icon must end with two \r
-Icon
+# Fisierul "Icon\r" de pe macOS. Scris cu clasa de caractere: forma veche ("Icon" urmat
+# de doua \r invizibile) si-a pierdut \r-urile si ignora orice folder "icon" (Windows nu
+# face diferenta intre majuscule), inclusiv src/app/shared/components/icon.
+Icon[\r]
 
 
 # Thumbnails
@@ -502,3 +504,9 @@ npm-debug.log*
 *.db
 *.db-shm
 *.db-wal
+
+# Frontend redesign tooling
+.playwright-mcp/
+.impeccable/build/
+.impeccable/review/
+.impeccable/config.local.json

@@ -2,10 +2,17 @@
 <html lang="ro">
 <head>
   <meta charset="utf-8">
+  <!-- Aplica tema salvata inainte sa porneasca Angular, ca pagina sa nu clipeasca in tema gresita. -->
+  <script>(function(){try{var t=localStorage.getItem('bp-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
   <title>BabyPlanner</title>
   <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Jurnalul zilnic al bebelușului: mese, somn, scutece și medicamente, notate în câteva secunde.">
+  <meta name="theme-color" content="#F9EFE5" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#2A221E" media="(prefers-color-scheme: dark)">
+  <link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 </head>
 <body>
   <app-root></app-root>

@@ -1,0 +1,54 @@
+/* Fara scrollbar vizibil + o estompare pe margini (mask), ca sa se vada ca lista
+   continua in afara ecranului. #000/transparent sunt valori de masca (canal alfa),
+   nu culori afisate — acelasi truc ca in mixin-ul `scallop`. */
+.chips-scroller {
+  overflow-x: auto;
+  scrollbar-width: none;
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 1.25rem,
+    #000 calc(100% - 1.25rem),
+    transparent
+  );
+}
+
+.chips-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.chips {
+  display: flex;
+  gap: var(--space-2);
+  width: max-content;
+  min-width: 100%;
+  padding: var(--space-1) var(--space-1) var(--space-2);
+  scroll-snap-type: x proximity;
+}
+
+.chip {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 3rem;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: 700 var(--text-small) / 1 var(--font-sans);
+  white-space: nowrap;
+  cursor: pointer;
+  scroll-snap-align: start;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+
+.chip[aria-selected='true'] {
+  border-color: var(--block-line);
+  background: linear-gradient(180deg, var(--paper-highlight) 0%, var(--block-soft) 100%);
+  color: var(--block-ink);
+}

@@ -1,3 +1,5 @@
+import { IconName } from '../../shared/components/icon/icon-names';
+
 /**
  * Tipurile de activitate.
  *
@@ -10,14 +12,57 @@ export const ACTIVITY_TYPES = ['Feeding', 'Sleep', 'Diaper', 'Medicine', 'Other'
 
 export type ActivityType = (typeof ACTIVITY_TYPES)[number];
 
-/** Etichetele afisate in interfata. Cheile sunt verificate de compilator. */
-export const ACTIVITY_TYPE_LABELS: Readonly<Record<ActivityType, string>> = {
-  Feeding: 'Masă',
-  Sleep: 'Somn',
-  Diaper: 'Scutec',
-  Medicine: 'Medicamente',
-  Other: 'Altele',
+/** Familia de culoare a unui tip, adica valoarea atributului `[data-tone]` (_surfaces.scss). */
+export type ActivityTone = 'feeding' | 'sleep' | 'diaper' | 'medicine' | 'other';
+
+/**
+ * Identitatea completa a unui tip de activitate: eticheta, iconita, familia de
+ * culoare si textul de ajutor din campul de note. Fiecare componenta care arata
+ * un tip (cub, chip, insigna) citeste de aici — un tip nou inseamna o singura
+ * intrare noua, niciun cod nu are tipurile "hardcodate" in alta parte.
+ */
+export const ACTIVITY_META: Readonly<
+  Record<
+    ActivityType,
+    { label: string; icon: IconName; tone: ActivityTone; notesPlaceholder: string }
+  >
+> = {
+  Feeding: {
+    label: 'Masă',
+    icon: 'feeding',
+    tone: 'feeding',
+    notesPlaceholder: 'ex. 120 ml lapte praf sau alăptat 15 minute',
+  },
+  Sleep: {
+    label: 'Somn',
+    icon: 'sleep',
+    tone: 'sleep',
+    notesPlaceholder: 'ex. a dormit 45 de minute',
+  },
+  Diaper: {
+    label: 'Scutec',
+    icon: 'diaper',
+    tone: 'diaper',
+    notesPlaceholder: 'ex. ud sau murdar',
+  },
+  Medicine: {
+    label: 'Medicamente',
+    icon: 'medicine',
+    tone: 'medicine',
+    notesPlaceholder: 'ex. Vitamina D, o picătură',
+  },
+  Other: {
+    label: 'Altele',
+    icon: 'other',
+    tone: 'other',
+    notesPlaceholder: 'ex. baie, plimbare',
+  },
 };
+
+/** Etichetele afisate in interfata. Derivate din ACTIVITY_META, ca sa nu existe doua surse de adevar. */
+export const ACTIVITY_TYPE_LABELS: Readonly<Record<ActivityType, string>> = Object.fromEntries(
+  ACTIVITY_TYPES.map((type) => [type, ACTIVITY_META[type].label]),
+) as Readonly<Record<ActivityType, string>>;
 
 /**
  * Verifica daca o valoare venita din exterior (query string, formular) este un

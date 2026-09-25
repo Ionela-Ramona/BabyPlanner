@@ -1,0 +1,146 @@
+@use 'mixins' as m;
+
+/* Stilurile directivei appButton (src/app/shared/components/button/button.ts).
+   Globale, pentru ca o directiva nu poate avea stiluri proprii. */
+
+.btn {
+  position: relative;
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-5);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: none;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    filter var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+
+  &:active:not(:disabled, [aria-disabled='true']) {
+    transform: translateY(1px);
+  }
+
+  &:disabled,
+  &[aria-disabled='true'] {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .icon {
+    --icon-size: 1.25rem;
+  }
+}
+
+.btn--lg {
+  min-height: var(--tap-lg);
+  padding-inline: var(--space-6);
+  font-size: var(--text-lead);
+}
+
+.btn--block {
+  display: flex;
+  width: 100%;
+}
+
+/* Primar: gradientul de miere, text cacao, lumina pe muchia de sus. */
+.btn--primary {
+  @include m.honey-button;
+
+  @media (hover: hover) {
+    &:hover:not(:disabled, [aria-disabled='true']) {
+      color: var(--on-accent);
+      filter: brightness(1.04) saturate(1.06);
+    }
+  }
+}
+
+/* Secundar: hartie + margine >= 3:1 (inlocuieste .button--ghost). */
+.btn--secondary {
+  border-color: var(--color-line);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-text);
+
+  @media (hover: hover) {
+    &:hover:not(:disabled, [aria-disabled='true']) {
+      background-color: var(--color-primary-soft);
+      color: var(--color-text-strong);
+    }
+  }
+}
+
+/* Fantoma: doar text, pentru actiuni tertiare ("Toți bebelușii"). */
+.btn--ghost {
+  padding-inline: var(--space-3);
+  color: var(--color-text);
+
+  @media (hover: hover) {
+    &:hover:not(:disabled, [aria-disabled='true']) {
+      background-color: var(--color-surface-muted);
+      color: var(--color-text-strong);
+    }
+  }
+}
+
+/* Distructiv: doar pentru confirmari ireversibile. */
+.btn--danger {
+  border-color: var(--color-danger-line);
+  background-color: var(--color-danger-fill);
+  color: var(--color-danger-ink);
+
+  @media (hover: hover) {
+    &:hover:not(:disabled, [aria-disabled='true']) {
+      filter: brightness(0.97);
+      color: var(--color-danger-ink);
+    }
+  }
+}
+
+/* Incarcare: textul devine transparent (latimea ramane), spinnerul sta deasupra. */
+.btn--loading {
+  color: transparent !important;
+  pointer-events: none;
+
+  &::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1.125rem;
+    height: 1.125rem;
+    margin: -0.5625rem 0 0 -0.5625rem;
+    border: 2px solid var(--color-text);
+    border-right-color: transparent;
+    border-radius: 50%;
+    content: '';
+    animation: btn-spin 0.7s linear infinite;
+  }
+
+  .icon {
+    visibility: hidden;
+  }
+}
+
+@keyframes btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (forced-colors: active) {
+  .btn {
+    border-color: ButtonText;
+  }
+}

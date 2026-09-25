@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 
+import { devRoutes } from './dev-routes';
+
 /**
  * Rutele de nivel inalt.
  *
@@ -22,6 +24,7 @@ export const routes: Routes = [
     path: 'babies',
     loadChildren: () => import('./features/babies/babies.routes').then((m) => m.babiesRoutes),
   },
+  ...devRoutes,
   {
     // Trebuie sa ramana ultima: '**' prinde orice nu s-a potrivit mai sus.
     path: '**',

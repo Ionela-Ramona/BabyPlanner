@@ -1,59 +1,39 @@
-# BabyPlanner
+# BabyPlanner frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.7.
+Angular 22 web application for the BabyPlanner baby activity logger.
 
-## Development server
+## Requirements
 
-To start a local development server, run:
+- Node >= 22.22.3 (set via `.nvmrc`: run `nvm use 24`)
+- Backend API running on `https://localhost:7057`
 
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Getting started
 
 ```bash
-ng generate component component-name
+npm install
+npm start
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+The dev server runs on `http://localhost:4300` and proxies API calls to the backend.
 
-```bash
-ng generate --help
-```
+## Development commands
 
-## Building
+- `npm start` — Start the dev server
+- `npm test` — Run unit tests with Vitest
+- `npm run build` — Build for production
 
-To build the project run:
+## Component showcase
 
-```bash
-ng build
-```
+Visit `/dev/components` to browse the design system components and patterns (dev mode only).
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Styles and design tokens
 
-## Running unit tests
+All design tokens, typography, and surface styles live in `src/styles/`:
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+- `_tokens.scss` — Color, spacing, radius, and shadow tokens
+- `_themes.scss` — Light ("Paper") and dark ("Night nursery") themes
+- `_typography.scss` — Type scale, font families, and utilities
+- `_surfaces.scss` — Card, stitch, scallop, baseline, and gradient styles
+- `_buttons.scss` — Button variants and sizes
 
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Import the mixins and tokens with `@use 'styles/...'` (the `src` folder is on the Sass include path).

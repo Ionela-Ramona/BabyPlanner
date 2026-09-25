@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 110">
+  <!-- Balon salvie cu buline albicioase si o sfoara subtire, ca in referinta.
+       Hex din _tokens.scss (Paper). -->
+  <path
+    d="M30 5 C45 5 52 20 52 35 C52 55 42 68 30 68 C18 68 8 55 8 35 C8 20 15 5 30 5 Z"
+    fill="#c1ae7e"
+    stroke="#827c5c"
+    stroke-width="1.4"
+    stroke-linejoin="round"
+  />
+  <path d="M30 68 L26 73 L34 73 Z" fill="#827c5c" />
+  <path
+    d="M30 74 C25 80 35 86 30 92 C25 97 35 101 31 106"
+    fill="none"
+    stroke="#927a63"
+    stroke-width="1.2"
+    stroke-linecap="round"
+  />
+
+  <circle cx="22" cy="24" r="2.2" fill="#fdfbf7" />
+  <circle cx="37" cy="19" r="1.7" fill="#fdfbf7" />
+  <circle cx="28" cy="42" r="2.4" fill="#fdfbf7" />
+  <circle cx="41" cy="37" r="1.9" fill="#fdfbf7" />
+  <circle cx="18" cy="45" r="1.6" fill="#fdfbf7" />
+</svg>

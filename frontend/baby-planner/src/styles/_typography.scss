@@ -1,0 +1,68 @@
+/* Doua voci, ca in imaginea de referinta:
+   - "Little": litera rotunda scrisa de mana (Mali) pentru titluri;
+   - "Moments": script de pensula (Dancing Script) doar pentru numele bebelusului,
+     wordmark si salutari, niciodata pentru date, etichete sau butoane.
+   Nunito face toata munca de interfata. */
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0 0 var(--space-3);
+  color: var(--color-text-strong);
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--text-h1);
+}
+
+h2 {
+  font-size: var(--text-h2);
+}
+
+h3 {
+  font-size: var(--text-h3);
+}
+
+h4 {
+  font-size: var(--text-lead);
+}
+
+small,
+.text-caption {
+  font-size: var(--text-caption);
+}
+
+.text-small {
+  font-size: var(--text-small);
+}
+
+.text-lead {
+  font-size: var(--text-lead);
+}
+
+/* Scriptul: minim 24px, altfel devine greu de citit. Numele ramane text real
+   in titlu; scriptul e doar stil. */
+.script {
+  font-family: var(--font-script);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+
+.script--display {
+  font-size: var(--text-script);
+}
+
+.script--large {
+  font-size: var(--text-display);
+}
+
+.script--medium {
+  font-size: 1.75rem;
+}
