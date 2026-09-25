@@ -1,0 +1,60 @@
+﻿@use 'sass:string';
+@use 'mixins' as m;
+
+/* Tonurile si clasele utilitare globale ale suprafetelor. Mixin-urile sunt in _mixins.scss. */
+
+/* Tonul unui element: [data-tone="feeding"] etc. Il folosesc cuburile,
+   insignele, dalele si cardurile colorate. */
+[data-tone] {
+  --block-fill: var(--stone-fill);
+  --block-soft: var(--stone-soft);
+  --block-line: var(--stone-line);
+  --block-ink: var(--stone-ink);
+}
+
+$tones: (
+  feeding: act-feeding,
+  sleep: act-sleep,
+  diaper: act-diaper,
+  medicine: act-medicine,
+  other: act-other,
+  honey: honey,
+  dusk: dusk,
+  sage: sage,
+  blush: blush,
+  stone: stone,
+  success: color-success,
+  warning: color-warning,
+  danger: color-danger,
+  info: color-info
+);
+
+@each $tone, $prefix in $tones {
+  [data-tone='#{$tone}'] {
+    @if string.index($prefix, 'color-') == 1 {
+      --block-fill: var(--#{$prefix}-line);
+      --block-soft: var(--#{$prefix}-fill);
+    } @else {
+      --block-fill: var(--#{$prefix}-fill);
+      --block-soft: var(--#{$prefix}-soft);
+    }
+
+    --block-line: var(--#{$prefix}-line);
+    --block-ink: var(--#{$prefix}-ink);
+  }
+}
+
+/* Clase utilitare globale: pastreaza fisierele de stil ale componentelor sub
+   bugetul de 4 kB. */
+.surface-card {
+  @include m.card-surface;
+}
+
+.surface-block {
+  @include m.block;
+}
+
+.surface-sunk {
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface-muted);
+}

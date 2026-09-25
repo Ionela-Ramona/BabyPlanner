@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 62">
+  <!-- Ghirlanda de 5 fanioane pe o sfoara lasata, ca in imaginea de referinta.
+       Hex din _tokens.scss (Paper): miere, salvie, roz-piersica, piatra, nisip. -->
+  <path d="M4 8 Q100 42 196 8" fill="none" stroke="#927a63" stroke-width="1.4" stroke-linecap="round" />
+
+  <!-- Fanion miere: punct -->
+  <path d="M7 12 L33 12 L20 42 Z" fill="#e2b88a" stroke="#a0733f" stroke-width="1.2" stroke-linejoin="round" />
+  <circle cx="20" cy="22" r="2" fill="#f3e1cd" />
+
+  <!-- Fanion salvie: dungi -->
+  <path d="M47 24 L73 24 L60 54 Z" fill="#c1ae7e" stroke="#827c5c" stroke-width="1.2" stroke-linejoin="round" />
+  <path d="M53 30h14M55 36h10" stroke="#e8dec9" stroke-width="1.4" stroke-linecap="round" />
+
+  <!-- Fanion roz-piersica: punct -->
+  <path d="M87 30 L113 30 L100 60" fill="#f0c0a8" stroke="#a76f59" stroke-width="1.2" stroke-linejoin="round" />
+  <circle cx="100" cy="40" r="2" fill="#f7e4d7" />
+
+  <!-- Fanion piatra: dungi -->
+  <path d="M127 24 L153 24 L140 54 Z" fill="#d7cbbc" stroke="#847c72" stroke-width="1.2" stroke-linejoin="round" />
+  <path d="M133 30h14M135 36h10" stroke="#efe8dd" stroke-width="1.4" stroke-linecap="round" />
+
+  <!-- Fanion nisip: punct -->
+  <path d="M167 12 L193 12 L180 42 Z" fill="#e8d3b9" stroke="#b28b67" stroke-width="1.2" stroke-linejoin="round" />
+  <circle cx="180" cy="22" r="2" fill="#fdfbf7" />
+</svg>

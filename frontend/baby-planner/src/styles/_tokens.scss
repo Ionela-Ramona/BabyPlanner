@@ -1,0 +1,265 @@
+/* Tokens de design: SINGURUL fisier din aplicatie care contine valori hex.
+   Culorile vin din imaginea de referinta (docs/design/reference/little-moments.png):
+   hartie calda, cerneala cacao, pasteluri de acuarela. Nu exista negru sau alb pur.
+
+   Fiecare familie pastel are trei trepte, pentru ca pastelurile singure nu trec WCAG:
+   - fill: decorativ (fata unui cub, fundalul unei insigne), niciodata text;
+   - line: margini de controale, >= 3:1 pe hartie si pe nuanta "soft";
+   - ink:  text si iconite, >= 4.5:1 pe hartie si pe nuanta "soft".
+   Perechile sunt verificate automat de scripts/check-contrast.mjs (npm run check:contrast). */
+
+/* ---- Tema de zi: "Paper" ---- */
+@mixin paper-tokens {
+  /* Hartia */
+  --paper-ground: #f9efe5;
+  --paper-card: #fbf5ed;
+  --paper-highlight: #fdfbf7;
+  --paper-sunk: #f3e7d9;
+  --paper-sand: #e8d3b9;
+
+  /* Cerneala */
+  --ink-strong: #4a3727;
+  --ink: #4e4034;
+  --ink-muted: #6e5b4a;
+  --ink-line: #927a63;
+  --ink-hairline: #e3d3bf;
+  --caramel: #b28b67;
+
+  /* Familii pastel (fill / soft / line / ink) */
+  --honey-fill: #e2b88a;
+  --honey-soft: #f3e1cd;
+  --honey-line: #a0733f;
+  --honey-ink: #7c5630;
+
+  --dusk-fill: #a9b4c2;
+  --dusk-soft: #e1e0df;
+  --dusk-line: #727e90;
+  --dusk-ink: #525e72;
+
+  --sage-fill: #c1ae7e;
+  --sage-soft: #e8dec9;
+  --sage-line: #827c5c;
+  --sage-ink: #5b5b3f;
+
+  --blush-fill: #f0c0a8;
+  --blush-soft: #f7e4d7;
+  --blush-line: #a76f59;
+  --blush-ink: #8a5440;
+
+  --stone-fill: #d7cbbc;
+  --stone-soft: #efe8dd;
+  --stone-line: #847c72;
+  --stone-ink: #635c55;
+
+  /* Butonul de miere: cea mai inchisa treapta ramane >= #D9AA78, altfel textul
+     cacao coboara sub 4.5:1. */
+  --honey-button-top: #f2d6b1;
+  --honey-button-mid: #e8c294;
+  --honey-button-bottom: #ddae7d;
+  --honey-button-highlight: rgb(255 250 240 / 75%);
+
+  --focus: #4f5c70;
+  --on-accent: #4e4034;
+
+  /* Umbrele sunt cacao, nu gri: pe hartie calda o umbra gri pare murdara. */
+  --shadow-rgb: 87 65 41;
+
+  /* Spalaturile de acuarela din fundal (colturile paginii). */
+  --wash-blush: rgb(240 192 168 / 30%);
+  --wash-sage: rgb(193 174 126 / 24%);
+  --wash-honey: rgb(226 184 138 / 16%);
+
+  --scrim: rgb(74 55 39 / 38%);
+  --selection: rgb(226 184 138 / 55%);
+}
+
+/* ---- Tema de noapte: "Night nursery" ----
+   Cacao cald in loc de negru-violet; pastelurile devin accente, nu suprafete.
+   Nimic nu straluceste: parintele se uita la telefon intr-o camera intunecata. */
+@mixin night-tokens {
+  --paper-ground: #2a221e;
+  --paper-card: #342a25;
+  --paper-highlight: #3c312b;
+  --paper-sunk: #231c19;
+  --paper-sand: #4a3d35;
+
+  --ink-strong: #f5ebdd;
+  --ink: #efe3d3;
+  --ink-muted: #c2b09c;
+  --ink-line: #957f6d;
+  --ink-hairline: #4a3d35;
+  --caramel: #a68664;
+
+  --honey-fill: #5a493b;
+  --honey-soft: #493b31;
+  --honey-line: #b0875c;
+  --honey-ink: #e6bf92;
+
+  --dusk-fill: #4e4848;
+  --dusk-soft: #423b38;
+  --dusk-line: #7e8a9b;
+  --dusk-ink: #b5c0ce;
+
+  --sage-fill: #534739;
+  --sage-soft: #453a30;
+  --sage-line: #8f8866;
+  --sage-ink: #cfc08f;
+
+  --blush-fill: #5d4b42;
+  --blush-soft: #4b3c35;
+  --blush-line: #b08170;
+  --blush-ink: #f2c6b0;
+
+  --stone-fill: #584d46;
+  --stone-soft: #483d37;
+  --stone-line: #968d82;
+  --stone-ink: #d9cec0;
+
+  --honey-button-top: #e2bb8e;
+  --honey-button-mid: #d9b183;
+  --honey-button-bottom: #d4a878;
+  --honey-button-highlight: rgb(255 240 220 / 35%);
+
+  --focus: #b9c4d6;
+  --on-accent: #2a221e;
+
+  --shadow-rgb: 12 8 6;
+
+  --wash-blush: rgb(240 192 168 / 6%);
+  --wash-sage: rgb(193 174 126 / 5%);
+  --wash-honey: rgb(226 184 138 / 4%);
+
+  --scrim: rgb(18 13 11 / 62%);
+  --selection: rgb(226 184 138 / 30%);
+}
+
+/* ---- Tot ce nu depinde de tema ---- */
+@mixin static-tokens {
+  /* Spatieri: scara de 4px pastrata din proiectul initial, plus cateva trepte mari. */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* Colturi: cardurile raman intre 12 si 16px; 24px doar pentru foi si rame. */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-pill: 999px;
+
+  /* Tipografie (fonturile sunt self-hosted din @fontsource, vezi styles.scss) */
+  --font-sans: 'Nunito Variable', 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Mali', 'Nunito Variable', system-ui, sans-serif;
+  --font-script: 'Dancing Script Variable', 'Dancing Script', cursive;
+
+  /* Scara fixa, raport ~1.2. Fara clamp(): in UI de produs vrem aceleasi marimi
+     pe orice ecran, ca ierarhia sa nu se schimbe cand rotesti telefonul. */
+  --text-caption: 0.8125rem;
+  --text-small: 0.875rem;
+  --text-body: 1rem;
+  --text-lead: 1.125rem;
+  --text-h3: 1.1875rem;
+  --text-h2: 1.4375rem;
+  --text-h1: 1.75rem;
+  --text-display: 2.25rem;
+  --text-script: 2.5rem;
+
+  /* Tinte de atingere: 48px e minimul, 56px pentru actiunile de logare. */
+  --tap-min: 3rem;
+  --tap-lg: 3.5rem;
+
+  /* Miscare: doar schimbari de stare, scurte, cu iesire exponentiala. */
+  --dur-fast: 150ms;
+  --dur: 220ms;
+  --dur-slow: 320ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-settle: cubic-bezier(0.34, 1.45, 0.64, 1);
+
+  /* Straturi */
+  --z-base: 0;
+  --z-sticky: 10;
+  --z-nav: 20;
+  --z-overlay: 40;
+  --z-toast: 50;
+  --z-skip: 60;
+
+  /* Latimi */
+  --layout-max-width: 45rem;
+  --layout-wide: 64rem;
+  --rail-width: 15rem;
+  --bottom-nav-height: 4.5rem;
+
+  /* Cusatura (stitch): linie punctata desenata in SVG, identica in orice browser. */
+  --stitch-inset: 0.4375rem;
+  --stitch-width: 1.5px;
+  --stitch-dash: 6 4;
+}
+
+/* ---- Tokeni semantici: numele vechi din proiect, acum legati de lumea noua ----
+   Paginile existente folosesc aceste nume, deci se re-stilizeaza fara schimbari
+   in template-uri (strategia din REDESIGN_PLAN.md §8). */
+@mixin semantic-tokens {
+  --color-bg: var(--paper-ground);
+  --color-surface: var(--paper-card);
+  --color-surface-raised: var(--paper-highlight);
+  --color-surface-muted: var(--paper-sunk);
+  --color-border: var(--ink-hairline);
+  --color-line: var(--ink-line);
+  --color-text: var(--ink);
+  --color-text-strong: var(--ink-strong);
+  --color-text-muted: var(--ink-muted);
+  --color-primary: var(--honey-ink);
+  --color-primary-hover: var(--ink-strong);
+  --color-primary-soft: var(--honey-soft);
+  --color-on-primary: var(--on-accent);
+  --color-focus: var(--focus);
+
+  --color-success-fill: var(--sage-soft);
+  --color-success-line: var(--sage-line);
+  --color-success-ink: var(--sage-ink);
+  --color-warning-fill: var(--honey-soft);
+  --color-warning-line: var(--honey-line);
+  --color-warning-ink: var(--honey-ink);
+  --color-danger-fill: var(--blush-soft);
+  --color-danger-line: var(--blush-line);
+  --color-danger-ink: var(--blush-ink);
+  --color-info-fill: var(--dusk-soft);
+  --color-info-line: var(--dusk-line);
+  --color-info-ink: var(--dusk-ink);
+
+  /* Tipurile de activitate (plan §4.6). Codul citeste --act-<tip>-*, niciodata
+     familia direct, ca sa putem schimba culoarea unui tip intr-un singur loc. */
+  --act-feeding-fill: var(--honey-fill);
+  --act-feeding-soft: var(--honey-soft);
+  --act-feeding-line: var(--honey-line);
+  --act-feeding-ink: var(--honey-ink);
+  --act-sleep-fill: var(--dusk-fill);
+  --act-sleep-soft: var(--dusk-soft);
+  --act-sleep-line: var(--dusk-line);
+  --act-sleep-ink: var(--dusk-ink);
+  --act-diaper-fill: var(--sage-fill);
+  --act-diaper-soft: var(--sage-soft);
+  --act-diaper-line: var(--sage-line);
+  --act-diaper-ink: var(--sage-ink);
+  --act-medicine-fill: var(--blush-fill);
+  --act-medicine-soft: var(--blush-soft);
+  --act-medicine-line: var(--blush-line);
+  --act-medicine-ink: var(--blush-ink);
+  --act-other-fill: var(--stone-fill);
+  --act-other-soft: var(--stone-soft);
+  --act-other-line: var(--stone-line);
+  --act-other-ink: var(--stone-ink);
+
+  --stitch-color: var(--caramel);
+
+  --shadow-sm: 0 1px 2px rgb(var(--shadow-rgb) / 8%), 0 1px 1px rgb(var(--shadow-rgb) / 4%);
+  --shadow-md: 0 6px 16px -6px rgb(var(--shadow-rgb) / 20%), 0 2px 4px rgb(var(--shadow-rgb) / 6%);
+  --shadow-lg: 0 18px 40px -12px rgb(var(--shadow-rgb) / 28%), 0 4px 10px rgb(var(--shadow-rgb) / 8%);
+}

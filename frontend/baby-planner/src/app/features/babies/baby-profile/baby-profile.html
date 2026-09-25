@@ -1,0 +1,124 @@
+<article class="profile" [class.profile--ready]="!!current()">
+  <header class="profile__title">
+    <!-- Un singur h1, prezent din prima clipa (shell-ul muta focusul pe el dupa navigare).
+         Numele e text simplu; scriptul e doar stilul. -->
+    <h1
+      class="profile__name"
+      [class.script]="!!current()"
+      [class.visually-hidden]="!current()"
+    >{{ current()?.name ?? 'Profil bebeluș' }}</h1>
+
+    @if (current()) {
+      <app-ribbon decorated>{{ birthDate() }}</app-ribbon>
+    }
+  </header>
+
+  @if (notFound()) {
+    <app-empty-state
+      class="profile__state"
+      illustration="cloud.svg"
+      title="Nu am găsit bebelușul"
+      message="Poate a fost șters între timp sau adresa e greșită."
+    >
+      <a actions appButton routerLink="/babies">Înapoi la Bebeluși</a>
+    </app-empty-state>
+  } @else if (baby.error()) {
+    <app-error-state
+      class="profile__state"
+      title="Nu am putut încărca profilul"
+      message="Verifică conexiunea, apoi încearcă din nou."
+      (retry)="baby.reload()"
+    />
+  } @else if (current(); as baby) {
+    <!-- Decoratiuni din referinta, putine si fara sens pentru cititorul de ecran. -->
+    <img class="deco deco--bunting" ngSrc="illustrations/bunting.svg" width="200" height="62" alt="" />
+    <img class="deco deco--star" ngSrc="illustrations/star.svg" width="24" height="24" alt="" />
+    <img class="deco deco--balloon" ngSrc="illustrations/balloon.svg" width="60" height="110" alt="" />
+
+    <div class="profile__frame">
+      <app-frame shape="cloud" size="var(--profile-frame)" tone="honey" aria-hidden="true">
+        {{ initials() }}
+      </app-frame>
+    </div>
+
+    <app-card class="profile__facts" variant="stitched" padding="lg">
+      <h2 class="visually-hidden">Pe scurt</h2>
+      <dl class="facts">
+        <div class="fact">
+          <dt><span class="fact__icon" data-tone="honey"><app-icon name="calendar" [size]="20" /></span>Data nașterii:</dt>
+          <dd>{{ birthDate() }}</dd>
+        </div>
+
+        <div class="fact">
+          <dt><span class="fact__icon" data-tone="honey"><app-icon name="star" [size]="20" /></span>Vârsta:</dt>
+          <dd>{{ age() }}</dd>
+        </div>
+
+        <div class="fact">
+          <dt><span class="fact__icon" data-tone="sage"><app-icon name="today" [size]="20" /></span>Azi:</dt>
+          <dd>
+            @if (today.error()) {
+              <span class="fact__quiet">Nu am putut încărca</span>
+            } @else if (todayLoading()) {
+              <span class="fact__quiet">Se încarcă…</span>
+            } @else if (todayCounts().length === 0) {
+              <span class="fact__quiet">Nimic notat încă</span>
+            } @else {
+              <ul class="counts" role="list">
+                @for (entry of todayCounts(); track entry.type) {
+                  <li [attr.data-tone]="entry.tone">
+                    <app-icon [name]="entry.icon" [size]="18" />{{ entry.label }}
+                  </li>
+                }
+              </ul>
+            }
+          </dd>
+        </div>
+
+        <div class="fact">
+          <dt><span class="fact__icon" data-tone="feeding"><app-icon name="feeding" [size]="20" /></span>Ultima masă:</dt>
+          <dd>
+            @if (lastFeeding(); as last) {
+              <time [attr.datetime]="last.iso">{{ last.relative }}</time>
+            } @else {
+              <span class="fact__quiet">{{ historyFailed() ? 'Nu am putut încărca' : historyLoading() ? 'Se încarcă…' : 'Încă nimic notat' }}</span>
+            }
+          </dd>
+        </div>
+
+        <div class="fact">
+          <dt><span class="fact__icon" data-tone="sleep"><app-icon name="sleep" [size]="20" /></span>Ultimul somn:</dt>
+          <dd>
+            @if (lastSleep(); as last) {
+              <time [attr.datetime]="last.iso">{{ last.relative }}</time>
+            } @else {
+              <span class="fact__quiet">{{ historyFailed() ? 'Nu am putut încărca' : historyLoading() ? 'Se încarcă…' : 'Încă nimic notat' }}</span>
+            }
+          </dd>
+        </div>
+      </dl>
+    </app-card>
+
+    <!-- Afirmatie decorativa (ca "You are our Greatest Adventure"); nu e informatie. -->
+    <app-bubble class="profile__bubble" aria-hidden="true" [scriptLine]="baby.name">
+      <p>Ești cea mai mare aventură a noastră</p>
+    </app-bubble>
+
+    <div class="profile__actions">
+      <a appButton variant="secondary" [routerLink]="['/babies', baby.id, 'activities']">
+        <app-icon name="history" [size]="20" />
+        Istoric
+      </a>
+      <a appButton variant="secondary" [routerLink]="['/babies', baby.id, 'edit']">
+        <app-icon name="edit" [size]="20" />
+        Editează
+      </a>
+      <button appButton variant="danger" type="button" [loading]="deleting()" (click)="remove()">
+        <app-icon name="delete" [size]="20" />
+        Șterge
+      </button>
+    </div>
+  } @else {
+    <app-skeleton class="profile__state" variant="profile" />
+  }
+</article>

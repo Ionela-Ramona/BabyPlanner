@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 60">
+  <!-- Imprastiere rara de puncte si 2-3 steluţe mici, pentru colturi de pagina.
+       Hex din _tokens.scss (Paper), un punct/o stea din fiecare familie pastel. -->
+  <circle cx="8" cy="10" r="2" fill="#e2b88a" />
+  <circle cx="30" cy="4" r="1.4" fill="#a9b4c2" />
+  <circle cx="52" cy="18" r="1.8" fill="#c1ae7e" />
+  <circle cx="76" cy="6" r="1.4" fill="#f0c0a8" />
+  <circle cx="98" cy="14" r="2" fill="#d7cbbc" />
+  <circle cx="112" cy="30" r="1.6" fill="#e2b88a" />
+  <circle cx="18" cy="34" r="1.4" fill="#f0c0a8" />
+  <circle cx="64" cy="34" r="1.6" fill="#a9b4c2" />
+
+  <path
+    d="M40 34.6 L41.8 39 L46.4 39.3 L42.9 42.2 L44 46.7 L40 44.2 L36 46.7 L37.1 42.2 L33.6 39.3 L38.2 39 Z"
+    fill="#f0c0a8"
+  />
+  <path
+    d="M88 40.6 L89.5 44.3 L93.5 44.6 L90.4 47.1 L91.3 51 L88 48.8 L84.7 51 L85.6 47.1 L82.5 44.6 L86.5 44.3 Z"
+    fill="#c1ae7e"
+  />
+  <path
+    d="M14 50.6 L15.2 53.6 L18.4 53.9 L15.9 55.9 L16.6 59 L14 57.3 L11.4 59 L12.1 55.9 L9.6 53.9 L12.8 53.6 Z"
+    fill="#e2b88a"
+  />
+</svg>

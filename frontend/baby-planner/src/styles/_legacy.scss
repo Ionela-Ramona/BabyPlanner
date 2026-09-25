@@ -1,0 +1,45 @@
+﻿@use 'mixins' as surfaces;
+
+/* Clase globale vechi, pastrate doar cat timp paginile existente le mai folosesc.
+   Arata deja ca in lumea noua (vezi _surfaces.scss); dispar in BP-UI-18,
+   dupa ce Bebeluși si Istoric trec pe componente. */
+
+.card {
+  @include surfaces.card-surface;
+
+  padding: var(--space-6);
+}
+
+/* Aceeasi clasa pentru <button> si <a>, ca sa alegem elementul dupa ce face
+   (actiune vs navigare), nu dupa cum arata. */
+.button {
+  @include surfaces.honey-button;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: filter var(--dur-fast) var(--ease-out);
+}
+
+.button:hover {
+  color: var(--on-accent);
+  filter: brightness(1.03) saturate(1.05);
+}
+
+.button--ghost {
+  border-color: var(--color-line);
+  background: var(--color-surface);
+  box-shadow: none;
+  color: var(--color-text);
+}
+
+.button--ghost:hover {
+  background: var(--color-primary-soft);
+  color: var(--color-text-strong);
+}

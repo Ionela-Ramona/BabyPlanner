@@ -1,1 +1,20 @@
-/* You can add global styles to this file, and also import other style files */
+﻿/* Stiluri globale: punctul de intrare. Fiecare parte sta in propriul fisier din
+   styles/, ca sa fie usor de gasit; tot ce e specific unei componente sta in
+   fisierul .scss al componentei.
+
+   Fonturile sunt self-hosted (pachetele @fontsource), nu de pe Google Fonts:
+   fara cerere catre un server strain si fara dependenta de retea. Browserul
+   descarca doar subseturile (latin / latin-ext) si greutatile folosite efectiv. */
+@use '@fontsource-variable/nunito/wght' as nunito;
+@use '@fontsource/mali/600' as mali;
+@use '@fontsource-variable/dancing-script/wght' as dancing-script;
+@use '@angular/cdk/overlay-prebuilt';
+
+@use 'styles/themes';
+@use 'styles/base';
+@use 'styles/typography';
+@use 'styles/surfaces';
+@use 'styles/buttons';
+@use 'styles/fields';
+@use 'styles/overlays';
+@use 'styles/legacy';

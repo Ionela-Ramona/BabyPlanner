@@ -1,0 +1,144 @@
+/* Reset minim si elementele de baza ale documentului. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* Respectam preferinta de sistem "reduce motion" pentru scroll-ul dintre rute. */
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  accent-color: var(--honey-line);
+  caret-color: var(--honey-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: 1.55;
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Spalatura de acuarela: un strat fix, sub tot continutul. Pe un pseudo-element
+   si nu cu background-attachment: fixed, care e ignorat pe iOS si scump la scroll. */
+body::before {
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  background:
+    radial-gradient(60rem 38rem at 108% -8%, var(--wash-blush), transparent 62%),
+    radial-gradient(52rem 36rem at -12% 108%, var(--wash-sage), transparent 60%),
+    radial-gradient(40rem 30rem at 30% 40%, var(--wash-honey), transparent 70%),
+    var(--color-bg);
+  content: '';
+  pointer-events: none;
+}
+
+p {
+  margin: 0 0 var(--space-4);
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+}
+
+img,
+svg {
+  max-width: 100%;
+}
+
+/* URL-uri si identificatori lungi se rup pe rand, nu imping pagina lateral. */
+code {
+  overflow-wrap: anywhere;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+::selection {
+  background-color: var(--selection);
+  color: var(--ink-strong);
+}
+
+/* Un singur stil de focus, vizibil pe orice fundal (cerinta WCAG). --focus are
+   >= 3:1 pe hartie, pe card si pe toate fill-urile pastel. Conturul urmeaza
+   singur colturile elementului, deci nu schimbam border-radius la focus. */
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Focusul mutat din cod (titlul paginii dupa navigare, <main> din skip link)
+   nu are nevoie de contur: cititorul de ecran anunta oricum noul loc. */
+[tabindex='-1']:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Barele de scroll poarta si ele paleta, nu griul browserului. */
+html {
+  scrollbar-color: var(--paper-sand) transparent;
+  scrollbar-width: thin;
+}
+
+/* Ascuns vizual, dar citit de screen reader. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+/* Orele se aliniaza pe coloana: cifrele au toate aceeasi latime. */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* In modul "forced colors" (Windows High Contrast) decoratiunile dispar, dar
+   marginile controalelor trebuie sa ramana. */
+@media (forced-colors: active) {
+  :focus-visible {
+    outline-color: Highlight;
+  }
+}

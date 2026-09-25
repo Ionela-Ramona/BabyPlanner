@@ -1,0 +1,148 @@
+/* Telefon: salut compact, dale pe doua coloane, chip-uri, cronologie.
+   Desktop (>= 64rem): salutul deasupra, dalele si cronologia pe doua coloane. */
+
+:host {
+  display: block;
+}
+
+.page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+}
+
+/* ---- Salut ---- */
+.greeting {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--space-2) var(--space-3);
+}
+
+.greeting__title {
+  margin: 0;
+  line-height: 1.1;
+}
+
+.greeting__name {
+  color: var(--blush-ink);
+  font-size: var(--text-script);
+  overflow-wrap: anywhere;
+}
+
+.greeting__placeholder {
+  display: inline-block;
+  width: 7rem;
+  height: 2.25rem;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-muted);
+  vertical-align: middle;
+}
+
+.greeting__age {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+.greeting__date {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+
+.page__full {
+  grid-column: 1 / -1;
+}
+
+/* ---- Dale ---- */
+.summary__tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Un numar impar de dale: ultima ia tot randul, fara gaura in grila. */
+.summary__tiles > li:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.summary .summary__skeleton {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* ---- Cronologie ---- */
+.timeline {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.timeline__divider {
+  margin-block: var(--space-3) var(--space-1);
+}
+
+.timeline__divider:first-child {
+  margin-top: 0;
+}
+
+.timeline__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Reincarcarea nu goleste pagina: continutul vechi doar se estompeaza. */
+.is-stale {
+  opacity: 0.6;
+  transition: opacity var(--dur) var(--ease-out);
+}
+
+/* Randul abia notat "cade" in zi, cu o mica revenire; static la reduced motion. */
+.timeline__item--new {
+  animation: row-settle var(--dur) var(--ease-settle);
+}
+
+@keyframes row-settle {
+  from {
+    transform: translateY(-0.5rem) scale(0.98);
+  }
+}
+
+@media (min-width: 64rem) {
+  .page {
+    grid-template-areas:
+      'greeting greeting'
+      'summary timeline';
+    grid-template-columns: minmax(16rem, 19rem) minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-6) var(--space-8);
+  }
+
+  .greeting {
+    grid-area: greeting;
+  }
+
+  .greeting__name {
+    font-size: 3rem;
+  }
+
+  /* Dalele raman la vedere cat timp derulezi cronologia. */
+  .summary {
+    position: sticky;
+    top: var(--space-6);
+    grid-area: summary;
+  }
+
+  .summary__tiles,
+  .summary .summary__skeleton {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .timeline {
+    grid-area: timeline;
+  }
+}

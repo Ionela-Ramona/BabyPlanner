@@ -1,0 +1,66 @@
+<a class="back-link" appButton variant="ghost" routerLink="/babies">
+  <app-icon name="back" />
+  Toți bebelușii
+</a>
+
+<header class="page-header">
+  <h1>Istoric</h1>
+  @if (babyName(); as name) {
+    <p class="page-header__baby">
+      <app-avatar [name]="name" [size]="32" />
+      <span>{{ name }}</span>
+    </p>
+  }
+</header>
+
+<app-filter-chips class="filter" [value]="type()" (valueChange)="onTypeChange($event)" />
+
+@if (activities.isLoading()) {
+  <app-card padding="sm">
+    <app-skeleton variant="row" [count]="6" />
+  </app-card>
+} @else if (activities.error()) {
+  <app-error-state
+    message="Verifică dacă API-ul rulează și dacă bebelușul există."
+    (retry)="activities.reload()"
+  />
+} @else if (!type() && activities.value().length === 0) {
+  <app-empty-state
+    illustration="blocks.svg"
+    title="Niciun moment notat încă"
+    message="Adaugă prima activitate ca să înceapă istoricul."
+  >
+    <button actions appButton type="button" (click)="addFirstActivity()">
+      ＋ Adaugă prima activitate
+    </button>
+  </app-empty-state>
+} @else if (type() && activities.value().length === 0) {
+  <app-empty-state
+    illustration="sleepy-star.svg"
+    [title]="emptyTypeMessage()"
+    message="Alege alt tip sau arată tot istoricul."
+  >
+    <button actions appButton variant="secondary" type="button" (click)="clearFilter()">
+      Arată toate
+    </button>
+  </app-empty-state>
+} @else {
+  @for (group of dayGroups(); track group.key) {
+    <section class="day">
+      <div class="day__header">
+        <h2 class="day__heading">
+          <app-ribbon size="sm">{{ group.heading }}</app-ribbon>
+        </h2>
+        <p class="day__summary text-muted">{{ group.summary }}</p>
+      </div>
+
+      <app-card padding="none">
+        <ul class="day__list">
+          @for (activity of group.activities; track activity.id) {
+            <li><app-activity-row [activity]="activity" (edit)="launcher.edit($event)" /></li>
+          }
+        </ul>
+      </app-card>
+    </section>
+  }
+}

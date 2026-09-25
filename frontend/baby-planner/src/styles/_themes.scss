@@ -1,0 +1,46 @@
+@use 'tokens';
+
+/* Cele doua teme.
+   Ordinea conteaza: preferinta de sistem se aplica doar daca utilizatorul nu a
+   ales explicit "Luminos" (data-theme="light"); alegerea explicita "Noapte"
+   (data-theme="dark") castiga oricand. ThemeService seteaza atributul pe <html>,
+   iar scriptul inline din index.html il pune inainte de bootstrap (fara flash). */
+
+:root {
+  @include tokens.static-tokens;
+  @include tokens.paper-tokens;
+  @include tokens.semantic-tokens;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    @include tokens.night-tokens;
+
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  @include tokens.night-tokens;
+
+  color-scheme: dark;
+}
+
+/* Un container care forteaza o tema (folosit de showcase pentru comparatii
+   una langa alta). Semantic-tokens se re-aplica pentru ca var()-urile se
+   rezolva pe elementul unde sunt declarate. */
+.theme-paper {
+  @include tokens.paper-tokens;
+  @include tokens.semantic-tokens;
+
+  color-scheme: light;
+}
+
+.theme-night {
+  @include tokens.night-tokens;
+  @include tokens.semantic-tokens;
+
+  color-scheme: dark;
+}

@@ -1,0 +1,66 @@
+<header class="page-head">
+  <h1>Bebeluși</h1>
+  <!-- error() primul: in starea de eroare lista (si hasBabies) arunca. -->
+  @if (!active.error() && active.hasBabies()) {
+    <a appButton variant="secondary" routerLink="/babies/new">
+      <app-icon name="plus" [size]="20" />
+      Adaugă bebeluș
+    </a>
+  }
+</header>
+
+@if (active.error()) {
+  <app-error-state
+    title="Nu am putut încărca lista"
+    message="Verifică dacă serverul rulează, apoi încearcă din nou."
+    (retry)="active.reload()"
+  />
+} @else if (active.hasBabies() === undefined) {
+  <app-skeleton variant="baby-card" [count]="2" />
+} @else if (cards().length === 0) {
+  <app-empty-state
+    illustration="sleepy-star.svg"
+    title="Niciun bebeluș încă"
+    message="Adaugă primul bebeluș ca să poți nota mesele, somnul și scutecele."
+  >
+    <a actions appButton routerLink="/babies/new">
+      <app-icon name="plus" [size]="20" />
+      Adaugă bebeluș
+    </a>
+  </app-empty-state>
+} @else {
+  <ul class="babies" role="list">
+    @for (baby of cards(); track baby.id) {
+      <li>
+        <app-card class="baby" padding="none">
+          <div class="baby__body">
+            <app-avatar [name]="baby.name" [size]="56" />
+            <div class="baby__text">
+              <h2 class="baby__name">
+                <!-- Linkul se intinde peste tot cardul (::after), dar numele accesibil ramane doar numele. -->
+                <a class="baby__link" [routerLink]="['/babies', baby.id]">{{ baby.name }}</a>
+              </h2>
+              <p class="baby__age">{{ baby.age }}</p>
+              <p class="baby__birth">Data nașterii: {{ baby.birthDate }}</p>
+            </div>
+            <app-icon class="baby__chevron" name="chevron-right" [size]="20" />
+          </div>
+          <div class="baby__footer">
+            <a
+              class="baby__history"
+              appButton
+              variant="ghost"
+              [routerLink]="['/babies', baby.id, 'activities']"
+              [attr.aria-label]="'Istoric pentru ' + baby.name"
+            >
+              <app-icon name="history" [size]="20" />
+              Istoric
+            </a>
+          </div>
+        </app-card>
+      </li>
+    }
+  </ul>
+}
+
+<p class="project-note">Proiect de învățare — .NET Web API + Angular {{ angularVersion }}</p>

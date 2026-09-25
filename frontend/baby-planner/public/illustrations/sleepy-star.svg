@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <!-- Aceeasi stea somnoroasa ca in wordmark (src/app/shared/components/wordmark),
+       ca fisier separat pentru a fi folosita ca ilustratie decorativa (<img alt="">).
+       Hex: treapta miere + cerneala din _tokens.scss (Paper). -->
+  <path
+    d="M11.29 4.95 Q12 3.1 12.71 4.95 L13.65 7.41 Q14.35 9.26 16.33 9.36 L18.96 9.5
+       Q20.94 9.6 19.4 10.84 L17.34 12.49 Q15.8 13.74 16.32 15.65 L17.01 18.19
+       Q17.53 20.1 15.87 19.02 L13.66 17.58 Q12 16.5 10.34 17.58 L8.13 19.02
+       Q6.47 20.1 6.99 18.19 L7.68 15.65 Q8.2 13.74 6.66 12.49 L4.6 10.84
+       Q3.06 9.6 5.04 9.5 L7.67 9.36 Q9.65 9.26 10.35 7.41 Z"
+    fill="#e2b88a"
+    stroke="#a0733f"
+    stroke-width="1"
+    stroke-linejoin="round"
+  />
+  <path d="M8.8 12.6 Q9.8 11.7 10.8 12.6" fill="none" stroke="#4e4034" stroke-width="1.25" stroke-linecap="round" />
+  <path d="M13.2 12.6 Q14.2 11.7 15.2 12.6" fill="none" stroke="#4e4034" stroke-width="1.25" stroke-linecap="round" />
+  <path d="M9.3 16.8 Q12 18.8 14.7 16.8" fill="none" stroke="#4e4034" stroke-width="1.25" stroke-linecap="round" />
+</svg>

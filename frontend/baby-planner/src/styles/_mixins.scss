@@ -1,0 +1,107 @@
+﻿/* Doar mixin-uri: acest fisier nu emite CSS, deci poate fi inclus in orice componenta (@use 'styles/mixins' as m) fara sa dubleze stiluri.
+
+   Stratul "profesional" al lumii: patru margini si trei gradiente, nimic in plus
+   (REDESIGN_PLAN.md §4.4). Componentele le folosesc prin aceste mixin-uri si clase,
+   ca sa nu-si inventeze fiecare propriile margini si umbre.
+
+   Margini:   stitch (cusatura, in componenta app-stitch), rim, scallop, baseline
+   Gradiente: paper wash (fundalul, in _base.scss), card lift, honey button
+   Plus "block": cubul de lemn pictat, forma care poarta tipurile de activitate. */
+
+/* ---- Gradient 2: card lift. Hartia de sus prinde lumina. ---- */
+@mixin card-lift {
+  background: linear-gradient(180deg, var(--paper-highlight) 0%, var(--paper-card) 70%);
+}
+
+/* Cardul de baza: elevatia vine din umbra, fara bordura (o bordura de 1px sub o
+   umbra lata ar arata ca un card "fantoma"). Noaptea umbrele nu se vad, asa ca
+   adancimea vine din tonul mai deschis al hartiei. */
+@mixin card-surface {
+  @include card-lift;
+
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+/* ---- Gradient 3: butonul de miere. ---- */
+@mixin honey-button {
+  border: 1px solid var(--honey-line);
+  background: linear-gradient(
+    180deg,
+    var(--honey-button-top) 0%,
+    var(--honey-button-mid) 55%,
+    var(--honey-button-bottom) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 var(--honey-button-highlight),
+    0 2px 6px -1px rgb(var(--shadow-rgb) / 30%);
+  color: var(--on-accent);
+}
+
+/* ---- Margine 2: rim. Banda de hartie palida in jurul unei rame. ---- */
+@mixin rim($width: 6px) {
+  border: $width solid var(--paper-highlight);
+  box-shadow: var(--shadow-md);
+}
+
+/* ---- Margine 3: scallop. Dantela de jos din imagine, facuta cu mask din
+   gradiente radiale repetate (nu clip-path cu zeci de puncte). Se aplica pe un
+   pseudo-element care are aceeasi culoare cu suprafata de sub el. ---- */
+@mixin scallop($edge: top, $size: 0.75rem, $color: var(--color-surface)) {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: calc($size / 2 + 1px);
+  background-color: $color;
+  content: '';
+  pointer-events: none;
+
+  @if $edge == top {
+    bottom: calc(100% - 1px);
+    mask: radial-gradient(circle at 50% 100%, #000 calc($size / 2 - 0.5px), transparent calc($size / 2))
+      repeat-x 0 0 / $size calc($size / 2);
+  } @else {
+    top: calc(100% - 1px);
+    mask: radial-gradient(circle at 50% 0%, #000 calc($size / 2 - 0.5px), transparent calc($size / 2))
+      repeat-x 0 0 / $size calc($size / 2);
+  }
+
+  @media (forced-colors: active) {
+    display: none;
+  }
+}
+
+/* ---- Margine 4: baseline. Linia punctata de sub valoarea unui camp, ca in
+   "Date: ........" din referinta. Desenata cu gradient (nu border-style: dashed)
+   ca liniutele sa fie identice in orice browser. ---- */
+@mixin baseline($color: var(--color-line)) {
+  background-image: linear-gradient(90deg, $color 0 60%, transparent 60% 100%);
+  background-position: 0 100%;
+  background-repeat: repeat-x;
+  background-size: 6px 1px;
+}
+
+/* ---- Cubul de lemn ----
+   Fata pictata (soft), muchia de jos in culoarea plina a familiei (partea
+   laterala a cubului), marginea de sus prinde lumina. Culorile vin din
+   --block-soft / --block-fill / --block-line, setate de [data-tone]. */
+@mixin block {
+  border: 1px solid color-mix(in srgb, var(--block-line) 55%, transparent);
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--block-soft) 55%, var(--paper-highlight)) 0%,
+    var(--block-soft) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 var(--paper-highlight),
+    inset 0 -3px 0 color-mix(in srgb, var(--block-fill) 85%, transparent),
+    0 3px 8px -4px rgb(var(--shadow-rgb) / 28%);
+}
+
+/* Varianta interactiva: marginea trebuie sa aiba >= 3:1 (WCAG 1.4.11). */
+@mixin block-interactive {
+  @include block;
+
+  border-color: var(--block-line);
+}

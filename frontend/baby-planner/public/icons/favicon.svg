@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Steaua somnoroasa pe hartie calda (paleta Paper din src/styles/_tokens.scss).
+       Hex "in dur" e permis DOAR aici: fisierele statice din public/ nu vad
+       variabilele CSS ale aplicatiei. -->
+  <rect x="1" y="1" width="30" height="30" rx="9" fill="#f9efe5" />
+  <path
+    d="M15.05 8.6 Q16 6.13 16.95 8.6 L18.2 11.88 Q19.13 14.35 21.77 14.48 L25.28 14.67
+       Q27.92 14.8 25.87 16.45 L23.12 18.65 Q21.07 20.32 21.76 22.87 L22.68 26.26
+       Q23.37 28.8 21.16 27.36 L18.21 25.44 Q16 24 13.79 25.44 L10.84 27.36
+       Q8.63 28.8 9.32 26.26 L10.24 22.87 Q10.93 20.32 8.88 18.65 L6.13 16.45
+       Q4.08 14.8 6.72 14.67 L10.23 14.48 Q12.87 14.35 13.8 11.88 Z"
+    fill="#e2b88a"
+    stroke="#a0733f"
+    stroke-width="1.1"
+    stroke-linejoin="round"
+  />
+  <path d="M11.73 18.8 Q13.07 17.6 14.4 18.8" fill="none" stroke="#4e4034" stroke-width="1.6" stroke-linecap="round" />
+  <path d="M17.6 18.8 Q18.93 17.6 20.27 18.8" fill="none" stroke="#4e4034" stroke-width="1.6" stroke-linecap="round" />
+  <path
+    d="M12.4 24.4 Q16 27.07 19.6 24.4"
+    fill="none"
+    stroke="#4e4034"
+    stroke-width="1.6"
+    stroke-linecap="round"
+  />
+</svg>

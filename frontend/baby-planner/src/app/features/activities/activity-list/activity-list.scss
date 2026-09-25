@@ -1,0 +1,77 @@
+:host {
+  display: block;
+}
+
+.back-link {
+  margin-bottom: var(--space-4);
+}
+
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.page-header h1 {
+  margin: 0;
+}
+
+.page-header__baby {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  color: var(--color-text-strong);
+  font-weight: 600;
+}
+
+.filter {
+  display: block;
+  margin-bottom: var(--space-6);
+}
+
+.day {
+  margin-bottom: var(--space-6);
+}
+
+.day:last-child {
+  margin-bottom: 0;
+}
+
+/* Antetul de zi ramane vizibil cat timp cardul lui defileaza pe sub el — ca intr-o
+   agenda cu file — asa ca zilele lungi raman usor de urmarit cu privirea. */
+.day__header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--space-3);
+  row-gap: var(--space-1);
+  padding-block: var(--space-2);
+  background-color: var(--color-bg);
+}
+
+.day__heading {
+  margin: 0;
+}
+
+.day__summary {
+  margin: 0;
+}
+
+.day__list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: var(--space-2);
+  list-style: none;
+}
+
+.day__list li + li {
+  margin-top: var(--space-1);
+}

@@ -1,0 +1,92 @@
+/* Controlul nativ dintr-un app-field ("shared/components/field/field.ts"). Global si nu in
+   stilurile componentei pentru ca ajunge pe un element PROIECTAT (<ng-content>): incapsularea
+   Angular nu atinge continutul proiectat, deci un stil scris in field.ts n-ar avea efect aici.
+
+   Forma: fara bordura vizibila, doar linia de baza punctata din referinta ("Date: ……"), care
+   devine o linie plina de 2px la focus (box-shadow, nu border, ca sa nu miste layout-ul). */
+@use 'styles/mixins' as m;
+
+.field-control {
+  display: block;
+  width: 100%;
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-1);
+  border: none;
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  color: var(--color-text);
+  font: inherit;
+  /* >= 16px: sub 16px Safari iOS face zoom automat la focus. */
+  font-size: var(--text-body);
+  line-height: 1.4;
+
+  @include m.baseline(var(--color-line));
+
+  &::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+  }
+
+  &:focus {
+    box-shadow: inset 0 -2px 0 0 var(--honey-line);
+    outline: none;
+  }
+
+  &[aria-invalid='true'] {
+    @include m.baseline(var(--color-danger-line));
+
+    &:focus {
+      box-shadow: inset 0 -2px 0 0 var(--color-danger-line);
+    }
+  }
+
+  &:disabled {
+    color: var(--color-text-muted);
+    cursor: not-allowed;
+    opacity: 0.65;
+  }
+
+  &:read-only:not(:disabled) {
+    cursor: default;
+  }
+
+  &:read-only:not(:disabled):focus {
+    /* Nimic de confirmat cu focus: un camp needitabil nu primeste o "linie plina" de validare. */
+    box-shadow: none;
+  }
+
+  /* Fara bordura + fundal transparent ar disparea in modul de contrast fortat (Windows). */
+  @media (forced-colors: active) {
+    border: 1px solid ButtonText;
+  }
+}
+
+textarea.field-control {
+  min-height: 4.5rem;
+  padding-top: var(--space-2);
+  resize: vertical;
+  /* Creste odata cu textul, fara sageata de resize; fallback: inaltime minima mai mare. */
+  field-sizing: content;
+}
+
+@supports not (field-sizing: content) {
+  textarea.field-control {
+    min-height: 6rem;
+  }
+}
+
+input[type='date'].field-control,
+input[type='datetime-local'].field-control {
+  /* color-scheme (styles/_themes.scss) coloreaza deja iconita nativa in tema de noapte;
+     aici doar o aliniem si-i dam o tinta de atingere decenta. */
+  &::-webkit-calendar-picker-indicator {
+    margin-inline-start: var(--space-2);
+    padding: var(--space-1);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+  }
+
+  &::-webkit-calendar-picker-indicator:hover {
+    background-color: var(--color-surface-muted);
+  }
+}
