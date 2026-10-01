@@ -73,6 +73,44 @@
   --selection: rgb(226 184 138 / 55%);
 }
 
+/* ---- Fundaluri la alegere (doar tema de zi) ----
+   Utilizatorul alege culoarea hartiei din foaia "Culoarea fundalului"; ThemeService
+   pune `data-background` pe <html>. Fiecare paleta inlocuieste doar suprafetele;
+   cerneala ramane aceeasi, deci check:contrast verifica fiecare paleta cu cerneala
+   din paper-tokens. "cream" e chiar paper-tokens, fara mixin propriu.
+   Noaptea ramane neutra: un fundal colorat ar straluci in camera intunecata. */
+@mixin background-rose {
+  --paper-ground: #fbe9ec;
+  --paper-card: #fdf2f4;
+  --paper-highlight: #fffafb;
+  --paper-sunk: #f6dde2;
+  --paper-sand: #ecc9d1;
+}
+
+@mixin background-mint {
+  --paper-ground: #e9f3ec;
+  --paper-card: #f2f8f4;
+  --paper-highlight: #fafdfb;
+  --paper-sunk: #dcebe1;
+  --paper-sand: #c5dccd;
+}
+
+@mixin background-sky {
+  --paper-ground: #e7f0f7;
+  --paper-card: #f1f6fa;
+  --paper-highlight: #fafcfe;
+  --paper-sunk: #d9e6f0;
+  --paper-sand: #c3d6e5;
+}
+
+@mixin background-lavender {
+  --paper-ground: #efe8f6;
+  --paper-card: #f6f1fa;
+  --paper-highlight: #fcfafd;
+  --paper-sunk: #e3d9ef;
+  --paper-sand: #d2c4e3;
+}
+
 /* ---- Tema de noapte: "Night nursery" ----
    Cacao cald in loc de negru-violet; pastelurile devin accente, nu suprafete.
    Nimic nu straluceste: parintele se uita la telefon intr-o camera intunecata. */

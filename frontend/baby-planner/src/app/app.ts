@@ -14,6 +14,7 @@ import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router
 import { filter, skip } from 'rxjs';
 
 import { BabySwitcher } from './core/layout/baby-switcher';
+import { BackgroundButton } from './core/layout/background-button';
 import { MainNav } from './core/layout/main-nav';
 import { ThemeToggle } from './core/layout/theme-toggle';
 import { ThemeService } from './core/services/theme';
@@ -27,6 +28,7 @@ import { ToastOutlet } from './shared/overlays/toast-outlet';
 @Component({
   imports: [
     BabySwitcher,
+    BackgroundButton,
     MainNav,
     RouterLink,
     RouterOutlet,

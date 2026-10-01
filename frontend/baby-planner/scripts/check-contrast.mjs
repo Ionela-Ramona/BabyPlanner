@@ -48,6 +48,12 @@ const nightMatch = content.match(/@mixin night-tokens\s*\{([^}]+)\}/s);
 if (!nightMatch) throw new Error('Could not find night-tokens mixin');
 const nightTokens = parseTokens(nightMatch[1]);
 
+// Fundalurile la alegere (@mixin background-<nume>) inlocuiesc doar suprafetele
+// temei de zi; le verificam cu restul tokenilor din paper-tokens (cerneala ramane aceeasi).
+const backgroundThemes = [...content.matchAll(/@mixin background-([a-z]+)\s*\{([^}]+)\}/gs)].map(
+  ([, name, body]) => ({ name: `paper + ${name}`, tokens: { ...paperTokens, ...parseTokens(body) } }),
+);
+
 function parseTokens(text) {
   const tokens = {};
   const regex = /--([a-z0-9\-]+):\s*([#a-f0-9]{7})/gi;
@@ -96,9 +102,14 @@ const checks = [
 const results = [];
 let hasFailed = false;
 
-for (const theme of ['paper', 'night']) {
-  const tokens = theme === 'paper' ? paperTokens : nightTokens;
-  console.log(`\n=== ${theme.toUpperCase()} THEME ===`);
+const themes = [
+  { name: 'paper', tokens: paperTokens },
+  { name: 'night', tokens: nightTokens },
+  ...backgroundThemes,
+];
+
+for (const { name, tokens } of themes) {
+  console.log(`\n=== ${name.toUpperCase()} THEME ===`);
   console.table(
     checks.flatMap(check => {
       return check.backgrounds.map(bg => {
