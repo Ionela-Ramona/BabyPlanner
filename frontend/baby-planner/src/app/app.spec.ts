@@ -107,6 +107,14 @@ describe('App', () => {
     expect(root.querySelector('fieldset legend')?.textContent).toContain('Temă');
   });
 
+  it('offers a button that opens the background colour sheet', async () => {
+    const root = await render([MARIA]);
+    const button = root.querySelector('app-background-button button');
+
+    expect(button?.getAttribute('aria-label')).toBe('Culoarea fundalului');
+    expect(button?.getAttribute('aria-haspopup')).toBe('dialog');
+  });
+
   it('no longer renders the learning-project footer', async () => {
     const root = await render([MARIA]);
 

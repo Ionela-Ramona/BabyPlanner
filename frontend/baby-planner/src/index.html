@@ -2,8 +2,9 @@
 <html lang="ro">
 <head>
   <meta charset="utf-8">
-  <!-- Aplica tema salvata inainte sa porneasca Angular, ca pagina sa nu clipeasca in tema gresita. -->
-  <script>(function(){try{var t=localStorage.getItem('bp-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+  <!-- Aplica tema si fundalul salvate inainte sa porneasca Angular, ca pagina sa nu clipeasca
+       in culorile gresite. Lista de fundaluri trebuie sa ramana aceeasi cu BACKGROUNDS din theme.ts. -->
+  <script>(function(){try{var d=document.documentElement,t=localStorage.getItem('bp-theme'),b=localStorage.getItem('bp-background');if(t==='light'||t==='dark'){d.setAttribute('data-theme',t);}if(b==='rose'||b==='mint'||b==='sky'||b==='lavender'){d.setAttribute('data-background',b);}}catch(e){}})();</script>
   <title>BabyPlanner</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">

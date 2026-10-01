@@ -14,6 +14,34 @@
   color-scheme: light;
 }
 
+/* Fundalul ales (data-background pe <html>). Sta INAINTEA regulilor de noapte:
+   au aceeasi specificitate, deci noaptea, declarata mai jos, castiga si ramane neutra.
+   `[data-background-preview]` e mostra din foaia de alegere: arata paleta de zi
+   chiar daca pagina e pe Noapte, ca utilizatorul sa vada ce alege. */
+[data-background-preview] {
+  @include tokens.paper-tokens;
+}
+
+:root[data-background='rose'],
+[data-background-preview='rose'] {
+  @include tokens.background-rose;
+}
+
+:root[data-background='mint'],
+[data-background-preview='mint'] {
+  @include tokens.background-mint;
+}
+
+:root[data-background='sky'],
+[data-background-preview='sky'] {
+  @include tokens.background-sky;
+}
+
+:root[data-background='lavender'],
+[data-background-preview='lavender'] {
+  @include tokens.background-lavender;
+}
+
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     @include tokens.night-tokens;
