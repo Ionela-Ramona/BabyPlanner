@@ -23,13 +23,13 @@ describe('Skeleton', () => {
     expect(status.textContent).toContain('Se încarcă…');
   });
 
-  it('renders one shape per count', () => {
+  it('renders one row per count', () => {
     const fixture = TestBed.createComponent(Host);
     fixture.componentInstance.count = 3;
     fixture.detectChanges();
 
-    const shapes = fixture.nativeElement.querySelectorAll('.skeleton__shape');
-    expect(shapes.length).toBe(3);
+    const rows = fixture.nativeElement.querySelectorAll('.skeleton__row');
+    expect(rows.length).toBe(3);
   });
 
   it('renders the composite profile shape', () => {

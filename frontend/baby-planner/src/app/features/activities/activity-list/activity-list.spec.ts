@@ -3,6 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ApplicationRef } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Location } from '@angular/common';
+import { provideLocationMocks } from '@angular/common/testing';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 
@@ -10,6 +11,7 @@ import { Activity } from '../../../core/models/activity';
 import { Baby } from '../../../core/models/baby';
 import { QuickLogLauncher } from '../../../core/services/quick-log-launcher';
 import { provideFakeClock } from '../../../core/testing/fake-clock';
+import { nextRequest } from '../../../core/testing/next-request';
 import { ActivityList } from './activity-list';
 
 const MARIA: Baby = { id: 1, name: 'Maria', dateOfBirth: '2026-03-01' };
@@ -49,6 +51,8 @@ describe('ActivityList', () => {
           [{ path: 'babies/:babyId/activities', component: ActivityList }],
           withComponentInputBinding(),
         ),
+        // Istoric controlat de test: Back merge sigur, fara history-ul din jsdom.
+        provideLocationMocks(),
         provideFakeClock(NOW).provider,
         { provide: QuickLogLauncher, useValue: { open: openSpy, openDetails: vi.fn(), edit: editSpy } },
       ],
@@ -69,8 +73,14 @@ describe('ActivityList', () => {
     const harness = await RouterTestingHarness.create(url);
     TestBed.tick();
     httpMock.expectOne('/api/babies').flush([MARIA]);
-    await settle();
+    // Nu asteptam stabilizarea aici: cererea de activitati porneste imediat si
+    // ar tine aplicatia "ocupata" pana o rezolva testul, in flushActivities.
+    TestBed.tick();
     return harness;
+  }
+
+  function nextActivitiesRequest() {
+    return nextRequest(httpMock, '/api/babies/1/activities');
   }
 
   function flushActivities(harness: RouterTestingHarness, list: Activity[], expectedType?: string) {
@@ -128,18 +138,17 @@ describe('ActivityList', () => {
     await flushActivities(harness, [], 'Feeding');
 
     const router = TestBed.inject((await import('@angular/router')).Router);
+    // In TestBed nu ruleaza bootstrap-ul care porneste ascultarea Back/Forward.
+    router.setUpLocationChangeListener();
     await router.navigate([], { queryParams: { type: null } });
-    TestBed.tick();
-    httpMock.expectOne((r) => r.url === '/api/babies/1/activities').flush([]);
+    (await nextActivitiesRequest()).flush([]);
     await settle();
 
     let root = harness.routeNativeElement!;
     expect(root.querySelector('[role="option"][aria-selected="true"]')?.textContent).toContain('Toate');
 
     TestBed.inject(Location).back();
-    TestBed.tick();
-    await settle();
-    httpMock.expectOne((r) => r.url === '/api/babies/1/activities').flush([]);
+    (await nextActivitiesRequest()).flush([]);
     await settle();
 
     root = harness.routeNativeElement!;
@@ -193,8 +202,7 @@ describe('ActivityList', () => {
       b.textContent?.includes('Arată toate'),
     );
     showAll!.click();
-    TestBed.tick();
-    httpMock.expectOne((r) => r.url === '/api/babies/1/activities').flush([]);
+    (await nextActivitiesRequest()).flush([]);
     await settle();
 
     expect(root.querySelector('[role="option"][aria-selected="true"]')?.textContent).toContain('Toate');

@@ -9,6 +9,7 @@ import { Baby } from '../../../core/models/baby';
 import { ActivityChanges } from '../../../core/services/activity-changes';
 import { QuickLogLauncher } from '../../../core/services/quick-log-launcher';
 import { FakeClock, provideFakeClock } from '../../../core/testing/fake-clock';
+import { nextRequest } from '../../../core/testing/next-request';
 import { DashboardPage } from './dashboard-page';
 
 const NOW = new Date(2026, 8, 25, 20, 30);
@@ -72,11 +73,11 @@ describe('DashboardPage', () => {
     harness = await RouterTestingHarness.create(url);
     TestBed.tick();
     httpMock.expectOne('/api/babies').flush(babies);
-    await settle();
     if (babies.length === 0) {
+      await settle();
       return;
     }
-    const request = httpMock.expectOne(TODAY_URL);
+    const request = await nextRequest(httpMock, TODAY_URL);
     if (today === 'error') {
       request.flush('boom', { status: 500, statusText: 'Server Error' });
     } else {
@@ -128,8 +129,7 @@ describe('DashboardPage', () => {
 
     TestBed.tick();
     httpMock.expectOne('/api/babies').flush([maria]);
-    await settle();
-    httpMock.expectOne(TODAY_URL).flush(TODAY);
+    (await nextRequest(httpMock, TODAY_URL)).flush(TODAY);
     await settle();
 
     const headings = root().querySelectorAll('h1');
@@ -247,11 +247,8 @@ describe('DashboardPage', () => {
     await setup();
 
     TestBed.inject(ActivityChanges).notify();
-    await harness.fixture.whenStable().catch(() => undefined);
-    TestBed.tick();
+    const request = await nextRequest(httpMock, TODAY_URL);
     harness.detectChanges();
-
-    const request = httpMock.expectOne(TODAY_URL);
     expect(rowNames().length).toBe(TODAY.length);
 
     const added: Activity = { id: 7, babyId: 1, type: 'Diaper', occurredAt: at(20, 10), notes: null };
@@ -294,8 +291,7 @@ describe('DashboardPage', () => {
     expect(root().querySelectorAll('h1').length).toBe(1);
 
     buttonByText('Reîncearcă').click();
-    TestBed.tick();
-    httpMock.expectOne(TODAY_URL).flush(TODAY);
+    (await nextRequest(httpMock, TODAY_URL)).flush(TODAY);
     await settle();
 
     expect(root().querySelector('[role="alert"]')).toBeNull();
