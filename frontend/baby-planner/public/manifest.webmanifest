@@ -1,0 +1,27 @@
+{
+  "name": "BabyPlanner",
+  "short_name": "BabyPlanner",
+  "description": "Jurnalul zilnic al bebelușului: mese, somn, scutece și medicamente, notate în câteva secunde.",
+  "lang": "ro",
+  "dir": "ltr",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F9EFE5",
+  "theme_color": "#F9EFE5",
+  "icons": [
+    {
+      "src": "icons/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

@@ -2,14 +2,10 @@
    styles/, ca sa fie usor de gasit; tot ce e specific unei componente sta in
    fisierul .scss al componentei.
 
-   Fonturile sunt self-hosted (pachetele @fontsource), nu de pe Google Fonts:
-   fara cerere catre un server strain si fara dependenta de retea. Browserul
-   descarca doar subseturile (latin / latin-ext) si greutatile folosite efectiv. */
-@use '@fontsource-variable/nunito/wght' as nunito;
-@use '@fontsource/mali/600' as mali;
-@use '@fontsource-variable/dancing-script/wght' as dancing-script;
+   Fonturile (subseturi self-hosted) sunt in styles/_fonts.scss. */
 @use '@angular/cdk/overlay-prebuilt';
 
+@use 'styles/fonts';
 @use 'styles/themes';
 @use 'styles/base';
 @use 'styles/typography';
@@ -17,4 +13,3 @@
 @use 'styles/buttons';
 @use 'styles/fields';
 @use 'styles/overlays';
-@use 'styles/legacy';

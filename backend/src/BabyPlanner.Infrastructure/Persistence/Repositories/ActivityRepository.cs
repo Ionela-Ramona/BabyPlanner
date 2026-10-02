@@ -49,6 +49,15 @@ public class ActivityRepository : IActivityRepository
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<Activity>> GetInProgressAsync(
+        int babyId,
+        CancellationToken cancellationToken = default) =>
+        await _context.Activities
+            .AsNoTracking()
+            .Where(a => a.BabyId == babyId && a.InProgress)
+            .OrderByDescending(a => a.OccurredAt)
+            .ToListAsync(cancellationToken);
+
     public async Task<Activity?> GetByIdAsync(int babyId, int id, CancellationToken cancellationToken = default) =>
         await _context.Activities
             .FirstOrDefaultAsync(a => a.Id == id && a.BabyId == babyId, cancellationToken);

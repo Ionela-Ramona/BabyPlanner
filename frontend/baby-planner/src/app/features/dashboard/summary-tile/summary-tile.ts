@@ -3,8 +3,9 @@ import { Component, booleanAttribute, computed, input, output } from '@angular/c
 import { ACTIVITY_META, ActivityType } from '../../../core/models/activity-type';
 import { Card } from '../../../shared/components/card/card';
 import { Icon } from '../../../shared/components/icon/icon';
+import { durationLabel } from '../../../shared/utils/activity-details';
 import { ACTIVITY_NOUN, countLabel, relativeLabel, timeLabel } from '../../../shared/utils/ro-time';
-import { TYPE_COPY, TypeSummary } from '../today-summary';
+import { TypeSummary } from '../today-summary';
 
 /**
  * O dala de pe Azi: cand s-a intamplat ultima data un tip si de cate ori azi.
@@ -28,7 +29,7 @@ import { TYPE_COPY, TypeSummary } from '../today-summary';
         (click)="activate()"
       >
         <span class="tile__head">
-          <span class="tile__block"><app-icon [name]="meta().icon" [size]="20" /></span>
+          <span class="tile__block" [class.tile__block--breathe]="breathe()"><app-icon [name]="meta().icon" [size]="20" /></span>
           <span class="tile__label">{{ meta().label }}</span>
           @if (active()) {
             <app-icon class="tile__check" name="check" [size]="18" />
@@ -41,6 +42,9 @@ import { TYPE_COPY, TypeSummary } from '../today-summary';
             <span aria-hidden="true">·</span>
             <span>{{ count() }}</span>
           </span>
+          @if (total()) {
+            <span class="tile__total tabular-nums">{{ total() }}</span>
+          }
         } @else {
           <span class="tile__when tile__when--none">Încă nimic azi</span>
           <span class="tile__meta tile__meta--add">
@@ -116,6 +120,16 @@ import { TYPE_COPY, TypeSummary } from '../today-summary';
       color: var(--block-ink);
     }
 
+    .tile__block--breathe {
+      animation: breathe calc(var(--dur-slow) * 2) var(--ease-settle);
+    }
+
+    @keyframes breathe {
+      50% {
+        transform: scale(1.12);
+      }
+    }
+
     .tile__label {
       min-width: 0;
       color: var(--color-text-strong);
@@ -150,6 +164,12 @@ import { TYPE_COPY, TypeSummary } from '../today-summary';
       font-weight: 600;
     }
 
+    .tile__total {
+      color: var(--color-text-strong);
+      font-size: var(--text-small);
+      font-weight: 800;
+    }
+
     .tile__meta--add {
       font-weight: 700;
     }
@@ -167,6 +187,12 @@ export class SummaryTile {
   readonly now = input.required<Date>();
   /** Tipul acestei dale e filtrul curent al cronologiei. */
   readonly active = input(false, { transform: booleanAttribute });
+  /**
+   * Tocmai s-a notat o activitate de acest tip: cubul "respira" o data (BP-UI-18,
+   * mica bucurie de dupa un Somn notat). Sub `prefers-reduced-motion` animatia e
+   * oprita global, din _base.scss.
+   */
+  readonly breathe = input(false, { transform: booleanAttribute });
 
   /** Apasare pe o dala cu activitati: comuta filtrul pe acest tip. */
   readonly filter = output<ActivityType>();
@@ -174,7 +200,7 @@ export class SummaryTile {
   readonly log = output<ActivityType>();
 
   protected readonly meta = computed(() => ACTIVITY_META[this.summary().type]);
-  protected readonly copy = computed(() => TYPE_COPY[this.summary().type]);
+  protected readonly copy = computed(() => ACTIVITY_META[this.summary().type].copy);
 
   protected readonly relative = computed(() => {
     const last = this.summary().last;
@@ -190,11 +216,25 @@ export class SummaryTile {
     countLabel(this.summary().count, ACTIVITY_NOUN[this.summary().type]),
   );
 
+  /**
+   * "540 ml azi", "9 h 40 min azi", "210 ml · 25 min azi" — doar din campurile
+   * structurate (BP-UI-20). Fara nimic masurat, nu aratam nimic (niciun "0 ml").
+   */
+  protected readonly total = computed(() => {
+    const { totalMl, totalMinutes } = this.summary();
+    const parts = [
+      totalMl === undefined ? '' : `${totalMl} ml`,
+      totalMinutes === undefined ? '' : durationLabel(totalMinutes),
+    ].filter(Boolean);
+    return parts.length ? `${parts.join(' · ')} azi` : '';
+  });
+
   /** O propozitie intreaga pentru cititorul de ecran; incepe cu eticheta vizibila. */
   protected readonly accessibleName = computed(() => {
     const label = this.meta().label;
+    const total = this.total() ? `, în total ${this.total()}` : '';
     return this.summary().last
-      ? `${label}: ultima ${this.relative()}, la ${this.time()}, ${this.count()} azi`
+      ? `${label}: ultima ${this.relative()}, la ${this.time()}, ${this.count()} azi${total}`
       : `${label}: încă nimic azi. ${this.copy().add}`;
   });
 

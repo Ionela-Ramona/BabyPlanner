@@ -1,12 +1,13 @@
-import { Component, computed, inject, input, linkedSignal } from '@angular/core';
+import { Component, computed, inject, input, linkedSignal, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
-import { Activity } from '../../../core/models/activity';
-import { ActivityType, isActivityType } from '../../../core/models/activity-type';
+import { Activity, toRequest } from '../../../core/models/activity';
+import { ACTIVITY_META, ActivityType, isActivityType } from '../../../core/models/activity-type';
 import { ActiveBaby } from '../../../core/services/active-baby';
 import { ActivityApi } from '../../../core/services/activity-api';
 import { ActivityChanges } from '../../../core/services/activity-changes';
+import { ActivityLog, sleptMinutes } from '../../../core/services/activity-log';
 import { Clock } from '../../../core/services/clock';
 import { QuickLogLauncher } from '../../../core/services/quick-log-launcher';
 import { ActivityRow } from '../../../shared/components/activity-row/activity-row';
@@ -19,9 +20,11 @@ import { FilterChips } from '../../../shared/components/filter-chips/filter-chip
 import { Icon } from '../../../shared/components/icon/icon';
 import { Ribbon } from '../../../shared/components/ribbon/ribbon';
 import { Skeleton } from '../../../shared/components/skeleton/skeleton';
-import { ageLabel } from '../../../shared/utils/ro-time';
+import { ToastService } from '../../../shared/overlays/toast.service';
+import { durationLabel } from '../../../shared/utils/activity-details';
+import { ageLabel, timeLabel } from '../../../shared/utils/ro-time';
 import { SummaryTile } from '../summary-tile/summary-tile';
-import { TYPE_COPY, groupByPartOfDay, newestFirst, summarizeToday } from '../today-summary';
+import { groupByPartOfDay, newestFirst, ongoingSleep, summarizeToday } from '../today-summary';
 
 // "joi, 25 septembrie": ziua saptamanii ajuta noaptea, cand zilele se amesteca.
 const DATE_FORMATTER = new Intl.DateTimeFormat('ro', {
@@ -71,6 +74,8 @@ export class DashboardPage {
   private readonly activeBaby = inject(ActiveBaby);
   private readonly activityApi = inject(ActivityApi);
   private readonly changes = inject(ActivityChanges);
+  private readonly activityLog = inject(ActivityLog);
+  private readonly toasts = inject(ToastService);
   private readonly clock = inject(Clock);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -128,6 +133,33 @@ export class DashboardPage {
   });
 
   /**
+   * Somnul in desfasurare vine separat de /today: unul inceput aseara la 22:00 nu
+   * mai e "azi" la 02:00, dar parintele tot trebuie sa-l poata incheia.
+   */
+  private readonly ongoing = rxResource({
+    params: () => {
+      const babyId = this.babyId();
+      return babyId === undefined ? undefined : { babyId, version: this.changes.version() };
+    },
+    stream: ({ params }) => this.activityApi.getOngoing(params.babyId),
+  });
+
+  /** Somnul care inca dureaza; o eroare la incarcare doar ascunde bannerul. */
+  protected readonly sleeping = computed(() =>
+    this.ongoing.hasValue() ? ongoingSleep(this.ongoing.value()) : undefined,
+  );
+  /** "de 1 h 10 min": se actualizeaza la fiecare minut, odata cu Clock. */
+  protected readonly sleptLabel = computed(() => {
+    const sleep = this.sleeping();
+    return sleep ? durationLabel(sleptMinutes(sleep, this.clock.now())) : '';
+  });
+  protected readonly sleepStart = computed(() => {
+    const sleep = this.sleeping();
+    return sleep ? timeLabel(sleep.occurredAt) : '';
+  });
+  protected readonly waking = signal(false);
+
+  /**
    * La o reincarcare, resursa isi goleste valoarea. Pastram ultima lista (pentru
    * acelasi bebelus) ca pagina sa nu clipeasca: continutul vechi doar se
    * estompeaza pe loc pana vine raspunsul. Tot aici aflam ce randuri sunt noi,
@@ -160,6 +192,11 @@ export class DashboardPage {
 
   protected readonly activities = computed(() => this.loaded()?.list);
   protected readonly fresh = computed(() => this.loaded()?.fresh ?? NO_IDS);
+  /** Tipurile randurilor tocmai aparute: dala Somn "respira" o data dupa un somn notat. */
+  protected readonly freshTypes = computed(() => {
+    const fresh = this.fresh();
+    return new Set((this.activities() ?? []).filter((a) => fresh.has(a.id)).map((a) => a.type));
+  });
   protected readonly isStale = computed(
     () => this.today.isLoading() && this.activities() !== undefined,
   );
@@ -176,7 +213,7 @@ export class DashboardPage {
 
   protected readonly filteredEmpty = computed(() => {
     const type = this.type();
-    return type ? TYPE_COPY[type] : undefined;
+    return type ? ACTIVITY_META[type].copy : undefined;
   });
 
   /** Filtrul sta in URL: refresh-ul il pastreaza, iar Back revine la cel anterior. */
@@ -201,5 +238,36 @@ export class DashboardPage {
 
   protected reloadBabies(): void {
     this.activeBaby.reload();
+  }
+
+  /** "S-a trezit": incheie somnul cu durata de pana acum; "Anulează" il redeschide. */
+  protected wake(sleep: Activity): void {
+    if (this.waking()) {
+      return;
+    }
+    this.waking.set(true);
+    this.activityLog.wake(sleep).subscribe({
+      next: (ended) => {
+        this.waking.set(false);
+        this.toasts.show({
+          message: `Somn încheiat · ${durationLabel(ended.durationMinutes ?? 0)}`,
+          tone: 'success',
+          action: {
+            label: 'Anulează',
+            run: () =>
+              this.activityLog.update(sleep.babyId, sleep.id, toRequest(sleep)).subscribe({
+                error: () => this.toasts.show({ message: 'Nu am putut anula.', tone: 'danger' }),
+              }),
+          },
+        });
+      },
+      error: () => {
+        this.waking.set(false);
+        this.toasts.show({
+          message: 'Nu am putut salva trezirea. Verifică conexiunea și încearcă din nou.',
+          tone: 'danger',
+        });
+      },
+    });
   }
 }

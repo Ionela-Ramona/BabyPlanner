@@ -15,7 +15,7 @@ import { Icon } from '../components/icon/icon';
   host: { class: 'sheet-header' },
   template: `
     <div class="sheet-header__text">
-      <h2 class="sheet-header__title">{{ title() }}</h2>
+      <h2 class="sheet-header__title" [attr.id]="titleId() ?? null">{{ title() }}</h2>
       @if (subtitle(); as subtitle) {
         <p class="sheet-header__subtitle text-muted">{{ subtitle }}</p>
       }
@@ -51,6 +51,11 @@ import { Icon } from '../components/icon/icon';
 export class SheetHeader {
   readonly title = input.required<string>();
   readonly subtitle = input<string>();
+  /**
+   * Id-ul pus pe h2, pentru `ariaLabelledBy` din `SheetService`. Pe h2, nu pe
+   * gazda: altfel numele foii ar include si textul butonului "Închide".
+   */
+  readonly titleId = input<string>();
   // `close` e numele asteptat de toate foile; evenimentul nativ `close` vine doar
   // de la <dialog> si nu urca pana aici, deci nu se amesteca.
   // eslint-disable-next-line @angular-eslint/no-output-native

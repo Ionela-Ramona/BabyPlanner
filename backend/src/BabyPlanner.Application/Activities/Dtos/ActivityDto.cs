@@ -8,4 +8,8 @@ public record ActivityDto(
     int BabyId,
     ActivityType Type,
     DateTimeOffset OccurredAt,
-    string? Notes);
+    string? Notes,
+    int? AmountMl,
+    int? DurationMinutes,
+    DiaperKind? DiaperKind,
+    bool InProgress);

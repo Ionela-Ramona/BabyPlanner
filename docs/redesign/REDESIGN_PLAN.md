@@ -1,6 +1,6 @@
 # BabyPlanner — Frontend Redesign Plan
 
-> Status: proposed · Updated: 2026-09-25 · Branch baseline: `feature/domain-entities` (e7f807b)
+> Status: implemented (BP-UI-01…19), see §12 · Updated: 2026-10-02 · Branch baseline: `feature/domain-entities` (e7f807b)
 > Scope: `frontend/baby-planner` (Angular 22) · Product context: [`PRODUCT.md`](../../PRODUCT.md) · Tickets: [`tickets/`](tickets/)
 
 ## 1. Summary
@@ -271,3 +271,17 @@ Order: 01 → 02 → 03 → 04/05 → 06–10 → 11 → 12. Ticket 13 can run i
 - **Illustration quality**: SVG placeholders won't match watercolor art. BP-UI-05 part 2 budgets proper sourcing. Until then, keep texture sparse.
 - **Cute vs. professional**: the storybook world lives in frames, headers, empty states and the profile. Istoric, forms and the timeline stay clean and dense enough to scan.
 - **Stage plan alignment**: Etapa 5/6 in `BabyPlannerDoc.docx` become tickets 14/15/17. JWT (Etapa 7) will need a login screen later, using the same kit.
+
+## 12. Implementation status (2026-10-02)
+
+| Tickets | Status | Notes |
+|---|---|---|
+| 01–13 | Done | Foundation, component kit, shell, showcase, state services |
+| 14 Azi | Done | Horizontal overflow on phones fixed in the quality gate |
+| 15 Quick-log | Done | 2-tap save with Anulează / Adaugă detalii, details form (Când shortcuts, per-type notes), edit with Șterge + undo, server errors mapped to fields; `quick-log-sheet.spec.ts` |
+| 16 Istoric | Done | |
+| 17 Bebeluși, profile, form, welcome | Done | Form and delete-flow specs added |
+| 18 Quality gate | Done, with follow-ups | 0 axe violations across 40 route/width/theme runs; Lighthouse mobile A11y 100, Best Practices 100, Performance 90–94; fonts 59.7 kB. Open: LCP 2.7–3.2 s vs 2.5 s target, manual screen reader / forced-colors pass. See [audit-report.md](audit-report.md). |
+| 19 DESIGN.md | Done | [DESIGN.md](../../DESIGN.md), `.impeccable/design.json` (generated), frontend README; "Baie" dry run passed. The impeccable CLI finish review was not available, so the review was done with screenshots in `review/`. |
+| 20 Structured details | Done (2026-10-02) | `AmountMl`, `DurationMinutes`, `DiaperKind`, `InProgress` + migration `AddStructuredActivityDetails`; `GET …/activities/ongoing`; per-type fields in the sheet, totals on Azi tiles, "Încă doarme · S-a trezit" banner; backend unit + integration tests (the first ones in the repo). See the ticket's "Outcome". |
+

@@ -8,7 +8,9 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "eslint src",
-    "check:contrast": "node scripts/check-contrast.mjs"
+    "check:contrast": "node scripts/check-contrast.mjs",
+    "subset:fonts": "npx --yes -p subset-font node scripts/subset-fonts.mjs",
+    "export:tokens": "node scripts/export-tokens.mjs"
   },
   "private": true,
   "engines": {
@@ -24,9 +26,6 @@
     "@angular/forms": "^22.1.0",
     "@angular/platform-browser": "^22.1.0",
     "@angular/router": "^22.1.0",
-    "@fontsource-variable/dancing-script": "^5.3.0",
-    "@fontsource-variable/nunito": "^5.3.0",
-    "@fontsource/mali": "^5.3.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
@@ -35,6 +34,9 @@
     "@angular/cli": "^22.1.7",
     "@angular/compiler-cli": "^22.1.0",
     "@eslint/js": "^10.0.1",
+    "@fontsource-variable/dancing-script": "^5.3.0",
+    "@fontsource-variable/nunito": "^5.3.0",
+    "@fontsource/mali": "^5.3.0",
     "angular-eslint": "^22.5.0",
     "axe-core": "^4.13.0",
     "eslint": "^10.11.0",

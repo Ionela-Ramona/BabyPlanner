@@ -54,6 +54,46 @@
   grid-column: 1 / -1;
 }
 
+/* ---- Somn in desfasurare (BP-UI-20) ---- */
+.sleeping {
+  grid-column: 1 / -1;
+  margin-top: var(--space-2);
+}
+
+.sleeping__body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.sleeping__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-md);
+  background-color: var(--act-sleep-soft);
+  color: var(--act-sleep-ink);
+}
+
+.sleeping__text {
+  display: grid;
+  flex: 1 1 10rem;
+  margin: 0;
+  color: var(--color-text-strong);
+}
+
+.sleeping__since {
+  color: var(--color-text-muted);
+  font-size: var(--text-small);
+}
+
+.sleeping__wake {
+  min-height: var(--tap-lg);
+}
+
 /* ---- Dale ---- */
 .summary__tiles {
   display: grid;
@@ -77,6 +117,9 @@
 /* ---- Cronologie ---- */
 .timeline {
   display: grid;
+  /* Fara coloana explicita, cea implicita (auto) se lateste dupa randul de chip-uri
+     si impinge pagina in afara ecranului pe telefon. */
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
   min-width: 0;
 }

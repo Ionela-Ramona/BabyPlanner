@@ -27,14 +27,18 @@ const TODAY: Activity[] = [
 ];
 
 const TODAY_URL = '/api/babies/1/activities/today';
+const ONGOING_URL = '/api/babies/1/activities/ongoing';
 
 describe('DashboardPage', () => {
   let httpMock: HttpTestingController;
+  /** Ce raspunde /ongoing; gol, in afara testelor despre somnul in desfasurare. */
+  let ongoing: Activity[] = [];
   let harness: RouterTestingHarness;
   let clock: FakeClock;
   let launcher: { open: ReturnType<typeof vi.fn>; edit: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
+    ongoing = [];
     localStorage.clear();
     clock = provideFakeClock(NOW);
     launcher = { open: vi.fn(), edit: vi.fn() };
@@ -55,7 +59,15 @@ describe('DashboardPage', () => {
     localStorage.clear();
   });
 
+  /**
+   * Raspunde si la /ongoing (somnul in desfasurare), cerut alaturi de /today si dupa
+   * fiecare schimbare. Fara raspuns, `whenStable` l-ar astepta la nesfarsit.
+   */
   async function settle(): Promise<void> {
+    TestBed.tick();
+    for (const request of httpMock.match(ONGOING_URL)) {
+      request.flush(ongoing);
+    }
     await harness.fixture.whenStable();
     harness.detectChanges();
   }
@@ -296,6 +308,53 @@ describe('DashboardPage', () => {
 
     expect(root().querySelector('[role="alert"]')).toBeNull();
     expect(rowNames().length).toBe(TODAY.length);
+  });
+
+  it('shows totals on the tiles only from structured details', async () => {
+    await setup('/dashboard', [
+      { ...TODAY[0], amountMl: 90 },
+      TODAY[1],
+      { ...TODAY[2], amountMl: 120 },
+      { ...TODAY[3], durationMinutes: 100 },
+      TODAY[4],
+      TODAY[5],
+    ]);
+
+    expect(tile('Masă').textContent).toContain('210 ml azi');
+    expect(tile('Somn').textContent).toContain('1 h 40 min azi');
+    // Scutecul n-are nimic masurat: niciun "0".
+    expect(tile('Scutec').querySelector('.tile__total')).toBeNull();
+    expect(tile('Masă').getAttribute('aria-label')).toContain('în total 210 ml azi');
+  });
+
+  it('shows a sleep still in progress, even one started yesterday, and ends it with "S-a trezit"', async () => {
+    const sleep: Activity = {
+      id: 9,
+      babyId: 1,
+      type: 'Sleep',
+      // Aseara la 19:20: nu e in /today, dar /ongoing il aduce.
+      occurredAt: new Date(2026, 8, 24, 19, 20).toISOString(),
+      notes: null,
+      inProgress: true,
+    };
+    ongoing = [sleep];
+    await setup();
+
+    const banner = root().querySelector('.sleeping');
+    expect(banner?.textContent).toContain('Încă doarme');
+    expect(banner?.textContent).toContain('de 24 h');
+    expect(banner?.textContent).toContain('19:20');
+
+    buttonByText('S-a trezit').click();
+    const request = await nextRequest(httpMock, (r) => r.method === 'PUT');
+    expect(request.request.url).toBe('/api/babies/1/activities/9');
+    expect(request.request.body).toEqual(expect.objectContaining({ inProgress: false, durationMinutes: 1440 }));
+    request.flush({ ...sleep, inProgress: false, durationMinutes: 1440 });
+
+    ongoing = [];
+    (await nextRequest(httpMock, TODAY_URL)).flush(TODAY);
+    await settle();
+    expect(root().querySelector('.sleeping')).toBeNull();
   });
 
   it('points to /babies when there is no baby yet', async () => {

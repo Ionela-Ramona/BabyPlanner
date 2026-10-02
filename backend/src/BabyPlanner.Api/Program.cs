@@ -62,3 +62,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// Vizibil pentru WebApplicationFactory<Program> din testele de integrare.
+public partial class Program;

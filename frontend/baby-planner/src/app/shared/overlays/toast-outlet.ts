@@ -16,12 +16,18 @@ const TONE_ICON: Record<ToastTone, IconName> = {
  * aplicatiei (`app.html`, BP-UI-11). Nu fura niciodata focusul: anuntul catre
  * cititorul de ecran vine din `ToastService` (`LiveAnnouncer`), nu din acest
  * card vizual.
+ *
+ * E un landmark (`region` cu nume): butoanele toastului ("Anulează") sunt
+ * continut real, iar un cititor de ecran trebuie sa le poata gasi din lista de
+ * regiuni, nu doar parcurgand pagina. Fara rol, axe raporta "region".
  */
 @Component({
   selector: 'app-toast-outlet',
   imports: [Button, Icon],
   host: {
     class: 'toast-outlet',
+    role: 'region',
+    'aria-label': 'Notificări',
     '(mouseenter)': 'onPointerEnter()',
     '(mouseleave)': 'onPointerLeave()',
     '(focusin)': 'onFocusIn()',
