@@ -36,6 +36,9 @@ import { Edge } from '../components/edge/edge';
       overflow: hidden;
       max-height: 90dvh;
       padding-bottom: env(safe-area-inset-bottom);
+      /* Invizibila normal; in high contrast umbra dispare, iar marginea (fortata la
+         CanvasText) e singurul lucru care separa foaia de pagina din spatele ei. */
+      border: 1px solid transparent;
       border-radius: var(--radius-xl) var(--radius-xl) 0 0;
       background-color: var(--color-surface);
       box-shadow: var(--shadow-lg);

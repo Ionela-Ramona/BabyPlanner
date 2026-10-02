@@ -20,7 +20,9 @@ import { IconName } from './icon-names';
     '[attr.aria-hidden]': "label() ? null : 'true'",
     '[style.--icon-size]': 'sizeCss()',
   },
-  template: `<svg focusable="false"><use [attr.href]="href()" /></svg>`,
+  // aria-hidden pe <svg>: numele (daca exista) e pe gazda; altfel cititorul de ecran
+  // anunta in plus un "grafic" fara nume in interiorul iconitei.
+  template: `<svg focusable="false" aria-hidden="true"><use [attr.href]="href()" /></svg>`,
   styles: `
     :host {
       display: inline-flex;

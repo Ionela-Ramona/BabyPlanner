@@ -288,6 +288,16 @@ function parseWhole(value: string): number | null {
       accent-color: var(--act-sleep-line);
     }
 
+    /* High contrast: fundalul si umbra butonului apasat dispar; Highlight il arata. */
+    @media (forced-colors: active) {
+      .shortcut[aria-pressed='true'] {
+        forced-color-adjust: none;
+        border-color: Highlight;
+        background: Highlight;
+        color: HighlightText;
+      }
+    }
+
     .details__delete {
       margin-inline-end: auto;
     }

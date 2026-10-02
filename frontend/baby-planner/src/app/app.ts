@@ -119,6 +119,18 @@ export class App {
     return wide;
   }
 
+  /**
+   * Skip link-ul muta focusul in <main> fara navigare. Un simplu `href="#continut"`
+   * nu merge intr-o aplicatie cu `<base href="/">`: devine "/#continut", alta adresa
+   * decat pagina curenta, iar browserul reincarca toata aplicatia.
+   */
+  protected skipToContent(event: Event): void {
+    event.preventDefault();
+    const main = this.main().nativeElement;
+    main.focus({ preventScroll: true });
+    main.scrollIntoView?.({ block: 'start' });
+  }
+
   private focusPage(): void {
     const main = this.main().nativeElement;
     const heading = main.querySelector<HTMLElement>('h1');

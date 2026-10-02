@@ -81,6 +81,9 @@ const TONE_ICON: Record<ToastTone, IconName> = {
       max-width: 26rem;
       padding: var(--space-4);
       border-radius: var(--radius-lg);
+      /* Marginea transparenta devine vizibila doar in high contrast, unde umbra
+         dispare si toastul s-ar topi in pagina de sub el. */
+      border: 1px solid transparent;
       background-color: var(--color-surface);
       box-shadow: var(--shadow-lg);
       color: var(--color-text-strong);

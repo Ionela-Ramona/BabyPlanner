@@ -70,14 +70,28 @@ Accessibility is 100 and Best Practices 100 on every route.
 - The one delight: the Somn tile's block "breathes" once (scale 1 → 1.12 → 1) after a sleep is logged.
 - `prefers-reduced-motion: reduce` turns every animation and transition instant (`_base.scss`). The review runs had reduced motion on.
 
-## Not verified in this pass (needs a person)
+## Manual checks (F3, 2026-10-02)
 
-These ticket items can't be automated here and were **not** done:
+Run in Chrome on the production build, driven by Playwright.
 
-- Screen reader passes: NVDA + Chrome and VoiceOver + iOS Safari, in Romanian.
-- 200% browser zoom (the 320px reflow run above covers the equivalent layout width).
-- Forced-colors mode on Windows: the CSS has `forced-colors` fallbacks for rows, tiles, fields and the active filter, but nobody has looked at it.
-- `impeccable audit` / `impeccable detect --json` / `impeccable critique`: the impeccable CLI isn't installed in this environment.
+| Check | How | Result |
+|---|---|---|
+| **Screen reader proxy** | Accessibility-tree snapshot of every route, the quick-log sheet (quick and details) and the baby form: what NVDA/VoiceOver read | One `h1` per page with nested `h2`/`h3`; landmarks are banner, main, `navigation "Navigare principală"`, `region "Notificări"`; the sheet is a named `dialog` with a named `listbox` of type options. **Fixed:** every labelled icon also exposed an unnamed inner `<svg>` (an extra "graphic"); it's now `aria-hidden`. |
+| **Keyboard only** | Tab through every page, plus the whole quick-log flow, tracking focus and its ring at each step | Order is skip link → top bar → main → nav, with a visible focus ring at every stop. The sheet traps focus, Escape closes it and returns focus to ＋ Adaugă, arrow keys move between type blocks, Enter saves, and the toast's "Anulează" is reachable with Tab. **Fixed (P1):** the skip link reloaded the whole app. With `<base href="/">`, `#continut` resolves to `/#continut`, so from Istoric with a filter it threw the user back to Azi. It now moves focus to `<main>` without navigating (regression test in `app.spec.ts`). |
+| **Windows high contrast** | Chrome forced-colors emulation, light and dark, every route plus the sheet | Card, tile, chip, field and button boundaries all survive; the active nav item and the selected type block stay marked. **Fixed:** these were drawn only with gradients or shadows, which forced colors drop: the selected filter chip (indistinguishable), the pressed Scutecul/duration buttons, the ＋ Adaugă block (transparent, so the nav border ran through the "+"), and the sheet and toast edges (blended into the page). They now use system colors (`Highlight`, `ButtonFace`, and a transparent border that Windows draws). |
+| **Zoom 200% / 400%** | 1280×800 at 200% = 640×400 CSS px; at 400% = 320×200 | No horizontal scroll on any route; the sheet's "Salvează" stays reachable. **Fixed (WCAG 2.4.11):** at 200–400% the fixed bottom nav covers 18–36% of the screen, and tabbing could stop on an Istoric row hidden behind it (3 hidden stops on Istoric at 200%). `scroll-padding` on `html` now keeps focus clear of the nav and the sticky day headers: 0 hidden stops at 200% and 400%. |
+
+After the fixes, axe still reports 0 violations across 35 route/width/theme runs.
+
+### Still needs a person
+- **Real screen readers:** NVDA + Chrome on Windows and VoiceOver + Safari on iOS, in Romanian. The tree above is what they read, but only listening shows how the Romanian labels, the plural counts and the live toast announcements sound. Suggested script:
+  1. On Azi, press H to jump through the headings, then D (NVDA) to move through the landmarks.
+  2. Open ＋ Adaugă: the dialog should be announced as "Adaugă pentru Maria". Pick Masă with the arrow keys and Enter.
+  3. The toast "Masă înregistrată" should be read once, without moving focus. Reach "Anulează" with Tab.
+  4. In Istoric, jump between days with H.
+  5. Delete a baby from the profile: the confirmation dialog should be read in full.
+- **Real Windows high contrast** (Settings → Accessibility → Contrast themes), as a sanity check of the emulation with an actual system palette.
+- `impeccable audit` / `detect` / `critique`: the impeccable CLI isn't installed in this environment.
 
 ## Follow-ups
 
@@ -95,7 +109,7 @@ These ticket items can't be automated here and were **not** done:
   - **Net effect, both over HTTP/2:** FCP 0.2–0.4 s faster on every route. LCP is unchanged on Azi and the profile, and up to 0.2 s faster on Bebeluși, Istoric, welcome and 404.
   - **Deploy note:** serve the app over HTTP/2 (any CDN or modern host does). Over HTTP/1.1 the data pages land at 3.1–3.4 s on simulated slow 4G.
 - **F2 · PNG icons for installability.** The manifest has an SVG icon and the 180px touch icon. 192px and 512px PNGs (and a maskable variant) would make install prompts work everywhere.
-- **F3 · Manual a11y pass**: the "Not verified" list above.
+- **F3 · Manual a11y pass.** Done as far as a browser allows (see "Manual checks"): 5 issues found and fixed, including the skip link reloading the app. Listening with a real NVDA/VoiceOver remains for a person; the script is in "Still needs a person".
 
 ## Artifacts
 

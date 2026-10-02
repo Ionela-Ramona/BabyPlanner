@@ -112,6 +112,19 @@ textarea {
 html {
   scrollbar-color: var(--paper-sand) transparent;
   scrollbar-width: thin;
+  /* Cand browserul aduce in vedere elementul cu focus (Tab), il opreste deasupra
+     barei de jos si sub antetele lipicioase de zi din Istoric, nu dedesubtul lor
+     (WCAG 2.4.11). Conteaza mai ales la zoom 200-400%, cand bara ocupa o treime
+     din ecran. */
+  scroll-padding-top: var(--space-16);
+  scroll-padding-bottom: calc(var(--bottom-nav-height) + var(--space-8) + env(safe-area-inset-bottom, 0px));
+}
+
+/* De la 64rem navigarea e o bara laterala: jos nu mai e nimic de ocolit. */
+@media (min-width: 64rem) {
+  html {
+    scroll-padding-bottom: var(--space-4);
+  }
 }
 
 /* Ascuns vizual, dar citit de screen reader. */

@@ -52,3 +52,14 @@
   background: linear-gradient(180deg, var(--paper-highlight) 0%, var(--block-soft) 100%);
   color: var(--block-ink);
 }
+
+/* High contrast: fundalul in gradient al chip-ului ales dispare, deci selectia s-ar
+   pierde. Culorile de sistem Highlight/HighlightText o arata in paleta utilizatorului. */
+@media (forced-colors: active) {
+  .chip[aria-selected='true'] {
+    forced-color-adjust: none;
+    border-color: Highlight;
+    background: Highlight;
+    color: HighlightText;
+  }
+}

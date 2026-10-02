@@ -1,6 +1,8 @@
 <!-- Primul element focusabil din pagina: sare peste antet, direct la continut.
      Utilizatorii de tastatura nu mai trebuie sa treaca prin navigare la fiecare pagina. -->
-<a class="skip-link" href="#continut">Sari la conținut</a>
+<!-- (click) e necesar: cu <base href="/">, "#continut" inseamna "/#continut", deci
+     browserul ar reincarca aplicatia (si ar pierde pagina curenta) in loc sa sara. -->
+<a class="skip-link" href="#continut" (click)="skipToContent($event)">Sari la conținut</a>
 
 <header class="topbar">
   <a class="topbar__home" routerLink="/dashboard" aria-label="BabyPlanner, pagina Azi">

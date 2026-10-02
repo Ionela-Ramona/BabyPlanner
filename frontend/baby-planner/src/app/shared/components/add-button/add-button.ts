@@ -85,9 +85,14 @@ import { Icon } from '../icon/icon';
       letter-spacing: -0.01em;
     }
 
+    /* In high contrast gradientul de miere dispare (background-image e ignorat) si
+       cubul ar ramane transparent: linia de sus a barei de navigare s-ar vedea prin
+       el, peste "+". O culoare de sistem pentru fundal il tine opac. */
     @media (forced-colors: active) {
       :host {
-        border-color: ButtonText;
+        border: 1px solid ButtonText;
+        background-color: ButtonFace;
+        color: ButtonText;
       }
     }
   `,

@@ -48,6 +48,20 @@ describe('App', () => {
     expect(root.querySelector('main#continut')?.getAttribute('tabindex')).toBe('-1');
   });
 
+  it('moves focus to <main> from the skip link without navigating', async () => {
+    const root = (await render([MARIA])).nativeElement as HTMLElement;
+    document.body.appendChild(root);
+    const skip = root.querySelector<HTMLAnchorElement>('a.skip-link')!;
+    const event = new MouseEvent('click', { bubbles: true, cancelable: true });
+
+    skip.dispatchEvent(event);
+
+    // Fara preventDefault, "#continut" + <base href="/"> = "/#continut": reincarcare.
+    expect(event.defaultPrevented).toBe(true);
+    expect(document.activeElement).toBe(root.querySelector('main#continut'));
+    root.remove();
+  });
+
   it('renders the wordmark with a single accessible name', async () => {
     const root = (await render([MARIA])).nativeElement as HTMLElement;
     const home = root.querySelector('.topbar__home');
