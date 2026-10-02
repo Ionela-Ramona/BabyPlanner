@@ -17,9 +17,37 @@ import { BabySwitcher } from './core/layout/baby-switcher';
 import { BackgroundButton } from './core/layout/background-button';
 import { MainNav } from './core/layout/main-nav';
 import { ThemeToggle } from './core/layout/theme-toggle';
+import { QuickLogLauncher } from './core/services/quick-log-launcher';
 import { ThemeService } from './core/services/theme';
 import { Wordmark } from './shared/components/wordmark/wordmark';
 import { ToastOutlet } from './shared/overlays/toast-outlet';
+
+/**
+ * Ruleaza `task` o singura data, dupa ce pagina s-a incarcat de tot (evenimentul
+ * `load` + cateva secunde de liniste), sau mai devreme, la prima interactiune.
+ * Asa descarcarea nu concureaza cu prima afisare (LCP) pe o retea lenta, dar e
+ * gata pana cand parintele apuca sa apese ＋.
+ */
+function afterPageSettles(task: () => void): void {
+  let done = false;
+  const run = () => {
+    if (done) {
+      return;
+    }
+    done = true;
+    removeEventListener('pointerdown', run, true);
+    removeEventListener('keydown', run, true);
+    task();
+  };
+  addEventListener('pointerdown', run, { capture: true, once: true, passive: true });
+  addEventListener('keydown', run, { capture: true, once: true });
+  const later = () => setTimeout(run, 3000);
+  if (document.readyState === 'complete') {
+    later();
+  } else {
+    addEventListener('load', later, { once: true });
+  }
+}
 
 /**
  * Shell-ul aplicatiei: bara de sus, navigarea si zona in care routerul randeaza
@@ -73,6 +101,12 @@ export class App {
     navigations
       .pipe(skip(1))
       .subscribe(() => afterNextRender({ write: () => this.focusPage() }, { injector: this.injector }));
+
+    // Foaia "＋ Adaugă" (si CDK-ul de sub ea) nu sta in bundle-ul initial, ca prima
+    // afisare sa fie rapida. O aducem dupa ce pagina s-a asezat (sau la prima
+    // atingere), ca prima apasare pe ＋ sa nu astepte reteaua.
+    const launcher = inject(QuickLogLauncher);
+    afterNextRender(() => afterPageSettles(() => launcher.prefetch()));
   }
 
   private deepestRouteIsWide(router: Router): boolean {

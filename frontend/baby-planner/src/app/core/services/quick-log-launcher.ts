@@ -38,6 +38,16 @@ export class QuickLogLauncher {
   private readonly activeBaby = inject(ActiveBaby);
   private readonly router = inject(Router);
 
+  /**
+   * Aduce in fundal codul foii (si CDK-ul de sub ea), fara s-o deschida. Apelat de
+   * shell cand browserul e liber: prima atingere pe ＋ nu mai asteapta reteaua.
+   * Un `import()` repetat nu mai descarca nimic, deci e sigur de apelat oricand.
+   */
+  prefetch(): void {
+    void import('../../shared/overlays/sheet-opener');
+    void import('../../features/quick-log/quick-log-sheet');
+  }
+
   /** Foaia rapida (cuburi). Cu `type`, sare direct la formularul cu tipul ales. */
   open(type?: ActivityType): Promise<void> {
     return this.show(type ? 'details' : 'quick', { type });
@@ -69,7 +79,7 @@ export class QuickLogLauncher {
     }
 
     const { QuickLogSheet } = await import('../../features/quick-log/quick-log-sheet');
-    this.sheets.open<unknown, QuickLogData>(QuickLogSheet, {
+    await this.sheets.open<unknown, QuickLogData>(QuickLogSheet, {
       data: { mode, babyId: baby.id, babyName: baby.name, ...extra },
       ariaLabelledBy: 'quick-log-title',
     });

@@ -75,7 +75,7 @@ Status colors are aliases: success = sage, warning = honey, danger = blush, info
 - Fixed scale, ratio about 1.2, no `clamp()`: `--text-caption` 0.8125rem, `--text-small` 0.875, `--text-body` 1, `--text-lead` 1.125, `--text-h3` 1.1875, `--text-h2` 1.4375, `--text-h1` 1.75, `--text-display` 2.25, `--text-script` 2.5rem.
 - Times use `.tabular-nums`, so the timeline's time column lines up.
 - A heading that shows the name in script still contains the name as plain text (the `.script` class is styling only).
-- Fonts are self-hosted subsets in `public/fonts/` (59.7 kB in total), declared in `styles/_fonts.scss`. Each face is split into a Latin file and a Romanian-diacritics file (ă ș ț) by `unicode-range`. Regenerate with `npm run subset:fonts`.
+- Fonts are self-hosted subsets in `public/fonts/` (59.7 kB in total), declared in `styles/_fonts.scss`. Each face is split into a Latin file and a Romanian-diacritics file (ă ș ț) by `unicode-range`. Regenerate with `npm run subset:fonts`. Each stack includes a metric-matched fallback (`Nunito Fallback`, `Mali Fallback`, `Dancing Script Fallback`): Arial with `size-adjust` and ascent/descent overrides, so text doesn't reflow when the web font arrives. Re-measure them if a font changes.
 
 ## 4. Four borders, three gradients
 
@@ -141,9 +141,9 @@ All are standalone, selector prefix `app`, signal `input()` / `output()` / `mode
 | `app-filter-chips` | "Toate" + types (Aria listbox, follow focus). Bind to the URL `?type=`. |
 | `app-activity-badge`, `app-activity-row` | Type badge; a timeline row (time first, notes as primary text, whole row is one button → edit) |
 | `app-avatar`, `app-wordmark` | Initials on a tone; the two-voice logo |
-| `app-empty-state` (`illustration`, `headingLevel`, `framed`, `priority`), `app-error-state` (`retry`) | Every empty/error branch. Set `priority` when the illustration is above the fold (it is the LCP). |
-| `app-skeleton` (`text` · `row` · `tile`) | Loading, shaped like what will arrive |
-| `SheetService.open()` + `app-sheet-header` (`titleId`) / `app-sheet-footer` | Bottom sheet on phones, centered panel from 48rem. Pass `ariaLabelledBy` = the header's `titleId`. |
+| `app-empty-state` (`illustration`, `headingLevel`, `framed`), `app-error-state` (`retry`) | Every empty/error branch. Illustrations are inline SVG from `empty-state/illustrations.ts` (so an empty page doesn't wait for an image); add a new one there. |
+| `app-skeleton` (`text` · `row` · `tile`) | Loading, shaped like what will arrive. When data that arrives later would insert something *above* content already on screen (Azi's sleep banner), show one loading block and swap everything in a single frame instead. |
+| `await SheetService.open()` + `app-sheet-header` (`titleId`) / `app-sheet-footer` | Bottom sheet on phones, centered panel from 48rem. Pass `ariaLabelledBy` = the header's `titleId`. `open()` is async: the CDK dialog code loads on first use, and the shell prefetches it once the page has settled. |
 | `ConfirmService` | Only for what cannot be undone (deleting a baby, which cascades). Everything else uses undo. |
 | `ToastService` (+ `app-toast-outlet` in the shell) | One toast at a time, announced politely, never steals focus; `action` / `secondaryAction` ("Anulează", "Adaugă detalii") |
 

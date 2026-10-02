@@ -27,6 +27,6 @@ export class BackgroundButton {
 
   protected async open(): Promise<void> {
     const { BackgroundSheet } = await import('./background-sheet');
-    this.sheets.open(BackgroundSheet, { ariaLabelledBy: 'background-title' });
+    await this.sheets.open(BackgroundSheet, { ariaLabelledBy: 'background-title' });
   }
 }

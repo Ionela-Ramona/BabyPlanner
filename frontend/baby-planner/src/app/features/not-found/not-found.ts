@@ -12,7 +12,6 @@ import { EmptyState } from '../../shared/components/empty-state/empty-state';
 
     <app-empty-state
       framed
-      priority
       illustration="cloud.svg"
       title="Aici nu e nimic de notat"
       message="Adresa nu corespunde niciunei pagini din aplicație. Poate a fost scrisă greșit sau pagina a fost mutată."

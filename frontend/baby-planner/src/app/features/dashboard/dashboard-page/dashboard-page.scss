@@ -24,19 +24,25 @@
   line-height: 1.1;
 }
 
+/* Numele si locul lui rezervat sunt blocuri de aceeasi inaltime (un rand de script),
+   ca panglica datei de dedesubt sa nu se miste cand soseste numele (CLS). */
+.greeting__name,
+.greeting__placeholder {
+  display: block;
+  /* min-height la nume: un nume foarte lung se poate rupe pe doua randuri. */
+  min-height: calc(var(--greeting-name-size, var(--text-script)) * 1.1);
+}
+
 .greeting__name {
   color: var(--blush-ink);
-  font-size: var(--text-script);
+  font-size: var(--greeting-name-size, var(--text-script));
   overflow-wrap: anywhere;
 }
 
 .greeting__placeholder {
-  display: inline-block;
   width: 7rem;
-  height: 2.25rem;
   border-radius: var(--radius-sm);
   background-color: var(--color-surface-muted);
-  vertical-align: middle;
 }
 
 .greeting__age {
@@ -166,11 +172,9 @@
   }
 
   .greeting {
-    grid-area: greeting;
-  }
+    --greeting-name-size: 3rem;
 
-  .greeting__name {
-    font-size: 3rem;
+    grid-area: greeting;
   }
 
   /* Dalele raman la vedere cat timp derulezi cronologia. */

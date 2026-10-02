@@ -193,9 +193,9 @@
   --radius-pill: 999px;
 
   /* Tipografie (subseturi self-hosted din public/fonts, vezi styles/_fonts.scss) */
-  --font-sans: 'Nunito Variable', 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-display: 'Mali', 'Nunito Variable', system-ui, sans-serif;
-  --font-script: 'Dancing Script Variable', 'Dancing Script', cursive;
+  --font-sans: 'Nunito Variable', 'Nunito Fallback', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Mali', 'Mali Fallback', system-ui, sans-serif;
+  --font-script: 'Dancing Script Variable', 'Dancing Script Fallback', cursive;
 
   /* Scara fixa, raport ~1.2. Fara clamp(): in UI de produs vrem aceleasi marimi
      pe orice ecran, ca ierarhia sa nu se schimbe cand rotesti telefonul. */

@@ -38,3 +38,24 @@ $romanian: U+0102-0103, U+015E-015F, U+0162-0163, U+0218-021B;
 @include face('Mali', 'mali-600', 600);
 /* Scriptul (numele bebelusului, "Moments"): instantiat static la 600. */
 @include face('Dancing Script Variable', 'dancing-script-600', 600);
+
+/* Fonturi de rezerva cu metricile fonturilor web (font-display: swap arata intai
+   textul in fontul de sistem). Arial, micsorat/marit si cu ascent/descent rescrise,
+   ocupa aproape exact cat Nunito/Mali/Dancing Script, deci cand soseste fontul web
+   textul nu mai sare (CLS). Valorile au fost masurate in Chrome pe text romanesc,
+   fata de Arial; Helvetica si Roboto au latimi apropiate, deci merg si ele.
+   Le refaci daca schimbi fonturile (vezi docs/redesign/audit-report.md, F1). */
+@mixin fallback($family, $size-adjust, $ascent, $descent) {
+  @font-face {
+    font-family: $family;
+    src: local('Arial'), local('Helvetica'), local('Roboto');
+    size-adjust: $size-adjust;
+    ascent-override: $ascent;
+    descent-override: $descent;
+    line-gap-override: 0%;
+  }
+}
+
+@include fallback('Nunito Fallback', 99.68%, 101.43%, 35.41%);
+@include fallback('Mali Fallback', 105.24%, 99.77%, 23.75%);
+@include fallback('Dancing Script Fallback', 77.5%, 118.71%, 36.13%);

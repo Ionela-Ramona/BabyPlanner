@@ -135,7 +135,7 @@ export class FeedbackSection {
   protected readonly skeletonVariants: SkeletonVariant[] = ['row', 'tile', 'baby-card', 'profile', 'text'];
 
   protected openSheet(): void {
-    this.sheets.open(DemoSheet, { title: 'Adaugă o masă' });
+    void this.sheets.open(DemoSheet, { title: 'Adaugă o masă' });
   }
 
   protected async confirmDelete(): Promise<void> {
