@@ -7,7 +7,8 @@ import { TestBed } from '@angular/core/testing';
 
 import { Activity } from '../models/activity';
 import { ActivityChanges } from './activity-changes';
-import { ActivityLog } from './activity-log';
+import { ActivityLog, sleptMinutes } from './activity-log';
+import { provideFakeClock } from '../testing/fake-clock';
 
 const activity: Activity = {
   id: 9,
@@ -24,7 +25,11 @@ describe('ActivityLog', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideFakeClock(new Date('2026-09-25T12:00:00Z')).provider,
+      ],
     });
     log = TestBed.inject(ActivityLog);
     changes = TestBed.inject(ActivityChanges);
@@ -75,8 +80,8 @@ describe('ActivityLog', () => {
     expect(changes.version()).toBe(0);
   });
 
-  it('restores a deleted activity by re-posting its type, moment and notes', () => {
-    log.restore(activity).subscribe();
+  it('restores a deleted activity by re-posting everything, details included', () => {
+    log.restore({ ...activity, durationMinutes: 45 }).subscribe();
 
     const request = httpMock.expectOne('/api/babies/1/activities');
     expect(request.request.method).toBe('POST');
@@ -84,10 +89,30 @@ describe('ActivityLog', () => {
       type: 'Sleep',
       occurredAt: '2026-09-25T11:00:00Z',
       notes: 'a dormit bine',
+      amountMl: null,
+      durationMinutes: 45,
+      diaperKind: null,
+      inProgress: false,
     });
 
     request.flush({ ...activity, id: 11 });
 
     expect(changes.version()).toBe(1);
+  });
+
+  it('wakes a sleep in progress with the minutes slept so far', () => {
+    // Ceasul fals e la 12:00 UTC; somnul a inceput la 11:00.
+    log.wake({ ...activity, notes: null, inProgress: true }).subscribe();
+
+    const request = httpMock.expectOne({ method: 'PUT', url: '/api/babies/1/activities/9' });
+    expect(request.request.body).toEqual(
+      expect.objectContaining({ inProgress: false, durationMinutes: 60, occurredAt: '2026-09-25T11:00:00Z' }),
+    );
+    request.flush({ ...activity, inProgress: false, durationMinutes: 60 });
+  });
+
+  it('never sends a duration outside 1 minute to one day', () => {
+    expect(sleptMinutes({ ...activity, occurredAt: '2026-09-25T12:00:00Z' }, new Date('2026-09-25T12:00:10Z'))).toBe(1);
+    expect(sleptMinutes({ ...activity, occurredAt: '2026-09-20T12:00:00Z' }, new Date('2026-09-25T12:00:00Z'))).toBe(1440);
   });
 });

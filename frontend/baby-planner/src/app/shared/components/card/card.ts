@@ -10,14 +10,13 @@ export type CardPadding = 'none' | 'sm' | 'md' | 'lg';
  * (`stitched`) sau tonata in culoarea unui tip de activitate (`tinted`).
  *
  * Nu decide semantica: gazda e un bloc simplu, iar apelantul o pune in <li>,
- * <article> sau <section> dupa caz (listele existente folosesc <li class="card">,
- * pastram acea semantica in paginile care migreaza pe app-card).
+ * <article> sau <section> dupa caz.
  */
 @Component({
   selector: 'app-card',
   imports: [Stitch],
   host: {
-    // Nu "card": clasa globala veche .card (styles/_legacy.scss) ar adauga padding dublu.
+    // Prefixul bp- tine clasa departe de orice alt ".card" global (cum era vechiul _legacy.scss).
     class: 'bp-card',
     '[class.card--plain]': "variant() === 'plain'",
     '[class.card--stitched]': "variant() === 'stitched'",

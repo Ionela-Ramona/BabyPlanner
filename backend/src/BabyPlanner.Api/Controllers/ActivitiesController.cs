@@ -50,6 +50,19 @@ public class ActivitiesController : ControllerBase
         return Ok(activities);
     }
 
+    /// <summary>Activitatile inca in desfasurare (somnul neincheiat), indiferent de zi.</summary>
+    [HttpGet("ongoing")]
+    [ProducesResponseType(typeof(IReadOnlyList<ActivityDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IReadOnlyList<ActivityDto>>> GetOngoing(
+        int babyId,
+        CancellationToken cancellationToken)
+    {
+        var activities = await _activities.GetInProgressAsync(babyId, cancellationToken);
+
+        return Ok(activities);
+    }
+
     /// <summary>O activitate anume.</summary>
     [HttpGet("{id:int}", Name = nameof(GetActivityById))]
     [ProducesResponseType(typeof(ActivityDto), StatusCodes.Status200OK)]

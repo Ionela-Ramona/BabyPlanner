@@ -34,31 +34,44 @@ public static class DbSeeder
 
             // Timpii sunt relativi la "acum", nu ore fixe: asa nicio activitate nu ajunge
             // in viitor, indiferent de ora la care pornesti aplicatia.
+            // Detaliile (ml, minute, tip de scutec) sunt campuri, nu text in notite: asa
+            // Azi poate arata totaluri ("120 ml azi", "Somn · 45 min"). Ultimul somn
+            // inca dureaza, ca sa se vada "Inca doarme" si butonul "S-a trezit".
             Activities =
             {
                 new Activity
                 {
+                    Type = ActivityType.Sleep,
+                    OccurredAt = now.AddMinutes(-10),
+                    InProgress = true
+                },
+                new Activity
+                {
                     Type = ActivityType.Feeding,
                     OccurredAt = now.AddMinutes(-20),
-                    Notes = "120 ml lapte praf"
+                    Notes = "Lapte praf",
+                    AmountMl = 120
                 },
                 new Activity
                 {
                     Type = ActivityType.Diaper,
                     OccurredAt = now.AddHours(-2),
-                    Notes = "Schimbat, fara probleme"
+                    Notes = "Schimbat, fara probleme",
+                    DiaperKind = DiaperKind.Wet
                 },
                 new Activity
                 {
                     Type = ActivityType.Sleep,
                     OccurredAt = now.AddHours(-4),
-                    Notes = "A dormit 45 de minute"
+                    Notes = "In patut",
+                    DurationMinutes = 45
                 },
                 new Activity
                 {
                     Type = ActivityType.Feeding,
                     OccurredAt = now.AddHours(-6),
-                    Notes = "Alaptat 15 minute"
+                    Notes = "Alaptat",
+                    DurationMinutes = 15
                 },
 
                 // Deliberat de ieri: asa vezi ca endpoint-ul /today chiar filtreaza ceva.

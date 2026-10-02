@@ -26,6 +26,9 @@ public interface IActivityRepository
     /// </summary>
     Task<Activity?> GetByIdAsync(int babyId, int id, CancellationToken cancellationToken = default);
 
+    /// <summary>Activitatile inca in desfasurare (somnul inceput si neincheiat), cele mai noi primele.</summary>
+    Task<IReadOnlyList<Activity>> GetInProgressAsync(int babyId, CancellationToken cancellationToken = default);
+
     Task AddAsync(Activity activity, CancellationToken cancellationToken = default);
 
     Task UpdateAsync(Activity activity, CancellationToken cancellationToken = default);

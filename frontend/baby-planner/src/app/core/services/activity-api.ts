@@ -35,6 +35,14 @@ export class ActivityApi {
     });
   }
 
+  /**
+   * GET .../activities/ongoing — somnul inceput si neincheiat, indiferent de zi
+   * (unul inceput aseara nu apare in /today dupa miezul noptii).
+   */
+  getOngoing(babyId: number): Observable<Activity[]> {
+    return this.http.get<Activity[]>(`${this.activitiesUrl(babyId)}/ongoing`);
+  }
+
   /** GET .../activities/{id} */
   getById(babyId: number, id: number): Observable<Activity> {
     return this.http.get<Activity>(`${this.activitiesUrl(babyId)}/${id}`);

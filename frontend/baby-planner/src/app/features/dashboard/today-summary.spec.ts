@@ -1,5 +1,5 @@
 import { Activity } from '../../core/models/activity';
-import { groupByPartOfDay, newestFirst, summarizeToday } from './today-summary';
+import { groupByPartOfDay, newestFirst, ongoingSleep, summarizeToday } from './today-summary';
 
 const at = (hour: number, minute = 0) => new Date(2026, 8, 25, hour, minute).toISOString();
 
@@ -40,6 +40,43 @@ describe('today-summary', () => {
       expect(feeding.count).toBe(3);
       expect(feeding.last?.id).toBe(2);
       expect(tiles.find((tile) => tile.type === 'Sleep')?.count).toBe(1);
+    });
+
+    it('totals ml and minutes only from the structured fields', () => {
+      const tiles = summarizeToday([
+        { ...activity(1, 'Feeding', at(3)), amountMl: 120 },
+        { ...activity(2, 'Feeding', at(7)), amountMl: 90, durationMinutes: 10 },
+        // Notitele nu se citesc niciodata ca numere.
+        { ...activity(3, 'Feeding', at(9)), notes: '200 ml' },
+        { ...activity(4, 'Sleep', at(1)), durationMinutes: 300 },
+        { ...activity(5, 'Sleep', at(13)), durationMinutes: 80 },
+        { ...activity(6, 'Sleep', at(15)), inProgress: true },
+      ]);
+
+      const feeding = tiles.find((tile) => tile.type === 'Feeding')!;
+      expect(feeding.totalMl).toBe(210);
+      expect(feeding.totalMinutes).toBe(10);
+      expect(tiles.find((tile) => tile.type === 'Sleep')!.totalMinutes).toBe(380);
+    });
+
+    it('has no totals when nothing was measured (no fake "0 ml")', () => {
+      const tiles = summarizeToday([activity(1, 'Feeding', at(3))]);
+
+      expect(tiles[0].totalMl).toBeUndefined();
+      expect(tiles[0].totalMinutes).toBeUndefined();
+    });
+  });
+
+  describe('ongoingSleep', () => {
+    it('finds the most recent sleep still in progress, ignoring old sleeps without a duration', () => {
+      const list = [
+        activity(1, 'Sleep', at(2)),
+        { ...activity(2, 'Sleep', at(10)), inProgress: true },
+        { ...activity(3, 'Sleep', at(14)), inProgress: true },
+      ];
+
+      expect(ongoingSleep(list)?.id).toBe(3);
+      expect(ongoingSleep([activity(1, 'Sleep', at(2))])).toBeUndefined();
     });
   });
 

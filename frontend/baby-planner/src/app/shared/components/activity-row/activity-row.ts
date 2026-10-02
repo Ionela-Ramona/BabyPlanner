@@ -2,6 +2,7 @@ import { Component, computed, input, output } from '@angular/core';
 
 import { Activity } from '../../../core/models/activity';
 import { ACTIVITY_META } from '../../../core/models/activity-type';
+import { detailsLabel } from '../../utils/activity-details';
 import { timeLabel } from '../../utils/ro-time';
 import { ActivityBadge } from '../activity-badge/activity-badge';
 import { Icon } from '../icon/icon';
@@ -10,9 +11,9 @@ import { Icon } from '../icon/icon';
  * Un rand din cronologie (Azi, Istoric, profil). Se pune intr-un `<li>`.
  *
  * Ierarhia urmeaza ce cauta parintele: ORA intai (coloana aliniata, cifre
- * tabulare), apoi NOTITELE ca text principal (acolo e informatia reala: "120 ml
- * lapte praf"), iar tipul e o insigna secundara. Fara notite, textul principal
- * devine eticheta tipului, ca randul sa nu para gol.
+ * tabulare), apoi DETALIILE si NOTITELE ca text principal (acolo e informatia
+ * reala: "120 ml · Lapte praf"), iar tipul e o insigna secundara. Fara detalii si
+ * fara notite, textul principal devine eticheta tipului, ca randul sa nu para gol.
  *
  * Tot randul e un singur buton (tinta mare, un singur Tab), care emite `edit`.
  * Numele accesibil e o propozitie intreaga ("Masă la 16:04, 120 ml lapte praf.
@@ -27,7 +28,7 @@ import { Icon } from '../icon/icon';
       <time class="activity-row__time tabular-nums" [attr.datetime]="activity().occurredAt">{{ time() }}</time>
       <span class="activity-row__text">
         <span class="activity-row__primary">{{ primary() }}</span>
-        @if (activity().notes) {
+        @if (description()) {
           <app-activity-badge class="activity-row__badge" [type]="activity().type" size="sm" />
         }
       </span>
@@ -114,11 +115,15 @@ export class ActivityRow {
 
   protected readonly meta = computed(() => ACTIVITY_META[this.activity().type]);
   protected readonly time = computed(() => timeLabel(this.activity().occurredAt));
-  protected readonly primary = computed(() => this.activity().notes?.trim() || this.meta().label);
+  /** Detaliile ("120 ml", "45 min", "Ud") si notitele, intr-un singur rand. */
+  protected readonly description = computed(() =>
+    [detailsLabel(this.activity()), this.activity().notes?.trim()].filter(Boolean).join(' · '),
+  );
+  protected readonly primary = computed(() => this.description() || this.meta().label);
 
   protected readonly accessibleName = computed(() => {
-    const notes = this.activity().notes?.trim();
+    const description = this.description();
     const base = `${this.meta().label} la ${this.time()}`;
-    return notes ? `${base}, ${notes}. Editează` : `${base}. Editează`;
+    return description ? `${base}, ${description}. Editează` : `${base}. Editează`;
   });
 }

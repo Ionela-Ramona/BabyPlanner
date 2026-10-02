@@ -18,6 +18,12 @@ public interface IActivityService
         ActivityType? type = null,
         CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Activitatile inca in desfasurare ("Inca doarme"), indiferent de zi: un somn
+    /// inceput aseara la 22:00 trebuie sa apara si la 02:00, cand "azi" e alta zi.
+    /// </summary>
+    Task<IReadOnlyList<ActivityDto>> GetInProgressAsync(int babyId, CancellationToken cancellationToken = default);
+
     Task<ActivityDto> GetByIdAsync(int babyId, int id, CancellationToken cancellationToken = default);
 
     Task<ActivityDto> CreateAsync(int babyId, CreateActivityRequest request, CancellationToken cancellationToken = default);

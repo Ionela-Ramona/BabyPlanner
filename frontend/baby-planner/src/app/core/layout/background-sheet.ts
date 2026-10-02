@@ -29,7 +29,7 @@ const LABELS: Readonly<Record<Background, string>> = {
   imports: [Button, Icon, SheetFooter, SheetHeader],
   template: `
     <app-sheet-header
-      id="background-title"
+      titleId="background-title"
       title="Culoarea fundalului"
       subtitle="Se aplică în toată aplicația și se păstrează pe acest dispozitiv."
       (close)="dialogRef.close()"

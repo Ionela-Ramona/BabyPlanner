@@ -1,4 +1,4 @@
-import { ActivityType } from '../../core/models/activity-type';
+import { ACTIVITY_META, ACTIVITY_TYPES, ActivityType } from '../../core/models/activity-type';
 
 /**
  * Helperi puri pentru timp si varsta in limba romana.
@@ -89,14 +89,10 @@ export const RO_NOUNS = {
 
 export type RoNoun = keyof typeof RO_NOUNS;
 
-/** Substantivul de folosit pentru fiecare tip de activitate ("2 mese", "3 scutece"). */
-export const ACTIVITY_NOUN: Record<ActivityType, RoNoun> = {
-  Feeding: 'masă',
-  Sleep: 'somn',
-  Diaper: 'scutec',
-  Medicine: 'medicament',
-  Other: 'activitate',
-};
+/** Substantivul de folosit pentru fiecare tip de activitate ("2 mese", "3 scutece"); vine din ACTIVITY_META. */
+export const ACTIVITY_NOUN: Readonly<Record<ActivityType, RoNoun>> = Object.fromEntries(
+  ACTIVITY_TYPES.map((type) => [type, ACTIVITY_META[type].noun]),
+) as Readonly<Record<ActivityType, RoNoun>>;
 
 const PLURAL_RULES = new Intl.PluralRules('ro');
 

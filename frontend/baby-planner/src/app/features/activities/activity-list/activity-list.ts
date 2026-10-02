@@ -3,7 +3,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { Activity } from '../../../core/models/activity';
-import { ActivityType, isActivityType } from '../../../core/models/activity-type';
+import { ACTIVITY_META, ActivityType, isActivityType } from '../../../core/models/activity-type';
 import { ActiveBaby } from '../../../core/services/active-baby';
 import { ActivityApi } from '../../../core/services/activity-api';
 import { ActivityChanges } from '../../../core/services/activity-changes';
@@ -30,20 +30,6 @@ interface DayGroup {
   readonly summary: string;
   readonly activities: readonly Activity[];
 }
-
-/**
- * Mesajul starii goale filtrate ("Niciun X înregistrat"), cu genul corect pentru
- * fiecare substantiv — "Nicio masă", dar "Niciun somn". `ACTIVITY_NOUN` din
- * ro-time.ts nu tine genul, deci propozitiile complete stau aici, langa singurul
- * loc care le foloseste.
- */
-const EMPTY_TYPE_MESSAGE: Readonly<Record<ActivityType, string>> = {
-  Feeding: 'Nicio masă înregistrată',
-  Sleep: 'Niciun somn înregistrat',
-  Diaper: 'Niciun scutec înregistrat',
-  Medicine: 'Niciun medicament înregistrat',
-  Other: 'Nicio activitate înregistrată',
-};
 
 /** Cheia de grupare: anul, luna si ziua locale, ca sa nu depindem de formatarea textului afisat. */
 function localDayKey(instant: string): string {
@@ -112,7 +98,7 @@ export class ActivityList {
 
   protected readonly emptyTypeMessage = computed(() => {
     const type = this.type();
-    return type ? EMPTY_TYPE_MESSAGE[type] : '';
+    return type ? ACTIVITY_META[type].copy.noneRecorded : '';
   });
 
   // Segmentele de ruta sunt mereu text; API-ul asteapta un numar.

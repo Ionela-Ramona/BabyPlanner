@@ -18,6 +18,27 @@
     <app-ribbon class="greeting__date" size="sm" decorated>
       <time [attr.datetime]="dateValue()">Azi · {{ dateLabel() }}</time>
     </app-ribbon>
+
+    <!-- Somnul inceput si neincheiat (BP-UI-20): o singura atingere il inchide. Sta in
+         salut, langa numele bebelusului, fiindca raspunde la "ce face acum?". -->
+    @if (sleeping(); as sleep) {
+      <app-card class="sleeping" variant="tinted" tone="sleep" padding="sm">
+        <div class="sleeping__body">
+          <span class="sleeping__icon"><app-icon name="sleep" [size]="22" /></span>
+          <p class="sleeping__text">
+            <strong>Încă doarme</strong>
+            <span class="sleeping__since">
+              de {{ sleptLabel() }} · a adormit la
+              <time class="tabular-nums" [attr.datetime]="sleep.occurredAt">{{ sleepStart() }}</time>
+            </span>
+          </p>
+          <button appButton type="button" class="sleeping__wake" [loading]="waking()" (click)="wake(sleep)">
+            <app-icon name="sun" />
+            S-a trezit
+          </button>
+        </div>
+      </app-card>
+    }
   </header>
 
   @if (babiesError()) {
@@ -57,6 +78,7 @@
                 [summary]="summary"
                 [now]="now()"
                 [active]="type() === summary.type"
+                [breathe]="summary.type === 'Sleep' && freshTypes().has('Sleep')"
                 (filter)="toggleFilter($event)"
                 (log)="launcher.open($event)"
               />
@@ -95,6 +117,7 @@
             title="Nicio activitate azi."
             message="Prima masă, primul somn sau primul scutec notat apare aici, cu ora lui."
             illustration="sleepy-star.svg"
+            priority
             [headingLevel]="3"
           >
             <button actions appButton type="button" (click)="launcher.open()">
@@ -103,7 +126,7 @@
             </button>
           </app-empty-state>
         } @else if (visible().length === 0 && filteredEmpty()) {
-          <app-empty-state [title]="filteredEmpty()!.none" [headingLevel]="3">
+          <app-empty-state [title]="filteredEmpty()!.noneToday" [headingLevel]="3">
             <button actions appButton variant="secondary" type="button" (click)="setFilter(undefined)">
               Arată toate
             </button>

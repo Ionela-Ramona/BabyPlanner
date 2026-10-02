@@ -23,7 +23,19 @@ namespace BabyPlanner.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("AmountMl")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("BabyId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("DiaperKind")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("DurationMinutes")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("InProgress")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Notes")

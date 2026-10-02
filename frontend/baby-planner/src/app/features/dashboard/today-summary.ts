@@ -15,6 +15,10 @@ export interface TypeSummary {
   readonly type: ActivityType;
   readonly count: number;
   readonly last?: Activity;
+  /** Suma ml de azi; lipseste cand nicio masa n-are cantitatea notata (nu aratam "0 ml"). */
+  readonly totalMl?: number;
+  /** Suma minutelor de azi (somnuri incheiate, alaptari); lipseste fara durate notate. */
+  readonly totalMinutes?: number;
 }
 
 export type PartOfDay = ReturnType<typeof partOfDay>;
@@ -23,18 +27,6 @@ export interface TimelineGroup {
   readonly label: PartOfDay;
   readonly activities: readonly Activity[];
 }
-
-/**
- * Textele care depind de genul substantivului ("Nicio masă" / "Niciun somn").
- * Nu se pot deriva din ACTIVITY_META, deci le tinem intr-un singur tabel.
- */
-export const TYPE_COPY: Readonly<Record<ActivityType, { none: string; add: string }>> = {
-  Feeding: { none: 'Nicio masă azi', add: 'Adaugă o masă' },
-  Sleep: { none: 'Niciun somn azi', add: 'Adaugă un somn' },
-  Diaper: { none: 'Niciun scutec azi', add: 'Adaugă un scutec' },
-  Medicine: { none: 'Niciun medicament azi', add: 'Adaugă un medicament' },
-  Other: { none: 'Nimic din „Altele” azi', add: 'Adaugă o activitate' },
-};
 
 // Comparam momente, nu siruri: precizia fractiunilor de secunda difera intre raspunsuri.
 function instant(activity: Activity): number {
@@ -52,8 +44,31 @@ export function summarizeToday(list: readonly Activity[]): TypeSummary[] {
     (type) => CORE_TYPES.includes(type) || list.some((activity) => activity.type === type),
   ).map((type) => {
     const ofType = newestFirst(list.filter((activity) => activity.type === type));
-    return { type, count: ofType.length, last: ofType[0] };
+    return {
+      type,
+      count: ofType.length,
+      last: ofType[0],
+      totalMl: sumOf(ofType, (activity) => activity.amountMl),
+      totalMinutes: sumOf(ofType, (activity) => activity.durationMinutes),
+    };
   });
+}
+
+/**
+ * Suma valorilor notate, sau `undefined` daca niciuna nu e notata. Totalurile vin
+ * doar din campurile structurate — notitele nu sunt niciodata citite ca numere.
+ */
+function sumOf(
+  list: readonly Activity[],
+  pick: (activity: Activity) => number | null | undefined,
+): number | undefined {
+  const values = list.map(pick).filter((value): value is number => typeof value === 'number');
+  return values.length ? values.reduce((sum, value) => sum + value, 0) : undefined;
+}
+
+/** Somnul care inca dureaza (cel mai recent, daca sunt mai multe), sau `undefined`. */
+export function ongoingSleep(list: readonly Activity[]): Activity | undefined {
+  return newestFirst(list.filter((activity) => activity.type === 'Sleep' && activity.inProgress))[0];
 }
 
 /**

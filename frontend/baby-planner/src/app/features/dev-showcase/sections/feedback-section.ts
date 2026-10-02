@@ -82,6 +82,7 @@ export class DemoSheet {
         <app-empty-state
           title="Nicio activitate azi."
           message="Apasă ＋ ca s-o adaugi pe prima."
+          [headingLevel]="3"
           illustration="sleepy-star.svg"
           framed
         >
