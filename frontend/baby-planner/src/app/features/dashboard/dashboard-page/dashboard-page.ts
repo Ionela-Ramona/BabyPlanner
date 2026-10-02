@@ -144,10 +144,31 @@ export class DashboardPage {
     stream: ({ params }) => this.activityApi.getOngoing(params.babyId),
   });
 
-  /** Somnul care inca dureaza; o eroare la incarcare doar ascunde bannerul. */
-  protected readonly sleeping = computed(() =>
-    this.ongoing.hasValue() ? ongoingSleep(this.ongoing.value()) : undefined,
-  );
+  /**
+   * Ultimul raspuns /ongoing pentru bebelusul curent. Ca la `loaded`: la o
+   * reincarcare (dupa o salvare) pastram lista veche, ca pagina sa nu se intoarca
+   * la schelet. O eroare conteaza ca "niciun somn": doar bannerul lipseste.
+   */
+  private readonly ongoingKnown = linkedSignal<
+    { babyId: number | undefined; list: readonly Activity[] | undefined; failed: boolean },
+    { babyId: number | undefined; list: readonly Activity[] } | undefined
+  >({
+    source: () => ({
+      babyId: this.babyId(),
+      list: this.ongoing.hasValue() ? this.ongoing.value() : undefined,
+      failed: !!this.ongoing.error(),
+    }),
+    computation: (source, previous) => {
+      if (source.list || source.failed) {
+        return { babyId: source.babyId, list: source.list ?? [] };
+      }
+      const prev = previous?.value;
+      return prev?.babyId === source.babyId ? prev : undefined;
+    },
+  });
+
+  /** Somnul care inca dureaza, sau `undefined`. */
+  protected readonly sleeping = computed(() => ongoingSleep(this.ongoingKnown()?.list ?? []));
   /** "de 1 h 10 min": se actualizeaza la fiecare minut, odata cu Clock. */
   protected readonly sleptLabel = computed(() => {
     const sleep = this.sleeping();
@@ -191,6 +212,14 @@ export class DashboardPage {
   });
 
   protected readonly activities = computed(() => this.loaded()?.list);
+  /**
+   * Ziua si somnul in desfasurare au sosit amandoua. Pana atunci pagina arata un
+   * singur bloc de asteptare, apoi dalele, cronologia si bannerul apar in acelasi
+   * cadru — bannerul nu mai impinge in jos continut deja afisat (CLS).
+   */
+  protected readonly dataReady = computed(
+    () => this.activities() !== undefined && this.ongoingKnown() !== undefined,
+  );
   protected readonly fresh = computed(() => this.loaded()?.fresh ?? NO_IDS);
   /** Tipurile randurilor tocmai aparute: dala Somn "respira" o data dupa un somn notat. */
   protected readonly freshTypes = computed(() => {

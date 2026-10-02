@@ -35,6 +35,9 @@
             ],
             "stylePreprocessorOptions": {
               "includePaths": ["src"]
+            },
+            "loader": {
+              ".svg": "text"
             }
           },
           "configurations": {

@@ -35,14 +35,14 @@ describe('SheetService', () => {
     overlayContainer.ngOnDestroy();
   });
 
-  it('opens the given component inside the overlay', () => {
-    service.open(TestSheetContent);
+  it('opens the given component inside the overlay', async () => {
+    await service.open(TestSheetContent);
 
     expect(overlayContainerElement.textContent).toContain('Conținut foaie');
   });
 
   it('labels the sheet with the given title', async () => {
-    service.open(TestSheetContent, { title: 'Adaugă activitate' });
+    await service.open(TestSheetContent, { title: 'Adaugă activitate' });
     await TestBed.inject(ApplicationRef).whenStable();
 
     const dialog = overlayContainerElement.querySelector('[role="dialog"]');
@@ -50,7 +50,7 @@ describe('SheetService', () => {
   });
 
   it('prefers an explicit ariaLabelledBy over the title', async () => {
-    service.open(TestSheetContent, { title: 'Ignorat', ariaLabelledBy: 'my-heading' });
+    await service.open(TestSheetContent, { title: 'Ignorat', ariaLabelledBy: 'my-heading' });
     await TestBed.inject(ApplicationRef).whenStable();
 
     const dialog = overlayContainerElement.querySelector('[role="dialog"]');
@@ -59,7 +59,7 @@ describe('SheetService', () => {
   });
 
   it('traps focus inside the sheet', async () => {
-    service.open(TestSheetContent);
+    await service.open(TestSheetContent);
     await TestBed.inject(ApplicationRef).whenStable();
 
     const dialog = overlayContainerElement.querySelector('[role="dialog"]') as HTMLElement;
@@ -71,7 +71,7 @@ describe('SheetService', () => {
     document.body.appendChild(trigger);
     trigger.focus();
 
-    service.open(TestSheetContent);
+    await service.open(TestSheetContent);
     await TestBed.inject(ApplicationRef).whenStable();
     expect(overlayContainerElement.querySelector('[role="dialog"]')).toBeTruthy();
 
@@ -83,8 +83,8 @@ describe('SheetService', () => {
     trigger.remove();
   });
 
-  it('resolves the closed observable with the result passed to close()', () => {
-    const ref = service.open<TestSheetContent, unknown, string>(TestSheetContent);
+  it('resolves the closed observable with the result passed to close()', async () => {
+    const ref = await service.open<TestSheetContent, unknown, string>(TestSheetContent);
     const results: (string | undefined)[] = [];
     ref.closed.subscribe((value) => results.push(value));
 

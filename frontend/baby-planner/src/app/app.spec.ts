@@ -1,6 +1,6 @@
 ﻿import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
+import { DeferBlockState, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
 import { App } from './app';
@@ -36,11 +36,11 @@ describe('App', () => {
       .match((request) => request.url.endsWith('/babies'))
       .forEach((request) => request.flush(babies));
     await fixture.whenStable();
-    return fixture.nativeElement as HTMLElement;
+    return fixture;
   }
 
   it('keeps the skip link as the first focusable element', async () => {
-    const root = await render([MARIA]);
+    const root = (await render([MARIA])).nativeElement as HTMLElement;
     const first = root.querySelector('a, button, input');
 
     expect(first?.textContent).toContain('Sari la conținut');
@@ -49,7 +49,7 @@ describe('App', () => {
   });
 
   it('renders the wordmark with a single accessible name', async () => {
-    const root = await render([MARIA]);
+    const root = (await render([MARIA])).nativeElement as HTMLElement;
     const home = root.querySelector('.topbar__home');
 
     expect(home?.getAttribute('aria-label')).toBe('BabyPlanner, pagina Azi');
@@ -57,7 +57,7 @@ describe('App', () => {
   });
 
   it('exposes one main navigation, after <main>, with Azi, Adaugă, Istoric and Bebeluși', async () => {
-    const root = await render([MARIA]);
+    const root = (await render([MARIA])).nativeElement as HTMLElement;
     const navs = root.querySelectorAll('nav');
 
     expect(navs.length).toBe(1);
@@ -74,7 +74,7 @@ describe('App', () => {
   });
 
   it('points Istoric at the active baby', async () => {
-    const root = await render([MARIA]);
+    const root = (await render([MARIA])).nativeElement as HTMLElement;
     const history = Array.from(root.querySelectorAll<HTMLAnchorElement>('nav a')).find((a) =>
       a.textContent?.includes('Istoric'),
     );
@@ -83,14 +83,23 @@ describe('App', () => {
   });
 
   it('shows the single baby as plain text, without a menu', async () => {
-    const root = await render([MARIA]);
+    const root = (await render([MARIA])).nativeElement as HTMLElement;
 
     expect(root.querySelector('.switcher__single')?.textContent).toContain('Maria');
     expect(root.querySelector('[ngMenuTrigger], .switcher__trigger')).toBeNull();
   });
 
   it('turns the baby into a menu button when there are several', async () => {
-    const root = await render([MARIA, ANDREI]);
+    const fixture = await render([MARIA, ANDREI]);
+    const root = fixture.nativeElement as HTMLElement;
+
+    // Pana se incarca meniul (@defer), un buton identic tine locul, deja etichetat.
+    const placeholder = root.querySelector('.switcher__trigger');
+    expect(placeholder?.getAttribute('aria-haspopup')).toBe('menu');
+    expect(placeholder?.getAttribute('aria-label')).toContain('Maria');
+
+    const [menuBlock] = await fixture.getDeferBlocks();
+    await menuBlock.render(DeferBlockState.Complete);
     const trigger = root.querySelector('.switcher__trigger');
 
     // Angular Aria pune "true", echivalentul ARIA pentru "menu".
@@ -100,7 +109,7 @@ describe('App', () => {
   });
 
   it('offers the three theme choices as a radio group', async () => {
-    const root = await render([MARIA]);
+    const root = (await render([MARIA])).nativeElement as HTMLElement;
     const radios = root.querySelectorAll<HTMLInputElement>('input[type="radio"][name="bp-theme"]');
 
     expect(radios.length).toBe(3);
@@ -108,7 +117,7 @@ describe('App', () => {
   });
 
   it('offers a button that opens the background colour sheet', async () => {
-    const root = await render([MARIA]);
+    const root = (await render([MARIA])).nativeElement as HTMLElement;
     const button = root.querySelector('app-background-button button');
 
     expect(button?.getAttribute('aria-label')).toBe('Culoarea fundalului');
@@ -116,7 +125,7 @@ describe('App', () => {
   });
 
   it('no longer renders the learning-project footer', async () => {
-    const root = await render([MARIA]);
+    const root = (await render([MARIA])).nativeElement as HTMLElement;
 
     expect(root.querySelector('footer')).toBeNull();
   });

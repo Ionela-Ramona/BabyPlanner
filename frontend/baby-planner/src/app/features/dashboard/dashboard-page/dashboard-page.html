@@ -21,7 +21,7 @@
 
     <!-- Somnul inceput si neincheiat (BP-UI-20): o singura atingere il inchide. Sta in
          salut, langa numele bebelusului, fiindca raspunde la "ce face acum?". -->
-    @if (sleeping(); as sleep) {
+    @if (dataReady() && sleeping(); as sleep) {
       <app-card class="sleeping" variant="tinted" tone="sleep" padding="sm">
         <div class="sleeping__body">
           <span class="sleeping__icon"><app-icon name="sleep" [size]="22" /></span>
@@ -67,6 +67,18 @@
       message="Verifică conexiunea și încearcă din nou."
       (retry)="today.reload()"
     />
+  } @else if (!dataReady()) {
+    <!-- Un singur bloc de asteptare, inlocuit dintr-o data de dale, cronologie si
+         bannerul de somn. Nimic din ce e deja pe ecran nu e impins cand sosesc datele:
+         blocul dispare, sectiunile apar noi (CLS ~0, vezi audit-report.md, F1). -->
+    <div class="summary">
+      <app-skeleton class="summary__skeleton" variant="tile" [count]="3" />
+    </div>
+    <div class="timeline">
+      <app-card class="timeline__card" padding="sm">
+        <app-skeleton variant="row" [count]="4" />
+      </app-card>
+    </div>
   } @else {
     <section class="summary" aria-labelledby="summary-title">
       <h2 id="summary-title" class="visually-hidden">Pe scurt</h2>
@@ -117,7 +129,6 @@
             title="Nicio activitate azi."
             message="Prima masă, primul somn sau primul scutec notat apare aici, cu ora lui."
             illustration="sleepy-star.svg"
-            priority
             [headingLevel]="3"
           >
             <button actions appButton type="button" (click)="launcher.open()">

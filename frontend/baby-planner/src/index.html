@@ -17,6 +17,8 @@
   <link rel="manifest" href="manifest.webmanifest">
   <!-- Fontul textului e cerut abia dupa CSS; preload il aduce in paralel cu el. -->
   <link rel="preload" href="fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <!-- ă ș ț apar pe orice pagina; fara preload ar sosi tarziu si textul ar sari a doua oara. -->
+  <link rel="preload" href="fonts/nunito-ro.woff2" as="font" type="font/woff2" crossorigin>
 </head>
 <body>
   <app-root></app-root>

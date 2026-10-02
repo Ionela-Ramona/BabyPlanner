@@ -1,9 +1,6 @@
-import { Dialog, DialogConfig, DialogRef } from '@angular/cdk/dialog';
-import { Overlay } from '@angular/cdk/overlay';
-import { ComponentType } from '@angular/cdk/portal';
-import { Service, inject } from '@angular/core';
-
-import { SheetContainer } from './sheet-container';
+import type { DialogRef } from '@angular/cdk/dialog';
+import type { ComponentType } from '@angular/cdk/portal';
+import { Injector, Service, inject } from '@angular/core';
 
 export interface SheetOptions<D = unknown> {
   /** Trimise componentei deschise, prin `DIALOG_DATA`. */
@@ -26,27 +23,20 @@ export interface SheetOptions<D = unknown> {
  * focusului pe elementul care a deschis foaia, inchidere pe `Esc` sau pe click
  * in afara panoului vin gratuit din `Dialog`/`CdkDialogContainer` — `SheetContainer`
  * doar adauga decorul (maner, margine festonata, scroll intern).
+ *
+ * `open` e asincron: codul CDK (dialog, overlay, portal) se incarca abia la prima
+ * foaie deschisa (`sheet-opener.ts`), nu odata cu aplicatia. Importurile de aici
+ * sunt doar de tip, deci nu trag CDK-ul in bundle-ul initial.
  */
 @Service()
 export class SheetService {
-  private readonly dialog = inject(Dialog);
-  private readonly overlay = inject(Overlay);
+  private readonly injector = inject(Injector);
 
-  open<C, D = unknown, R = unknown>(
+  async open<C, D = unknown, R = unknown>(
     component: ComponentType<C>,
     options: SheetOptions<D> = {},
-  ): DialogRef<R, C> {
-    const config: DialogConfig<D, DialogRef<R, C>> = {
-      data: options.data ?? null,
-      container: SheetContainer,
-      panelClass: 'bp-sheet-pane',
-      backdropClass: 'bp-scrim',
-      ariaLabelledBy: options.ariaLabelledBy ?? null,
-      ariaLabel: options.ariaLabelledBy ? null : (options.title ?? null),
-      ariaDescribedBy: options.ariaDescribedBy ?? null,
-      autoFocus: 'first-tabbable',
-      positionStrategy: this.overlay.position().global().centerHorizontally().centerVertically(),
-    };
-    return this.dialog.open<R, D, C>(component, config);
+  ): Promise<DialogRef<R, C>> {
+    const { openSheet } = await import('./sheet-opener');
+    return openSheet<C, D, R>(this.injector, component, options);
   }
 }

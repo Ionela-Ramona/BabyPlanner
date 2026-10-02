@@ -1,7 +1,8 @@
-import { NgOptimizedImage } from '@angular/common';
-import { Component, booleanAttribute, input } from '@angular/core';
+import { Component, booleanAttribute, computed, inject, input } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 import { Stitch } from '../stitch/stitch';
+import { EMPTY_STATE_ILLUSTRATIONS, EmptyStateIllustration } from './illustrations';
 
 /**
  * Un moment gol cu adevarat proiectat: ilustratie, titlu, mesaj care invata
@@ -11,21 +12,14 @@ import { Stitch } from '../stitch/stitch';
  */
 @Component({
   selector: 'app-empty-state',
-  imports: [NgOptimizedImage, Stitch],
+  imports: [Stitch],
   host: {
     class: 'empty-state',
     '[class.empty-state--framed]': 'framed()',
   },
   template: `
-    @if (illustration(); as src) {
-      <img
-        class="empty-state__illustration"
-        [ngSrc]="'illustrations/' + src"
-        alt=""
-        width="160"
-        height="160"
-        [priority]="priority()"
-      />
+    @if (illustrationSvg(); as svg) {
+      <span class="empty-state__illustration" [innerHTML]="svg"></span>
     }
 
     @switch (headingLevel()) {
@@ -66,6 +60,9 @@ import { Stitch } from '../stitch/stitch';
     }
 
     .empty-state__illustration {
+      display: block;
+      width: 160px;
+      height: 160px;
       margin-bottom: var(--space-2);
     }
 
@@ -94,14 +91,21 @@ import { Stitch } from '../stitch/stitch';
 export class EmptyState {
   readonly title = input.required<string>();
   readonly message = input<string>();
-  /** Numele fisierului din `public/illustrations/`, ex. `sleepy-star.svg`. */
-  readonly illustration = input<string>();
+  /** Una din ilustratiile din `illustrations.ts`, ex. `sleepy-star.svg`. */
+  readonly illustration = input<EmptyStateIllustration>();
   readonly headingLevel = input<2 | 3>(2);
   /** Pune starea goala intr-o suprafata cu cusatura, pentru context inchis (ex. o foaie). */
   readonly framed = input(false, { transform: booleanAttribute });
+
+  private readonly sanitizer = inject(DomSanitizer);
+
   /**
-   * Ilustratia e elementul principal al paginii (ex. pagina 404): o incarcam
-   * imediat, nu lazy. Fara `priority`, NgOptimizedImage o incarca lazy implicit.
+   * SVG-ul inline. `bypassSecurityTrustHtml` e sigur aici: textul vine doar din
+   * fisierele noastre din public/illustrations/, compilate in bundle, niciodata
+   * din date primite de la utilizator sau de la server.
    */
-  readonly priority = input(false, { transform: booleanAttribute });
+  protected readonly illustrationSvg = computed<SafeHtml | null>(() => {
+    const name = this.illustration();
+    return name ? this.sanitizer.bypassSecurityTrustHtml(EMPTY_STATE_ILLUSTRATIONS[name]) : null;
+  });
 }
