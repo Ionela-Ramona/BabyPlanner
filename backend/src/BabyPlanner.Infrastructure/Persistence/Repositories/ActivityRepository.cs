@@ -58,6 +58,17 @@ public class ActivityRepository : IActivityRepository
             .OrderByDescending(a => a.OccurredAt)
             .ToListAsync(cancellationToken);
 
+    public async Task<IReadOnlyList<Activity>> GetLatestPerTypeAsync(
+        int babyId,
+        CancellationToken cancellationToken = default) =>
+        // Un singur SELECT cu ROW_NUMBER() pe tip; la aceeasi ora castiga cea adaugata ultima.
+        await _context.Activities
+            .AsNoTracking()
+            .Where(a => a.BabyId == babyId)
+            .GroupBy(a => a.Type)
+            .Select(g => g.OrderByDescending(a => a.OccurredAt).ThenByDescending(a => a.Id).First())
+            .ToListAsync(cancellationToken);
+
     public async Task<Activity?> GetByIdAsync(int babyId, int id, CancellationToken cancellationToken = default) =>
         await _context.Activities
             .FirstOrDefaultAsync(a => a.Id == id && a.BabyId == babyId, cancellationToken);

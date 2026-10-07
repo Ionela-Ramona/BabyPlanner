@@ -28,10 +28,10 @@ A personal, keepsake-feeling baby log: the warmth of a printed baby memory book,
 ## Capabilities and Constraints
 
 - Baby: `id`, `name`, `dateOfBirth` (DateOnly, `YYYY-MM-DD`).
-- Activity: `id`, `babyId`, `type`, `occurredAt` (UTC instant, shown in local time), `notes` (optional). Types: Feeding (Masă), Sleep (Somn), Diaper (Scutec), Medicine (Medicamente), Other (Altele). There are **no** amount, duration or end-time fields today. Parents put those in notes ("120 ml lapte praf", "A dormit 45 de minute").
-- API (.NET 8, `/api`, dev proxy to `https://localhost:7057`): babies CRUD; `/api/babies/{babyId}/activities` CRUD with an optional `?type=` filter; `/activities/today`. Errors are RFC 7807 ProblemDetails / ValidationProblemDetails.
+- Activity: `id`, `babyId`, `type`, `occurredAt` (UTC instant, shown in local time), `notes` (optional). Types: Feeding (Masă), Sleep (Somn), Diaper (Scutec), Medicine (Medicamente), Other (Altele). Optional structured details, each meaningful only for some types: `amountMl`, `durationMinutes`, `diaperKind` (Wet / Dirty / Both), and `inProgress` (a sleep that has started and not ended, "Încă doarme"; on waking it becomes `false` and gets a duration). Older entries have none of these and stay valid. There is still no end-time field; free-form details go in notes.
+- API (.NET 8, `/api`, dev proxy to `https://localhost:7057`): babies CRUD; `/api/babies/{babyId}/activities` CRUD with an optional `?type=` filter; `/activities/today`; `/activities/ongoing` (in-progress sleep, any day); `/activities/latest` (newest activity of each type, any day; feeds the Azi tiles' "last time"). Errors are RFC 7807 ProblemDetails / ValidationProblemDetails.
 - Frontend: Angular 22, standalone components, signals, `rxResource`, route/query params bound to `input()`s, the filter state lives in the URL, lazy feature routes, Vitest.
-- Built so far (branch `feature/domain-entities`): app shell, nav, Bebeluși list, Activități list with a type filter, a Dashboard placeholder, and a not-found page. Still planned: the Today dashboard (Etapa 5), add/edit forms (Etapa 6), then JWT auth.
+- Built (on `main`): app shell and nav; Azi, the today dashboard with summary tiles; the quick-log sheet (＋ Adaugă, then a type); Bebeluși list, baby profile, add/edit baby form; Istoric, the per-baby activity history with a type filter; a first-run welcome page (`/welcome`, reached when there are no babies); a not-found page; and a dev-only component showcase (`/dev/components`). Not built yet: JWT auth, which is still the planned next step. No accounts or multi-caregiver sharing exist today.
 - Development seeds one baby, "Maria" (born 2026-03-25), with sample activities.
 
 ## Brand Commitments

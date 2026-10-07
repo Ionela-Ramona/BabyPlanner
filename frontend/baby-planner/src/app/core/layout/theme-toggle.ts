@@ -11,59 +11,79 @@ interface ThemeOption {
 }
 
 /**
- * Comutatorul de tema din bara de sus: Sistem / Luminos / Noapte.
+ * Comutatorul de tema din foaia "Aspect": Sistem / Luminos / Noapte.
  *
  * Grup de butoane radio native, nu butoane cu `aria-pressed`: sagetile schimba
  * alegerea, iar cititorul de ecran spune "Temă, grup, Noapte, buton radio, 3 din 3"
- * fara nicio linie de ARIA scrisa de mana. Vizual sunt trei iconite; textul ramane
- * pentru cititorul de ecran si ca tooltip.
+ * fara nicio linie de ARIA scrisa de mana. In foaie e loc de text: iconita + eticheta.
  */
 @Component({
   selector: 'app-theme-toggle',
   imports: [Icon],
   template: `
     <fieldset class="theme-toggle">
-      <legend class="visually-hidden">Temă</legend>
-      @for (option of options; track option.value) {
-        <label class="theme-toggle__option" [title]="option.label">
-          <input
-            class="theme-toggle__input"
-            type="radio"
-            name="bp-theme"
-            [value]="option.value"
-            [checked]="theme.preference() === option.value"
-            (change)="theme.set(option.value)"
-          />
-          <app-icon [name]="option.icon" [size]="20" />
-          <span class="visually-hidden">{{ option.label }}</span>
-        </label>
-      }
+      <legend class="theme-toggle__legend">Temă</legend>
+      <div class="theme-toggle__track">
+        @for (option of options; track option.value) {
+          <label class="theme-toggle__option">
+            <input
+              class="theme-toggle__input"
+              type="radio"
+              name="bp-theme"
+              [value]="option.value"
+              [checked]="theme.preference() === option.value"
+              (change)="theme.set(option.value)"
+            />
+            <app-icon [name]="option.icon" [size]="20" />
+            {{ option.label }}
+          </label>
+        }
+      </div>
     </fieldset>
   `,
   styles: `
     :host {
-      display: inline-flex;
+      display: block;
     }
 
     .theme-toggle {
-      display: inline-flex;
-      gap: 2px;
       margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    .theme-toggle__track {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 2px;
       padding: 3px;
       border: 1px solid var(--color-border);
-      border-radius: var(--radius-pill);
+      border-radius: var(--radius-lg);
       background-color: var(--paper-sunk);
+    }
+
+    /* Legenda sta deasupra, ca titlul sectiunii de fundal de sub ea. */
+    .theme-toggle__legend {
+      margin-bottom: var(--space-3);
+      padding: 0;
+      color: var(--color-text-strong);
+      font-weight: 800;
     }
 
     .theme-toggle__option {
       position: relative;
-      display: inline-grid;
-      place-items: center;
-      /* 44px vizibil + 2px spatiu intre ele: tinta ramane >= 44px (WCAG 2.5.8
-         cere 24px; ne tinem de 44px pentru degetul mare, noaptea, cu o mana). */
-      width: 2.75rem;
-      height: 2.75rem;
-      border-radius: var(--radius-pill);
+      /* Iconita deasupra etichetei: "Ca sistemul" incape intreg si la 360px. */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      /* 48px: tinta minima a aplicatiei, pentru degetul mare, noaptea, cu o mana. */
+      min-height: var(--tap-min);
+      padding: var(--space-2);
+      border-radius: var(--radius-md);
+      font-size: var(--text-small);
+      font-weight: 700;
       color: var(--color-text-muted);
       cursor: pointer;
       transition:

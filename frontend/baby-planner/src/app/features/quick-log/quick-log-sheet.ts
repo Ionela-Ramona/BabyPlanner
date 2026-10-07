@@ -14,7 +14,8 @@ import {
 import { ACTIVITY_META, ActivityType } from '../../core/models/activity-type';
 import { ActivityLog, MAX_DURATION_MINUTES, sleptMinutes } from '../../core/services/activity-log';
 import { Clock } from '../../core/services/clock';
-import { QuickLogData, QuickLogLauncher } from '../../core/services/quick-log-launcher';
+import { QuickLogData } from '../../core/services/quick-log-launcher';
+import { QuickSave, UNDO_FAILED } from '../../core/services/quick-save';
 import { ActivityPicker } from '../../shared/components/activity-picker/activity-picker';
 import { Button } from '../../shared/components/button/button';
 import { Field, FieldControl } from '../../shared/components/field/field';
@@ -37,9 +38,6 @@ const FUTURE_TOLERANCE_MS = 5 * 60_000;
 
 /** Scurtaturile de langa "Când": parintele noteaza de obicei ceva ce tocmai s-a terminat. */
 const MINUTES_AGO = [5, 15, 30] as const;
-
-const SAVE_FAILED = 'Nu am putut salva. Verifică conexiunea și încearcă din nou.';
-const UNDO_FAILED = 'Nu am putut anula. Verifică conexiunea și încearcă din nou.';
 
 /** Duratele propuse ca scurtaturi, pe tip (alaptarea e scurta, somnul nu). */
 const DURATION_CHIPS: Partial<Record<ActivityType, readonly number[]>> = {
@@ -315,7 +313,7 @@ export class QuickLogSheet {
   private readonly activityLog = inject(ActivityLog);
   private readonly clock = inject(Clock);
   private readonly toasts = inject(ToastService);
-  private readonly launcher = inject(QuickLogLauncher);
+  private readonly quickSaver = inject(QuickSave);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly injector = inject(Injector);
 
@@ -454,19 +452,12 @@ export class QuickLogSheet {
   }
 
   /**
-   * A doua atingere din calea rapida: salveaza "acum" si inchide foaia imediat.
-   * Somnul porneste "in desfasurare": parintele il noteaza cand adoarme bebelusul
-   * si il incheie cu "S-a trezit" de pe Azi, care ii calculeaza durata.
+   * A doua atingere din calea rapida: inchide foaia imediat si salveaza "acum" in
+   * fundal (vezi `QuickSave`, aceeasi notare ca dalele de pe Azi).
    */
   protected quickSave(type: ActivityType): void {
-    const request: CreateActivityRequest = {
-      type,
-      occurredAt: this.clock.now().toISOString(),
-      notes: null,
-      ...(type === 'Sleep' ? { inProgress: true } : {}),
-    };
     this.dialogRef.close();
-    this.createInBackground(request);
+    this.quickSaver.save(this.data.babyId, type);
   }
 
   protected async onSubmit(event: Event): Promise<void> {
@@ -530,25 +521,6 @@ export class QuickLogSheet {
           message: 'Nu am putut șterge. Verifică conexiunea și încearcă din nou.',
           tone: 'danger',
           action: { label: 'Încearcă din nou', run: () => this.remove(activity) },
-        }),
-    });
-  }
-
-  private createInBackground(request: CreateActivityRequest): void {
-    this.activityLog.create(this.data.babyId, request).subscribe({
-      next: (saved) =>
-        this.toasts.show({
-          message: saved.inProgress ? 'Somn început' : ACTIVITY_META[saved.type].copy.logged,
-          tone: 'success',
-          action: { label: 'Anulează', run: () => this.undo(() => this.activityLog.remove(this.data.babyId, saved)) },
-          secondaryAction: { label: 'Adaugă detalii', run: () => void this.launcher.edit(saved) },
-        }),
-      error: () =>
-        this.toasts.show({
-          message: SAVE_FAILED,
-          tone: 'danger',
-          // Acelasi moment ca la prima incercare, nu "acum"-ul reincercarii.
-          action: { label: 'Încearcă din nou', run: () => this.createInBackground(request) },
         }),
     });
   }

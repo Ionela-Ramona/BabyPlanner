@@ -1,6 +1,7 @@
 import { Component, computed, inject, input, linkedSignal, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { forkJoin } from 'rxjs';
 
 import { Activity, toRequest } from '../../../core/models/activity';
 import { ACTIVITY_META, ActivityType, isActivityType } from '../../../core/models/activity-type';
@@ -10,6 +11,7 @@ import { ActivityChanges } from '../../../core/services/activity-changes';
 import { ActivityLog, sleptMinutes } from '../../../core/services/activity-log';
 import { Clock } from '../../../core/services/clock';
 import { QuickLogLauncher } from '../../../core/services/quick-log-launcher';
+import { QuickSave } from '../../../core/services/quick-save';
 import { ActivityRow } from '../../../shared/components/activity-row/activity-row';
 import { Button } from '../../../shared/components/button/button';
 import { Card } from '../../../shared/components/card/card';
@@ -24,7 +26,7 @@ import { ToastService } from '../../../shared/overlays/toast.service';
 import { durationLabel } from '../../../shared/utils/activity-details';
 import { ageLabel, timeLabel } from '../../../shared/utils/ro-time';
 import { SummaryTile } from '../summary-tile/summary-tile';
-import { groupByPartOfDay, newestFirst, ongoingSleep, summarizeToday } from '../today-summary';
+import { CORE_TYPES, groupByPartOfDay, newestFirst, ongoingSleep, summarizeToday } from '../today-summary';
 
 // "joi, 25 septembrie": ziua saptamanii ajuta noaptea, cand zilele se amesteca.
 const DATE_FORMATTER = new Intl.DateTimeFormat('ro', {
@@ -34,6 +36,14 @@ const DATE_FORMATTER = new Intl.DateTimeFormat('ro', {
 });
 
 const NO_IDS: ReadonlySet<number> = new Set();
+
+/** Ce stim dincolo de /today: somnul in desfasurare si ultima activitate din fiecare tip. */
+interface BeyondToday {
+  readonly ongoing: readonly Activity[];
+  readonly latest: readonly Activity[];
+}
+
+const NOTHING_BEYOND: BeyondToday = { ongoing: [], latest: [] };
 
 /** Ultima lista primita, pentru ce bebelus era si ce randuri au aparut fata de lista dinainte. */
 interface LoadedDay {
@@ -80,6 +90,7 @@ export class DashboardPage {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   protected readonly launcher = inject(QuickLogLauncher);
+  private readonly quickSave = inject(QuickSave);
 
   /**
    * Query param-ul `type` (prin `withComponentInputBinding`). Orice text care nu
@@ -133,34 +144,41 @@ export class DashboardPage {
   });
 
   /**
-   * Somnul in desfasurare vine separat de /today: unul inceput aseara la 22:00 nu
-   * mai e "azi" la 02:00, dar parintele tot trebuie sa-l poata incheia.
+   * Ce trece de granita zilei vine separat de /today, intr-o singura cerere:
+   * somnul in desfasurare (unul inceput aseara la 22:00 nu mai e "azi" la 02:00,
+   * dar parintele tot trebuie sa-l poata incheia) si ultima activitate din fiecare
+   * tip (la 03:00, ultima masa e cea de aseara, nu "inca nimic").
    */
-  private readonly ongoing = rxResource({
+  private readonly beyondToday = rxResource({
     params: () => {
       const babyId = this.babyId();
       return babyId === undefined ? undefined : { babyId, version: this.changes.version() };
     },
-    stream: ({ params }) => this.activityApi.getOngoing(params.babyId),
+    stream: ({ params }) =>
+      forkJoin({
+        ongoing: this.activityApi.getOngoing(params.babyId),
+        latest: this.activityApi.getLatest(params.babyId),
+      }),
   });
 
   /**
-   * Ultimul raspuns /ongoing pentru bebelusul curent. Ca la `loaded`: la o
-   * reincarcare (dupa o salvare) pastram lista veche, ca pagina sa nu se intoarca
-   * la schelet. O eroare conteaza ca "niciun somn": doar bannerul lipseste.
+   * Ultimul raspuns pentru bebelusul curent. Ca la `loaded`: la o reincarcare
+   * (dupa o salvare) pastram raspunsul vechi, ca pagina sa nu se intoarca la
+   * schelet. O eroare conteaza ca "nimic dincolo de azi": lipseste doar bannerul,
+   * iar dalele arata ce stiu din /today.
    */
-  private readonly ongoingKnown = linkedSignal<
-    { babyId: number | undefined; list: readonly Activity[] | undefined; failed: boolean },
-    { babyId: number | undefined; list: readonly Activity[] } | undefined
+  private readonly beyondKnown = linkedSignal<
+    { babyId: number | undefined; value: BeyondToday | undefined; failed: boolean },
+    ({ babyId: number | undefined } & BeyondToday) | undefined
   >({
     source: () => ({
       babyId: this.babyId(),
-      list: this.ongoing.hasValue() ? this.ongoing.value() : undefined,
-      failed: !!this.ongoing.error(),
+      value: this.beyondToday.hasValue() ? this.beyondToday.value() : undefined,
+      failed: !!this.beyondToday.error(),
     }),
     computation: (source, previous) => {
-      if (source.list || source.failed) {
-        return { babyId: source.babyId, list: source.list ?? [] };
+      if (source.value || source.failed) {
+        return { babyId: source.babyId, ...(source.value ?? NOTHING_BEYOND) };
       }
       const prev = previous?.value;
       return prev?.babyId === source.babyId ? prev : undefined;
@@ -168,7 +186,7 @@ export class DashboardPage {
   });
 
   /** Somnul care inca dureaza, sau `undefined`. */
-  protected readonly sleeping = computed(() => ongoingSleep(this.ongoingKnown()?.list ?? []));
+  protected readonly sleeping = computed(() => ongoingSleep(this.beyondKnown()?.ongoing ?? []));
   /** "de 1 h 10 min": se actualizeaza la fiecare minut, odata cu Clock. */
   protected readonly sleptLabel = computed(() => {
     const sleep = this.sleeping();
@@ -218,7 +236,7 @@ export class DashboardPage {
    * cadru — bannerul nu mai impinge in jos continut deja afisat (CLS).
    */
   protected readonly dataReady = computed(
-    () => this.activities() !== undefined && this.ongoingKnown() !== undefined,
+    () => this.activities() !== undefined && this.beyondKnown() !== undefined,
   );
   protected readonly fresh = computed(() => this.loaded()?.fresh ?? NO_IDS);
   /** Tipurile randurilor tocmai aparute: dala Somn "respira" o data dupa un somn notat. */
@@ -230,7 +248,12 @@ export class DashboardPage {
     () => this.today.isLoading() && this.activities() !== undefined,
   );
 
-  protected readonly summaries = computed(() => summarizeToday(this.activities() ?? []));
+  private readonly summaries = computed(() =>
+    summarizeToday(this.activities() ?? [], this.beyondKnown()?.latest),
+  );
+  /** Masa, somnul, scutecul: randurile mari. Celelalte, rare, impart un singur rand mic. */
+  protected readonly coreSummaries = computed(() => this.summaries().filter((s) => CORE_TYPES.includes(s.type)));
+  protected readonly rareSummaries = computed(() => this.summaries().filter((s) => !CORE_TYPES.includes(s.type)));
 
   protected readonly visible = computed(() => {
     const type = this.type();
@@ -260,9 +283,21 @@ export class DashboardPage {
     });
   }
 
-  /** A doua apasare pe dala filtrului activ il scoate. */
-  protected toggleFilter(type: ActivityType): void {
-    this.setFilter(this.type() === type ? undefined : type);
+  /**
+   * Dala noteaza, la o atingere: "acum", cu "Anulează" in toast. Somnul in
+   * desfasurare se incheie (ca "S-a trezit"); Medicamente si Altele deschid
+   * formularul, fiindca fara o notita ("Vitamina D") n-ar spune nimic.
+   */
+  protected logFromTile(type: ActivityType): void {
+    const sleep = this.sleeping();
+    const babyId = this.babyId();
+    if (type === 'Sleep' && sleep) {
+      this.wake(sleep);
+    } else if (type === 'Medicine' || type === 'Other' || babyId === undefined) {
+      void this.launcher.open(type);
+    } else {
+      this.quickSave.save(babyId, type);
+    }
   }
 
   protected reloadBabies(): void {

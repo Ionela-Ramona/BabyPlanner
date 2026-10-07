@@ -144,7 +144,7 @@ const TEXT_LINE_WIDTHS = [92, 78, 60];
     /* Bloc de activitate (tile): un singur cub, cat un card. */
     .skeleton__shape--tile {
       width: 100%;
-      height: 5.5rem;
+      height: 4.25rem;
       border-radius: var(--radius-md);
     }
 

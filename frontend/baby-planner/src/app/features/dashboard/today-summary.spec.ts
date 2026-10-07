@@ -9,23 +9,11 @@ function activity(id: number, type: Activity['type'], occurredAt: string): Activ
 
 describe('today-summary', () => {
   describe('summarizeToday', () => {
-    it('always returns the three core types, even for an empty day', () => {
+    it('always returns every type in the canonical order, even for an empty day', () => {
       const tiles = summarizeToday([]);
 
-      expect(tiles.map((tile) => tile.type)).toEqual(['Feeding', 'Sleep', 'Diaper']);
+      expect(tiles.map((tile) => tile.type)).toEqual(['Feeding', 'Sleep', 'Diaper', 'Medicine', 'Other']);
       expect(tiles.every((tile) => tile.count === 0 && tile.last === undefined)).toBe(true);
-    });
-
-    it('adds any other type present today, in the canonical order', () => {
-      const tiles = summarizeToday([activity(1, 'Other', at(9)), activity(2, 'Medicine', at(8))]);
-
-      expect(tiles.map((tile) => tile.type)).toEqual([
-        'Feeding',
-        'Sleep',
-        'Diaper',
-        'Medicine',
-        'Other',
-      ]);
     });
 
     it('counts per type and picks the most recent one as last', () => {

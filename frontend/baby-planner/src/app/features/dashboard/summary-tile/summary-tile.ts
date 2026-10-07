@@ -4,15 +4,22 @@ import { ACTIVITY_META, ActivityType } from '../../../core/models/activity-type'
 import { Card } from '../../../shared/components/card/card';
 import { Icon } from '../../../shared/components/icon/icon';
 import { durationLabel } from '../../../shared/utils/activity-details';
-import { ACTIVITY_NOUN, countLabel, relativeLabel, timeLabel } from '../../../shared/utils/ro-time';
+import {
+  ACTIVITY_NOUN,
+  countLabel,
+  dayHeader,
+  isSameLocalDay,
+  relativeLabel,
+  timeLabel,
+} from '../../../shared/utils/ro-time';
 import { TypeSummary } from '../today-summary';
 
 /**
  * O dala de pe Azi: cand s-a intamplat ultima data un tip si de cate ori azi.
  *
- * Cu cel putin o activitate, dala e un buton de comutare (`aria-pressed`) care
- * filtreaza cronologia. Fara nicio activitate azi nu are ce filtra, asa ca
- * devine invitatia de a nota una (`log`) — o dala goala nu e un filtru mort.
+ * Un singur inteles: apasarea noteaza (`log`). Pagina decide cum — salvare "acum"
+ * la o atingere, formularul pentru tipurile care cer o notita, sau "S-a trezit"
+ * cand bebelusul doarme. Filtrarea cronologiei sta doar in chip-urile de sub dale.
  *
  * `now` vine din Clock prin pagina: "acum 2 ore" se recalculeaza la fiecare minut.
  */
@@ -24,33 +31,42 @@ import { TypeSummary } from '../today-summary';
       <button
         type="button"
         class="tile"
-        [attr.aria-pressed]="summary().last ? active() : null"
+        [class.tile--compact]="compact()"
         [attr.aria-label]="accessibleName()"
-        (click)="activate()"
+        (click)="log.emit(summary().type)"
       >
-        <span class="tile__head">
-          <span class="tile__block" [class.tile__block--breathe]="breathe()"><app-icon [name]="meta().icon" [size]="20" /></span>
-          <span class="tile__label">{{ meta().label }}</span>
-          @if (active()) {
-            <app-icon class="tile__check" name="check" [size]="18" />
-          }
+        <span class="tile__block" [class.tile__block--breathe]="breathe()">
+          <app-icon [name]="meta().icon" [size]="compact() ? 18 : 20" />
         </span>
-        @if (summary().last; as last) {
-          <span class="tile__when">{{ relative() }}</span>
-          <span class="tile__meta">
-            <time class="tabular-nums" [attr.datetime]="last.occurredAt">{{ time() }}</time>
-            <span aria-hidden="true">·</span>
-            <span>{{ count() }}</span>
-          </span>
-          @if (total()) {
-            <span class="tile__total tabular-nums">{{ total() }}</span>
+        <span class="tile__label">{{ meta().label }}</span>
+        @if (compact()) {
+          <!-- Randul tipurilor rare: doar cand a fost ultima data; restul e in formular. -->
+          @if (summary().last; as last) {
+            <time class="tile__meta tabular-nums" [attr.datetime]="last.occurredAt">{{ time() }}</time>
           }
         } @else {
-          <span class="tile__when tile__when--none">Încă nimic azi</span>
-          <span class="tile__meta tile__meta--add">
-            <app-icon name="plus" [size]="16" />
-            {{ copy().add }}
-          </span>
+          @if (asleep()) {
+            <span class="tile__when">Doarme acum</span>
+            <span class="tile__meta">Atinge când s-a trezit</span>
+          } @else if (summary().last; as last) {
+            <span class="tile__when">{{ relative() }}</span>
+            <span class="tile__meta">
+              <time class="tabular-nums" [attr.datetime]="last.occurredAt">{{ time() }}</time>
+              <span aria-hidden="true">·</span>
+              <span>{{ summary().count ? count() : 'încă nimic azi' }}</span>
+              @if (total()) {
+                <span aria-hidden="true">·</span>
+                <span class="tile__total tabular-nums">{{ total() }}</span>
+              }
+            </span>
+          } @else {
+            <span class="tile__when tile__when--none">Încă nimic azi</span>
+            <span class="tile__meta">{{ copy().add }}</span>
+          }
+          <!-- Semnul ca randul noteaza, nu doar arata: acelasi ＋ ca butonul Adaugă. -->
+          @if (!asleep()) {
+            <app-icon class="tile__plus" name="plus" [size]="20" />
+          }
         }
       </button>
     </app-card>
@@ -66,14 +82,22 @@ import { TypeSummary } from '../today-summary';
       height: 100%;
     }
 
+    /* Un rand pe doua linii: "Masă ... acum 25 de minute" / "14:45 · 3 mese".
+       "Cand" sta aliniat la dreapta pe toate randurile: la 3 noaptea se citeste ca o coloana. */
     .tile {
       display: grid;
-      align-content: start;
-      gap: var(--space-1);
+      grid-template-areas:
+        'block label when plus'
+        'block meta meta plus';
+      /* Coloana ＋ ramane si cand lipseste (Somn, cat doarme): "cand" sta aliniat. */
+      grid-template-columns: auto auto minmax(0, 1fr) 1.25rem;
+      align-content: center;
+      align-items: baseline;
+      gap: 2px var(--space-3);
       width: 100%;
       height: 100%;
-      min-height: 6.75rem;
-      padding: var(--space-3) var(--space-4) var(--space-4);
+      min-height: 4.25rem;
+      padding: var(--space-3) var(--space-4) var(--space-3) var(--space-3);
       border: 0;
       border-radius: var(--radius-lg);
       background: transparent;
@@ -96,16 +120,20 @@ import { TypeSummary } from '../today-summary';
       background-color: color-mix(in srgb, var(--block-fill) 30%, transparent);
     }
 
-    /* Filtrul activ: un inel in linia familiei, plus bifa (nu doar culoare). */
-    .tile[aria-pressed='true'] {
-      box-shadow: inset 0 0 0 2px var(--block-line);
+    /* Tipurile rare: o pastila pe jumatate de rand, eticheta + ora ultimei. */
+    .tile--compact {
+      grid-template-areas:
+        'block label'
+        'block meta';
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 0 var(--space-2);
+      min-height: var(--tap-min);
+      padding: var(--space-2) var(--space-3);
     }
 
-    .tile__head {
-      display: flex;
-      align-items: center;
-      gap: var(--space-2);
-      margin-bottom: var(--space-1);
+    /* Fara ora (tipul n-a fost notat niciodata): eticheta centrata langa cub. */
+    .tile--compact:not(:has(.tile__meta)) {
+      grid-template-areas: 'block label';
     }
 
     /* Cubul de lemn al tipului, acelasi ca in selectorul de activitati. */
@@ -113,11 +141,17 @@ import { TypeSummary } from '../today-summary';
       @include m.block;
 
       display: grid;
-      flex: none;
+      grid-area: block;
       place-items: center;
+      align-self: center;
       width: 2.25rem;
       height: 2.25rem;
       color: var(--block-ink);
+    }
+
+    .tile--compact .tile__block {
+      width: 1.75rem;
+      height: 1.75rem;
     }
 
     .tile__block--breathe {
@@ -130,23 +164,24 @@ import { TypeSummary } from '../today-summary';
       }
     }
 
+    /* Etichetele nu se rup in mijlocul cuvantului; la nevoie, "Medicam…" pe tot cuvantul. */
     .tile__label {
+      grid-area: label;
+      overflow: hidden;
       min-width: 0;
       color: var(--color-text-strong);
       font-weight: 700;
-      overflow-wrap: anywhere;
-    }
-
-    .tile__check {
-      margin-left: auto;
-      color: var(--block-ink);
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .tile__when {
+      grid-area: when;
       color: var(--color-text-strong);
       font-size: var(--text-lead);
       font-weight: 800;
       line-height: 1.25;
+      text-align: end;
     }
 
     .tile__when--none {
@@ -154,10 +189,16 @@ import { TypeSummary } from '../today-summary';
       font-weight: 700;
     }
 
+    .tile__plus {
+      grid-area: plus;
+      align-self: center;
+      color: var(--block-ink);
+    }
+
     .tile__meta {
       display: flex;
       flex-wrap: wrap;
-      align-items: center;
+      grid-area: meta;
       gap: 0 var(--space-1);
       color: var(--block-ink);
       font-size: var(--text-small);
@@ -166,27 +207,17 @@ import { TypeSummary } from '../today-summary';
 
     .tile__total {
       color: var(--color-text-strong);
-      font-size: var(--text-small);
       font-weight: 800;
-    }
-
-    .tile__meta--add {
-      font-weight: 700;
-    }
-
-    @media (forced-colors: active) {
-      .tile[aria-pressed='true'] {
-        outline: 2px solid Highlight;
-        outline-offset: -2px;
-      }
     }
   `,
 })
 export class SummaryTile {
   readonly summary = input.required<TypeSummary>();
   readonly now = input.required<Date>();
-  /** Tipul acestei dale e filtrul curent al cronologiei. */
-  readonly active = input(false, { transform: booleanAttribute });
+  /** Doar pe dala Somn: bebelusul doarme acum, deci apasarea noteaza trezirea. */
+  readonly asleep = input(false, { transform: booleanAttribute });
+  /** Pastila mica pentru tipurile rare: eticheta si ora ultimei, fara numaratoare. */
+  readonly compact = input(false, { transform: booleanAttribute });
   /**
    * Tocmai s-a notat o activitate de acest tip: cubul "respira" o data (BP-UI-18,
    * mica bucurie de dupa un Somn notat). Sub `prefers-reduced-motion` animatia e
@@ -194,9 +225,7 @@ export class SummaryTile {
    */
   readonly breathe = input(false, { transform: booleanAttribute });
 
-  /** Apasare pe o dala cu activitati: comuta filtrul pe acest tip. */
-  readonly filter = output<ActivityType>();
-  /** Apasare pe o dala goala: deschide notarea unei activitati de acest tip. */
+  /** Orice apasare: noteaza o activitate de acest tip. */
   readonly log = output<ActivityType>();
 
   protected readonly meta = computed(() => ACTIVITY_META[this.summary().type]);
@@ -207,9 +236,19 @@ export class SummaryTile {
     return last ? relativeLabel(last.occurredAt, this.now()) : '';
   });
 
+  /** "23:40" azi; "ieri, 23:40" sau "joi, 18 septembrie, 23:40" pentru o zi trecuta. */
   protected readonly time = computed(() => {
     const last = this.summary().last;
-    return last ? timeLabel(last.occurredAt) : '';
+    if (!last) {
+      return '';
+    }
+    const time = timeLabel(last.occurredAt);
+    return this.lastIsToday() ? time : `${dayHeader(last.occurredAt, this.now()).toLocaleLowerCase('ro')}, ${time}`;
+  });
+
+  private readonly lastIsToday = computed(() => {
+    const last = this.summary().last;
+    return !!last && isSameLocalDay(new Date(last.occurredAt), this.now());
   });
 
   protected readonly count = computed(() =>
@@ -233,17 +272,15 @@ export class SummaryTile {
   protected readonly accessibleName = computed(() => {
     const label = this.meta().label;
     const total = this.total() ? `, în total ${this.total()}` : '';
-    return this.summary().last
-      ? `${label}: ultima ${this.relative()}, la ${this.time()}, ${this.count()} azi${total}`
-      : `${label}: încă nimic azi. ${this.copy().add}`;
-  });
-
-  protected activate(): void {
-    const { type, last } = this.summary();
-    if (last) {
-      this.filter.emit(type);
-    } else {
-      this.log.emit(type);
+    const { last, count } = this.summary();
+    if (this.asleep()) {
+      return `${label}: doarme acum. Notează trezirea.`;
     }
-  }
+    if (!last) {
+      return `${label}: încă nimic azi. ${this.copy().add}`;
+    }
+    const today = count ? `${this.count()} azi${total}` : 'încă nimic azi';
+    const at = this.lastIsToday() ? `la ${this.time()}` : this.time();
+    return `${label}: ultima ${this.relative()}, ${at}, ${today}. ${this.copy().add}`;
+  });
 }

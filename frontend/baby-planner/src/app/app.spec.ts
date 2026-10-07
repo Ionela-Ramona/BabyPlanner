@@ -83,7 +83,7 @@ describe('App', () => {
     const labels = Array.from(navs[0].querySelectorAll('.nav__label')).map((el) =>
       el.textContent?.trim(),
     );
-    expect(labels).toEqual(['Azi', 'Istoric', 'Bebeluși']);
+    expect(labels).toEqual(['Azi', 'Istoric', 'Bebeluși', 'Aspect']);
     expect(navs[0].querySelector('button[app-add-button]')?.getAttribute('aria-label')).toBe('Adaugă');
   });
 
@@ -122,20 +122,17 @@ describe('App', () => {
     expect(trigger?.getAttribute('aria-label')).toContain('Maria');
   });
 
-  it('offers the three theme choices as a radio group', async () => {
+  it('keeps theme and background out of the top bar, behind "Aspect" in the nav', async () => {
     const root = (await render([MARIA])).nativeElement as HTMLElement;
-    const radios = root.querySelectorAll<HTMLInputElement>('input[type="radio"][name="bp-theme"]');
+    const aspect = Array.from(root.querySelectorAll('app-main-nav button')).find((button) =>
+      button.textContent?.includes('Aspect'),
+    );
 
-    expect(radios.length).toBe(3);
-    expect(root.querySelector('fieldset legend')?.textContent).toContain('Temă');
-  });
-
-  it('offers a button that opens the background colour sheet', async () => {
-    const root = (await render([MARIA])).nativeElement as HTMLElement;
-    const button = root.querySelector('app-background-button button');
-
-    expect(button?.getAttribute('aria-label')).toBe('Culoarea fundalului');
-    expect(button?.getAttribute('aria-haspopup')).toBe('dialog');
+    expect(root.querySelector('.topbar input[type="radio"]')).toBeNull();
+    expect(aspect?.getAttribute('aria-haspopup')).toBe('dialog');
+    // 2 + ＋ + 2: cubul Adaugă sta in mijlocul barei de jos.
+    expect(root.querySelectorAll('app-main-nav .nav__slot').length).toBe(5);
+    expect(root.querySelector('app-main-nav .nav__slot:nth-child(3) .nav__add')).not.toBeNull();
   });
 
   it('no longer renders the learning-project footer', async () => {

@@ -63,6 +63,19 @@ public class ActivitiesController : ControllerBase
         return Ok(activities);
     }
 
+    /// <summary>Ultima activitate din fiecare tip, indiferent de zi (dalele de pe Azi).</summary>
+    [HttpGet("latest")]
+    [ProducesResponseType(typeof(IReadOnlyList<ActivityDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IReadOnlyList<ActivityDto>>> GetLatest(
+        int babyId,
+        CancellationToken cancellationToken)
+    {
+        var activities = await _activities.GetLatestPerTypeAsync(babyId, cancellationToken);
+
+        return Ok(activities);
+    }
+
     /// <summary>O activitate anume.</summary>
     [HttpGet("{id:int}", Name = nameof(GetActivityById))]
     [ProducesResponseType(typeof(ActivityDto), StatusCodes.Status200OK)]

@@ -84,16 +84,22 @@
       <h2 id="summary-title" class="visually-hidden">Pe scurt</h2>
       @if (activities()) {
         <ul class="summary__tiles" [class.is-stale]="isStale()">
-          @for (summary of summaries(); track summary.type) {
+          @for (summary of coreSummaries(); track summary.type) {
             <li>
               <app-summary-tile
                 [summary]="summary"
                 [now]="now()"
-                [active]="type() === summary.type"
+                [asleep]="summary.type === 'Sleep' && !!sleeping()"
                 [breathe]="summary.type === 'Sleep' && freshTypes().has('Sleep')"
-                (filter)="toggleFilter($event)"
-                (log)="launcher.open($event)"
+                (log)="logFromTile($event)"
               />
+            </li>
+          }
+        </ul>
+        <ul class="summary__rare" [class.is-stale]="isStale()">
+          @for (summary of rareSummaries(); track summary.type) {
+            <li>
+              <app-summary-tile compact [summary]="summary" [now]="now()" (log)="logFromTile($event)" />
             </li>
           }
         </ul>
@@ -126,6 +132,7 @@
           <app-skeleton variant="row" [count]="4" />
         } @else if (activities()!.length === 0) {
           <app-empty-state
+            compact
             title="Nicio activitate azi."
             message="Prima masă, primul somn sau primul scutec notat apare aici, cu ora lui."
             illustration="sleepy-star.svg"

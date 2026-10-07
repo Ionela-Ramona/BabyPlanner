@@ -7,10 +7,10 @@ import { partOfDay } from '../../shared/utils/ro-time';
  * cronologiei. Stau separat de componenta ca sa poata fi testate fara DOM.
  */
 
-/** Tipurile care au mereu o dala, chiar si cand azi nu s-a notat nimic. */
+/** Tipurile cu rand mare pe Azi; celelalte (rare) stau pe un singur rand, mai mic. */
 export const CORE_TYPES: readonly ActivityType[] = ['Feeding', 'Sleep', 'Diaper'];
 
-/** Rezumatul unui tip pentru ziua de azi: cate au fost si care e cea mai recenta. */
+/** Rezumatul unui tip: cate au fost azi si care e cea mai recenta (poate fi de ieri). */
 export interface TypeSummary {
   readonly type: ActivityType;
   readonly count: number;
@@ -38,16 +38,22 @@ export function newestFirst(list: readonly Activity[]): Activity[] {
   return [...list].sort((a, b) => instant(b) - instant(a) || b.id - a.id);
 }
 
-/** O dala pentru fiecare tip de baza, plus orice alt tip care apare azi, in ordinea din ACTIVITY_TYPES. */
-export function summarizeToday(list: readonly Activity[]): TypeSummary[] {
-  return ACTIVITY_TYPES.filter(
-    (type) => CORE_TYPES.includes(type) || list.some((activity) => activity.type === type),
-  ).map((type) => {
+/**
+ * Un rezumat pentru fiecare tip, in ordinea din ACTIVITY_TYPES — si pentru cele fara
+ * nimic azi, fiindca fiecare dala e si butonul care noteaza tipul.
+ *
+ * `latest` (din /latest) e ultima activitate a fiecarui tip, indiferent de zi: dupa
+ * miezul noptii, "ultima masa" ramane cea de aseara, nu dispare. Numaratoarea si
+ * totalurile raman doar pentru azi.
+ */
+export function summarizeToday(list: readonly Activity[], latest: readonly Activity[] = []): TypeSummary[] {
+  return ACTIVITY_TYPES.map((type) => {
     const ofType = newestFirst(list.filter((activity) => activity.type === type));
     return {
       type,
       count: ofType.length,
-      last: ofType[0],
+      // Cea mai noua dintre cele doua: imediat dupa o salvare, oricare poate fi cu un pas in urma.
+      last: newestFirst([...ofType.slice(0, 1), ...latest.filter((activity) => activity.type === type)])[0],
       totalMl: sumOf(ofType, (activity) => activity.amountMl),
       totalMinutes: sumOf(ofType, (activity) => activity.durationMinutes),
     };

@@ -135,6 +135,30 @@ public class ActivityDetailsTests : IClassFixture<ApiFactory>
     }
 
     [Fact]
+    public async Task Latest_returns_the_newest_of_each_type_even_from_yesterday()
+    {
+        var babyId = await CreateBabyAsync();
+        var url = $"/api/babies/{babyId}/activities";
+        // Masa de aseara e ultima masa: /today n-o mai vede, /latest trebuie s-o vada.
+        var lastNight = ApiFactory.Now.AddHours(-17);
+
+        await _client.PostAsJsonAsync(url, new { type = "Feeding", occurredAt = lastNight.AddHours(-3) });
+        var feed = await (await _client.PostAsJsonAsync(url, new { type = "Feeding", occurredAt = lastNight }))
+            .Content.ReadFromJsonAsync<ActivityResponse>(Json);
+        var diaper = await (await _client.PostAsJsonAsync(url, new { type = "Diaper", occurredAt = ApiFactory.Now }))
+            .Content.ReadFromJsonAsync<ActivityResponse>(Json);
+
+        var latest = await _client.GetFromJsonAsync<ActivityResponse[]>($"{url}/latest", Json);
+
+        Assert.Equal(2, latest!.Length);
+        Assert.Equal(feed!.Id, Assert.Single(latest, a => a.Type == "Feeding").Id);
+        Assert.Equal(diaper!.Id, Assert.Single(latest, a => a.Type == "Diaper").Id);
+        Assert.Equal(
+            HttpStatusCode.NotFound,
+            (await _client.GetAsync("/api/babies/9999/activities/latest")).StatusCode);
+    }
+
+    [Fact]
     public async Task Ongoing_is_404_for_an_unknown_baby()
     {
         var response = await _client.GetAsync("/api/babies/9999/activities/ongoing");

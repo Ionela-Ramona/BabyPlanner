@@ -14,9 +14,7 @@ import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router
 import { filter, skip } from 'rxjs';
 
 import { BabySwitcher } from './core/layout/baby-switcher';
-import { BackgroundButton } from './core/layout/background-button';
 import { MainNav } from './core/layout/main-nav';
-import { ThemeToggle } from './core/layout/theme-toggle';
 import { QuickLogLauncher } from './core/services/quick-log-launcher';
 import { ThemeService } from './core/services/theme';
 import { Wordmark } from './shared/components/wordmark/wordmark';
@@ -56,11 +54,9 @@ function afterPageSettles(task: () => void): void {
 @Component({
   imports: [
     BabySwitcher,
-    BackgroundButton,
     MainNav,
     RouterLink,
     RouterOutlet,
-    ThemeToggle,
     ToastOutlet,
     Wordmark,
   ],
@@ -72,7 +68,7 @@ export class App {
   private readonly main = viewChild.required<ElementRef<HTMLElement>>('main');
   private readonly injector = inject(Injector);
 
-  /** Pe telefoanele cele mai inguste wordmark-ul ramane doar steaua. */
+  /** Sub 360px wordmark-ul ramane doar steaua; peste, bara de sus are loc de numele intreg. */
   protected readonly narrow = signal(false);
 
   /** Pagina curenta a cerut latimea mare (`data: { wide: true }` pe ruta). */
@@ -142,7 +138,7 @@ export class App {
   }
 
   private watchNarrowScreen(): void {
-    const media = inject(DOCUMENT).defaultView?.matchMedia?.('(max-width: 29.99rem)');
+    const media = inject(DOCUMENT).defaultView?.matchMedia?.('(max-width: 22.49rem)');
     if (!media) {
       return;
     }

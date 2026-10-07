@@ -5,6 +5,7 @@ import { AddButton } from '../../shared/components/add-button/add-button';
 import { Button } from '../../shared/components/button/button';
 import { Edge } from '../../shared/components/edge/edge';
 import { Icon } from '../../shared/components/icon/icon';
+import { SheetService } from '../../shared/overlays/sheet.service';
 import { ActiveBaby } from '../services/active-baby';
 import { QuickLogLauncher } from '../services/quick-log-launcher';
 
@@ -18,6 +19,9 @@ import { QuickLogLauncher } from '../services/quick-log-launcher';
  * "＋ Adaugă" apare de doua ori, dar niciodata vizibil simultan: cubul de miere
  * ridicat in bara de jos si butonul lat din capul rail-ului. Cel ascuns are
  * `display: none`, deci iese si din arborele de accesibilitate.
+ *
+ * Patru locuri plus ＋ in mijloc (2 + ＋ + 2), ca cubul sa stea sub degetul mare.
+ * "Aspect" (tema si fundalul) e al patrulea: se schimba rar, deci nu sta in bara de sus.
  */
 @Component({
   selector: 'app-main-nav',
@@ -52,10 +56,6 @@ import { QuickLogLauncher } from '../services/quick-log-launcher';
           </a>
         </li>
 
-        <li class="nav__slot nav__slot--add">
-          <button class="nav__add" app-add-button (click)="add()"></button>
-        </li>
-
         <li class="nav__slot">
           @if (historyLink(); as link) {
             <a
@@ -76,6 +76,10 @@ import { QuickLogLauncher } from '../services/quick-log-launcher';
           }
         </li>
 
+        <li class="nav__slot nav__slot--add">
+          <button class="nav__add" app-add-button (click)="add()"></button>
+        </li>
+
         <li class="nav__slot">
           <a
             class="nav__link"
@@ -88,6 +92,13 @@ import { QuickLogLauncher } from '../services/quick-log-launcher';
             <span class="nav__label">Bebeluși</span>
           </a>
         </li>
+
+        <li class="nav__slot">
+          <button class="nav__link" type="button" aria-haspopup="dialog" (click)="openAppearance()">
+            <app-icon name="palette" [size]="24" />
+            <span class="nav__label">Aspect</span>
+          </button>
+        </li>
       </ul>
     </nav>
   `,
@@ -96,6 +107,7 @@ import { QuickLogLauncher } from '../services/quick-log-launcher';
 export class MainNav {
   private readonly activeBaby = inject(ActiveBaby);
   private readonly quickLog = inject(QuickLogLauncher);
+  private readonly sheets = inject(SheetService);
 
   protected readonly historyLink = computed(() => {
     const id = this.activeBaby.activeId();
@@ -104,5 +116,11 @@ export class MainNav {
 
   protected add(): void {
     void this.quickLog.open();
+  }
+
+  /** Foaia se incarca lazy: majoritatea vizitelor nu o deschid. */
+  protected async openAppearance(): Promise<void> {
+    const { BackgroundSheet } = await import('./background-sheet');
+    await this.sheets.open(BackgroundSheet, { ariaLabelledBy: 'appearance-title' });
   }
 }

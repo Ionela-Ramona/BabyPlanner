@@ -16,6 +16,7 @@ import { EMPTY_STATE_ILLUSTRATIONS, EmptyStateIllustration } from './illustratio
   host: {
     class: 'empty-state',
     '[class.empty-state--framed]': 'framed()',
+    '[class.empty-state--compact]': 'compact()',
   },
   template: `
     @if (illustrationSvg(); as svg) {
@@ -66,6 +67,17 @@ import { EMPTY_STATE_ILLUSTRATIONS, EmptyStateIllustration } from './illustratio
       margin-bottom: var(--space-2);
     }
 
+    /* Sub alt continut (ex. dalele de pe Azi): ilustratia mai mica, ca titlul si
+       butonul sa incapa deasupra barei de jos pe telefon. */
+    :host(.empty-state--compact) {
+      padding-block: var(--space-4);
+    }
+
+    /* zoom, nu width: SVG-ul vine prin innerHTML, deci stilurile incapsulate nu-l ating. */
+    :host(.empty-state--compact) .empty-state__illustration {
+      zoom: 0.6;
+    }
+
     .empty-state__title {
       margin: 0;
     }
@@ -96,6 +108,8 @@ export class EmptyState {
   readonly headingLevel = input<2 | 3>(2);
   /** Pune starea goala intr-o suprafata cu cusatura, pentru context inchis (ex. o foaie). */
   readonly framed = input(false, { transform: booleanAttribute });
+  /** Ilustratie si spatiere mai mici, pentru o stare goala sub alt continut. */
+  readonly compact = input(false, { transform: booleanAttribute });
 
   private readonly sanitizer = inject(DomSanitizer);
 

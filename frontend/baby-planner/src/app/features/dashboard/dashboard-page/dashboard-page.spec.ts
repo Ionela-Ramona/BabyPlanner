@@ -28,17 +28,21 @@ const TODAY: Activity[] = [
 
 const TODAY_URL = '/api/babies/1/activities/today';
 const ONGOING_URL = '/api/babies/1/activities/ongoing';
+const LATEST_URL = '/api/babies/1/activities/latest';
 
 describe('DashboardPage', () => {
   let httpMock: HttpTestingController;
   /** Ce raspunde /ongoing; gol, in afara testelor despre somnul in desfasurare. */
   let ongoing: Activity[] = [];
+  /** Ce raspunde /latest; gol, in afara testelor despre ziua de ieri. */
+  let latest: Activity[] = [];
   let harness: RouterTestingHarness;
   let clock: FakeClock;
   let launcher: { open: ReturnType<typeof vi.fn>; edit: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     ongoing = [];
+    latest = [];
     localStorage.clear();
     clock = provideFakeClock(NOW);
     launcher = { open: vi.fn(), edit: vi.fn() };
@@ -60,13 +64,16 @@ describe('DashboardPage', () => {
   });
 
   /**
-   * Raspunde si la /ongoing (somnul in desfasurare), cerut alaturi de /today si dupa
-   * fiecare schimbare. Fara raspuns, `whenStable` l-ar astepta la nesfarsit.
+   * Raspunde si la /ongoing si /latest (ce trece de granita zilei), cerute alaturi de
+   * /today si dupa fiecare schimbare. Fara raspuns, `whenStable` le-ar astepta la nesfarsit.
    */
   async function settle(): Promise<void> {
     TestBed.tick();
     for (const request of httpMock.match(ONGOING_URL)) {
       request.flush(ongoing);
+    }
+    for (const request of httpMock.match(LATEST_URL)) {
+      request.flush(latest);
     }
     await harness.fixture.whenStable();
     harness.detectChanges();
@@ -152,47 +159,58 @@ describe('DashboardPage', () => {
     expect(root().querySelector('app-ribbon')?.textContent).toContain('Azi · vineri, 25 septembrie');
   });
 
-  it('computes the tiles from the data: core types plus any other type present today', async () => {
+  it('computes the tiles from the data: three core rows, then the rare types on one line', async () => {
     await setup();
 
-    expect(tileLabels()).toEqual(['Masă', 'Somn', 'Scutec', 'Medicamente']);
-    expect(tile('Masă').getAttribute('aria-label')).toBe('Masă: ultima acum 5 ore, la 15:30, 3 mese azi');
+    expect(tileLabels()).toEqual(['Masă', 'Somn', 'Scutec', 'Medicamente', 'Altele']);
+    expect(root().querySelectorAll('.summary__tiles app-summary-tile').length).toBe(3);
+    expect(root().querySelectorAll('.summary__rare app-summary-tile').length).toBe(2);
+    expect(tile('Masă').getAttribute('aria-label')).toBe(
+      'Masă: ultima acum 5 ore, la 15:30, 3 mese azi. Adaugă o masă',
+    );
     expect(tile('Masă').textContent).toContain('acum 5 ore');
     expect(tile('Masă').textContent).toContain('15:30');
     expect(tile('Somn').textContent).toContain('1 somn');
-    expect(tile('Masă').getAttribute('aria-pressed')).toBe('false');
+    // Dala noteaza, nu filtreaza: nu e un buton de comutare.
+    expect(tile('Masă').hasAttribute('aria-pressed')).toBe(false);
   });
 
-  it('invites logging from a tile with nothing today instead of filtering', async () => {
+  it('a tile tap saves that type "now" in one tap, without touching the filter', async () => {
+    await setup();
+
+    tile('Masă').click();
+    const request = await nextRequest(httpMock, (r) => r.method === 'POST');
+    expect(request.request.url).toBe('/api/babies/1/activities');
+    expect(request.request.body).toEqual({ type: 'Feeding', occurredAt: NOW.toISOString(), notes: null });
+    request.flush({ id: 20, babyId: 1, type: 'Feeding', occurredAt: NOW.toISOString(), notes: null });
+
+    (await nextRequest(httpMock, TODAY_URL)).flush(TODAY);
+    await settle();
+    expect(url()).toBe('/dashboard');
+    expect(launcher.open).not.toHaveBeenCalled();
+  });
+
+  it('an empty Somn tile starts a sleep in one tap', async () => {
     await setup('/dashboard', TODAY.filter((activity) => activity.type !== 'Sleep'));
 
     const sleep = tile('Somn');
     expect(sleep.textContent).toContain('Încă nimic azi');
-    expect(sleep.hasAttribute('aria-pressed')).toBe(false);
-
     sleep.click();
-    await settle();
 
-    expect(launcher.open).toHaveBeenCalledWith('Sleep');
-    expect(url()).toBe('/dashboard');
+    const request = await nextRequest(httpMock, (r) => r.method === 'POST');
+    expect(request.request.body).toEqual(expect.objectContaining({ type: 'Sleep', inProgress: true }));
+    request.flush({ id: 21, babyId: 1, type: 'Sleep', occurredAt: NOW.toISOString(), notes: null, inProgress: true });
+    (await nextRequest(httpMock, TODAY_URL)).flush(TODAY);
+    await settle();
   });
 
-  it('filters the timeline from a tile, reflects it in the URL, and clears it on a second tap', async () => {
+  it('Medicamente opens the form instead, since it needs a note', async () => {
     await setup();
 
-    tile('Masă').click();
-    await settle();
+    tile('Medicamente').click();
 
-    expect(url()).toBe('/dashboard?type=Feeding');
-    expect(tile('Masă').getAttribute('aria-pressed')).toBe('true');
-    expect(rowNames().every((name) => name.startsWith('Masă'))).toBe(true);
-    expect(rowNames().length).toBe(3);
-
-    tile('Masă').click();
-    await settle();
-
-    expect(url()).toBe('/dashboard');
-    expect(rowNames().length).toBe(TODAY.length);
+    expect(launcher.open).toHaveBeenCalledWith('Medicine');
+    httpMock.expectNone((r) => r.method === 'POST');
   });
 
   it('filters from the chips and keeps the filter in the URL', async () => {
@@ -206,7 +224,6 @@ describe('DashboardPage', () => {
 
     expect(url()).toBe('/dashboard?type=Sleep');
     expect(rowNames()).toEqual(['Somn la 13:20, a dormit bine. Editează']);
-    expect(tile('Somn').getAttribute('aria-pressed')).toBe('true');
   });
 
   it('restores the filter from the URL and ignores unknown values', async () => {
@@ -276,7 +293,7 @@ describe('DashboardPage', () => {
     await setup('/dashboard', []);
 
     expect(root().querySelector('h3')?.textContent).toContain('Nicio activitate azi.');
-    expect(tileLabels()).toEqual(['Masă', 'Somn', 'Scutec']);
+    expect(tileLabels()).toEqual(['Masă', 'Somn', 'Scutec', 'Medicamente', 'Altele']);
 
     buttonByText('Adaugă prima activitate').click();
 
@@ -355,6 +372,54 @@ describe('DashboardPage', () => {
     (await nextRequest(httpMock, TODAY_URL)).flush(TODAY);
     await settle();
     expect(root().querySelector('.sleeping')).toBeNull();
+  });
+
+  it('while the baby sleeps, the Somn tile says so and ends the sleep like "S-a trezit"', async () => {
+    const sleep: Activity = {
+      id: 9,
+      babyId: 1,
+      type: 'Sleep',
+      occurredAt: at(19, 30),
+      notes: null,
+      inProgress: true,
+    };
+    ongoing = [sleep];
+    await setup('/dashboard', [...TODAY, sleep]);
+
+    const tileButton = tile('Somn');
+    expect(tileButton.textContent).toContain('Doarme acum');
+    expect(tileButton.getAttribute('aria-label')).toBe('Somn: doarme acum. Notează trezirea.');
+
+    tileButton.click();
+    const request = await nextRequest(httpMock, (r) => r.method === 'PUT');
+    expect(request.request.url).toBe('/api/babies/1/activities/9');
+    expect(request.request.body).toEqual(expect.objectContaining({ inProgress: false, durationMinutes: 60 }));
+    request.flush({ ...sleep, inProgress: false, durationMinutes: 60 });
+
+    ongoing = [];
+    (await nextRequest(httpMock, TODAY_URL)).flush(TODAY);
+    await settle();
+  });
+
+  it('after midnight, the tiles still show the last feed from last night', async () => {
+    // 20:30 azi e "acum"; masa de aseara la 23:40 e ultima. Azi: doar un scutec.
+    const lastNightFeed: Activity = {
+      id: 7,
+      babyId: 1,
+      type: 'Feeding',
+      occurredAt: new Date(2026, 8, 24, 23, 40).toISOString(),
+      notes: null,
+    };
+    latest = [lastNightFeed, TODAY[1]];
+    await setup('/dashboard', [TODAY[1]]);
+
+    const feeding = tile('Masă');
+    expect(feeding.textContent).toContain('ieri, 23:40');
+    expect(feeding.textContent).toContain('încă nimic azi');
+    expect(feeding.textContent).not.toContain('Încă nimic azi');
+    expect(feeding.getAttribute('aria-label')).toContain('ieri, 23:40, încă nimic azi');
+    // Scutecul de azi ramane "de azi", fara zi in fata orei.
+    expect(tile('Scutec').textContent).not.toContain('ieri');
   });
 
   it('points to /babies when there is no baby yet', async () => {

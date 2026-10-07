@@ -10,7 +10,8 @@ The app is a page of a baby book that a tired parent writes in at 3am, one-hande
 - **Storybook lives in frames, not in data.** The script name, ribbons, bubbles and illustrations appear on Azi's greeting, the profile, empty states and the welcome page. Istoric, forms and the timeline stay clean and dense enough to scan.
 - **No pure black, no pure white.** Every neutral is tinted warm.
 - **Color is never the only signal.** An activity type is always icon + label + color.
-- **Logging is two taps.** ＋ Adaugă, then a block. Everything else is optional.
+- **Logging is one or two taps.** A tile on Azi logs its type "now" in one tap (Somn ends a sleep in progress; Medicamente and Altele open the form). Anywhere else, ＋ Adaugă, then a block. Every quick save offers Anulează. Tiles never filter; only the chips do.
+- **Azi reads top to bottom: what happened, then the day.** Masă, Somn and Scutec are full-width two-line rows with "acum…" right-aligned in one column; Medicamente and Altele share one row of small pills. On a 390×844 phone the timeline starts above the fold. The top bar holds only the wordmark and the baby; theme and background live in the "Aspect" sheet, the 4th nav slot, so the nav is 2 + ＋ + 2 with ＋ under the thumb.
 
 ## 2. Tokens
 

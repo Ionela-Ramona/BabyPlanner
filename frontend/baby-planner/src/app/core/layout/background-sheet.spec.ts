@@ -37,7 +37,16 @@ describe('BackgroundSheet', () => {
     const names = Array.from(root.querySelectorAll('.backgrounds__name')).map((el) => el.textContent?.trim());
     expect(names).toEqual(['Crem', 'Roz', 'Mentă', 'Bleu', 'Lavandă']);
     expect(radios(root).filter((radio) => radio.checked).map((radio) => radio.value)).toEqual(['cream']);
-    expect(root.querySelector('fieldset legend')?.textContent).toContain('Culoarea fundalului');
+    expect(root.querySelector('fieldset.backgrounds legend')?.textContent).toContain('Culoarea fundalului');
+  });
+
+  it('offers the three theme choices as a labelled radio group', () => {
+    const { root } = render();
+    const themes = root.querySelectorAll<HTMLInputElement>('input[type="radio"][name="bp-theme"]');
+
+    expect(themes.length).toBe(3);
+    expect(root.querySelector('app-theme-toggle legend')?.textContent).toContain('Temă');
+    expect(root.querySelector('app-theme-toggle')?.textContent).toContain('Noapte');
   });
 
   it('applies the background as soon as an option is picked', () => {

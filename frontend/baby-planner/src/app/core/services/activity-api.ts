@@ -43,6 +43,14 @@ export class ActivityApi {
     return this.http.get<Activity[]>(`${this.activitiesUrl(babyId)}/ongoing`);
   }
 
+  /**
+   * GET .../activities/latest — ultima activitate din fiecare tip, indiferent de zi
+   * (masa de aseara la 23:40 e tot "ultima masa" la 03:00).
+   */
+  getLatest(babyId: number): Observable<Activity[]> {
+    return this.http.get<Activity[]>(`${this.activitiesUrl(babyId)}/latest`);
+  }
+
   /** GET .../activities/{id} */
   getById(babyId: number, id: number): Observable<Activity> {
     return this.http.get<Activity>(`${this.activitiesUrl(babyId)}/${id}`);

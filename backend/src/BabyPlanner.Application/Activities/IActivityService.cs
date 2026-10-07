@@ -24,6 +24,12 @@ public interface IActivityService
     /// </summary>
     Task<IReadOnlyList<ActivityDto>> GetInProgressAsync(int babyId, CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Ultima activitate din fiecare tip, indiferent de zi: la 03:00, "cand a mancat
+    /// ultima data?" are raspuns si daca masa a fost aseara la 23:40, inainte de miezul noptii.
+    /// </summary>
+    Task<IReadOnlyList<ActivityDto>> GetLatestPerTypeAsync(int babyId, CancellationToken cancellationToken = default);
+
     Task<ActivityDto> GetByIdAsync(int babyId, int id, CancellationToken cancellationToken = default);
 
     Task<ActivityDto> CreateAsync(int babyId, CreateActivityRequest request, CancellationToken cancellationToken = default);

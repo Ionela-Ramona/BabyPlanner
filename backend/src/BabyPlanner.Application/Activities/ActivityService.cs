@@ -77,6 +77,17 @@ public class ActivityService : IActivityService
         return activities.Select(a => a.ToDto()).ToList();
     }
 
+    public async Task<IReadOnlyList<ActivityDto>> GetLatestPerTypeAsync(
+        int babyId,
+        CancellationToken cancellationToken = default)
+    {
+        await EnsureBabyExistsAsync(babyId, cancellationToken);
+
+        var activities = await _activities.GetLatestPerTypeAsync(babyId, cancellationToken);
+
+        return activities.Select(a => a.ToDto()).ToList();
+    }
+
     public async Task<ActivityDto> GetByIdAsync(int babyId, int id, CancellationToken cancellationToken = default)
     {
         var activity = await FindOrThrowAsync(babyId, id, cancellationToken);

@@ -21,7 +21,7 @@
 
 .nav__list {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   align-items: stretch;
   max-width: var(--layout-max-width);
   height: var(--bottom-nav-height);
@@ -53,6 +53,14 @@
   line-height: 1.2;
   text-decoration: none;
   transition: color var(--dur-fast) var(--ease-out);
+}
+
+/* "Aspect" e buton (deschide o foaie), dar arata ca vecinii lui. */
+button.nav__link {
+  border: 0;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
 }
 
 .nav__link:hover {

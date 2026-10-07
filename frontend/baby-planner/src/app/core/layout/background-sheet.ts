@@ -6,6 +6,7 @@ import { Icon } from '../../shared/components/icon/icon';
 import { SheetFooter } from '../../shared/overlays/sheet-footer';
 import { SheetHeader } from '../../shared/overlays/sheet-header';
 import { BACKGROUNDS, Background, ThemeService } from '../services/theme';
+import { ThemeToggle } from './theme-toggle';
 
 const LABELS: Readonly<Record<Background, string>> = {
   cream: 'Crem',
@@ -16,9 +17,10 @@ const LABELS: Readonly<Record<Background, string>> = {
 };
 
 /**
- * Foaia "Culoarea fundalului": utilizatorul alege hartia temei de zi dintr-o lista
- * de palete verificate la contrast (styles/_tokens.scss). Nu e un color picker liber:
- * cu orice culoare, textul ar putea deveni ilizibil.
+ * Foaia "Aspect", deschisa din navigare: tema (Sistem / Luminos / Noapte) si hartia
+ * temei de zi, aleasa dintr-o lista de palete verificate la contrast (styles/_tokens.scss).
+ * Nu e un color picker liber: cu orice culoare, textul ar putea deveni ilizibil.
+ * Stau aici, nu in bara de sus: se schimba rar, iar bara ramane a bebelusului.
  *
  * Alegerea se aplica pe loc, ca parintele sa vada pagina in spatele foii schimbandu-se;
  * "Gata" doar inchide. Mostrele folosesc `data-background-preview`, deci arata culoarea
@@ -26,17 +28,19 @@ const LABELS: Readonly<Record<Background, string>> = {
  */
 @Component({
   selector: 'app-background-sheet',
-  imports: [Button, Icon, SheetFooter, SheetHeader],
+  imports: [Button, Icon, SheetFooter, SheetHeader, ThemeToggle],
   template: `
     <app-sheet-header
-      titleId="background-title"
-      title="Culoarea fundalului"
+      titleId="appearance-title"
+      title="Aspect"
       subtitle="Se aplică în toată aplicația și se păstrează pe acest dispozitiv."
       (close)="dialogRef.close()"
     />
 
-    <fieldset class="backgrounds">
-      <legend class="visually-hidden">Culoarea fundalului</legend>
+    <app-theme-toggle class="section" />
+
+    <fieldset class="backgrounds section">
+      <legend class="section__title">Culoarea fundalului</legend>
       @for (background of backgrounds; track background) {
         <label class="backgrounds__option">
           <input
@@ -67,13 +71,24 @@ const LABELS: Readonly<Record<Background, string>> = {
     </app-sheet-footer>
   `,
   styles: `
+    .section {
+      display: block;
+      margin-top: var(--space-5);
+    }
+
     .backgrounds {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
       gap: var(--space-3);
-      margin: var(--space-4) 0 0;
       padding: 0;
       border: 0;
+    }
+
+    .section__title {
+      margin-bottom: var(--space-3);
+      padding: 0;
+      color: var(--color-text-strong);
+      font-weight: 800;
     }
 
     .backgrounds__option {
