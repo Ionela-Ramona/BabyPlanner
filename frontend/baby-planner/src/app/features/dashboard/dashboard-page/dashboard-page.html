@@ -28,8 +28,11 @@
           <p class="sleeping__text">
             <strong>Încă doarme</strong>
             <span class="sleeping__since">
-              de {{ sleptLabel() }} · a adormit la
-              <time class="tabular-nums" [attr.datetime]="sleep.occurredAt">{{ sleepStart() }}</time>
+              <span class="sleeping__nowrap">de {{ sleptLabel() }}</span> ·
+              <span class="sleeping__nowrap">
+                a adormit la
+                <time class="tabular-nums" [attr.datetime]="sleep.occurredAt">{{ sleepStart() }}</time>
+              </span>
             </span>
           </p>
           <button appButton type="button" class="sleeping__wake" [loading]="waking()" (click)="wake(sleep)">

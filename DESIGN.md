@@ -73,7 +73,7 @@ Status colors are aliases: success = sage, warning = honey, danger = blush, info
 | `--font-display` | Mali 600 | Headings, wordmark "Baby", avatar initials, bubbles |
 | `--font-script` | Dancing Script 600 | **Only** the wordmark "Planner", the baby's name and greetings. Never data, labels or buttons. ≥ 24px. |
 
-- Fixed scale, ratio about 1.2, no `clamp()`: `--text-caption` 0.8125rem, `--text-small` 0.875, `--text-body` 1, `--text-lead` 1.125, `--text-h3` 1.1875, `--text-h2` 1.4375, `--text-h1` 1.75, `--text-display` 2.25, `--text-script` 2.5rem.
+- Fixed scale, about 1.125–1.25 per step (body → h3 is 1.25, so a heading never reads as body), no `clamp()`: `--text-caption` 0.8125rem, `--text-small` 0.875, `--text-body` 1, `--text-lead` 1.125, `--text-h3` 1.25, `--text-h2` 1.5, `--text-h1` 1.75, `--text-display` 2.25, `--text-script` 2.5rem.
 - Times use `.tabular-nums`, so the timeline's time column lines up.
 - A heading that shows the name in script still contains the name as plain text (the `.script` class is styling only).
 - Fonts are self-hosted subsets in `public/fonts/` (59.7 kB in total), declared in `styles/_fonts.scss`. Each face is split into a Latin file and a Romanian-diacritics file (ă ș ț) by `unicode-range`. Regenerate with `npm run subset:fonts`. Each stack includes a metric-matched fallback (`Nunito Fallback`, `Mali Fallback`, `Dancing Script Fallback`): Arial with `size-adjust` and ascent/descent overrides, so text doesn't reflow when the web font arrives. Re-measure them if a font changes.

@@ -8,6 +8,7 @@ p1_count: 2
 target_identity: "file:D:\\Projects\\BabyPlanner\\frontend\\baby-planner\\src\\app\\features\\dashboard\\dashboard-page"
 timestamp: 2026-10-07T11-32-57Z
 slug: src-app-features-dashboard-dashboard-page-de9fa992
+closed: true
 ---
 # Critique: Azi dashboard (2026-10-07)
 

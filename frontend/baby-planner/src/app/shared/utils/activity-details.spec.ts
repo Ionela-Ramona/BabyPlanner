@@ -28,7 +28,7 @@ describe('detailsLabel', () => {
   });
 
   it('says the baby is still asleep', () => {
-    expect(detailsLabel({ ...base, type: 'Sleep', inProgress: true })).toBe('doarme încă');
+    expect(detailsLabel({ ...base, type: 'Sleep', inProgress: true })).toBe('încă doarme');
   });
 
   it('never reads numbers out of the notes', () => {

@@ -15,10 +15,10 @@ export function durationLabel(minutes: number): string {
   return rest === 0 ? `${hours} h` : `${hours} h ${rest} min`;
 }
 
-/** "120 ml · 15 min", "45 min", "Ud", "doarme încă" — sau gol, fara detalii. */
+/** "120 ml · 15 min", "45 min", "Ud", "încă doarme" — sau gol, fara detalii. */
 export function detailsLabel(activity: Activity): string {
   if (activity.inProgress) {
-    return 'doarme încă';
+    return 'încă doarme';
   }
   const parts: string[] = [];
   if (activity.amountMl) {

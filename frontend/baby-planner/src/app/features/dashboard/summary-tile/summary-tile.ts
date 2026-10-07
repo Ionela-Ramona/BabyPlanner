@@ -182,6 +182,8 @@ import { TypeSummary } from '../today-summary';
       font-weight: 800;
       line-height: 1.25;
       text-align: end;
+      /* Rupt in doua, "acum 25 de / minute" devine "acum 25 / de minute": randuri egale. */
+      text-wrap: balance;
     }
 
     .tile__when--none {

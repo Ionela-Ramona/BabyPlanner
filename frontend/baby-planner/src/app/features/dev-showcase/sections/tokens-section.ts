@@ -53,8 +53,8 @@ import { Component } from '@angular/core';
         <div class="type-scale">
           <div style="font-size: var(--text-display); font-family: var(--font-display);">Display (2.25rem)</div>
           <div style="font-size: var(--text-h1); font-family: var(--font-display);">H1 (1.75rem)</div>
-          <div style="font-size: var(--text-h2); font-family: var(--font-display);">H2 (1.4375rem)</div>
-          <div style="font-size: var(--text-h3); font-family: var(--font-display);">H3 (1.1875rem)</div>
+          <div style="font-size: var(--text-h2); font-family: var(--font-display);">H2 (1.5rem)</div>
+          <div style="font-size: var(--text-h3); font-family: var(--font-display);">H3 (1.25rem)</div>
           <div style="font-size: var(--text-lead); font-family: var(--font-sans);">Lead (1.125rem)</div>
           <div style="font-size: var(--text-body); font-family: var(--font-sans);">Body (1rem)</div>
           <div style="font-size: var(--text-small); font-family: var(--font-sans);">Small (0.875rem)</div>

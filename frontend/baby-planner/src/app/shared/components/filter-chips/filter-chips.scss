@@ -1,16 +1,54 @@
 /* Fara scrollbar vizibil + o estompare pe margini (mask), ca sa se vada ca lista
    continua in afara ecranului. #000/transparent sunt valori de masca (canal alfa),
-   nu culori afisate — acelasi truc ca in mixin-ul `scallop`. */
+   nu culori afisate — acelasi truc ca in mixin-ul `scallop`.
+   Estomparea apare doar pe marginea unde mai e ceva de derulat: la inceput "Toate"
+   e intreg, la final ultimul chip la fel; cand totul incape, nu se estompeaza nimic. */
+@property --fade-start {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --fade-end {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
 .chips-scroller {
   overflow-x: auto;
   scrollbar-width: none;
   mask-image: linear-gradient(
     90deg,
     transparent,
-    #000 1.25rem,
-    #000 calc(100% - 1.25rem),
+    #000 var(--fade-start),
+    #000 calc(100% - var(--fade-end)),
     transparent
   );
+  /* Nu e miscare, doar urmareste derularea: ramane si la prefers-reduced-motion. */
+  animation: chips-fade linear both;
+  animation-duration: auto !important;
+  animation-timeline: scroll(self inline);
+}
+
+@keyframes chips-fade {
+  from {
+    --fade-start: 0px;
+    --fade-end: 1.25rem;
+  }
+
+  15% {
+    --fade-start: 1.25rem;
+  }
+
+  85% {
+    --fade-end: 1.25rem;
+  }
+
+  to {
+    --fade-start: 1.25rem;
+    --fade-end: 0px;
+  }
 }
 
 .chips-scroller::-webkit-scrollbar {
