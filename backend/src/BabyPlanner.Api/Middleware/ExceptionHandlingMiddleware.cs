@@ -83,11 +83,13 @@ public class ExceptionHandlingMiddleware
 
         context.Response.Clear();
         context.Response.StatusCode = problem.Status ?? StatusCodes.Status500InternalServerError;
-        // Tipul standard pentru ProblemDetails, nu application/json simplu.
-        context.Response.ContentType = "application/problem+json";
-
         // Trimitem si tipul concret: altfel ValidationProblemDetails s-ar serializa ca
-        // ProblemDetails simplu si s-ar pierde dictionarul de erori.
-        await context.Response.WriteAsJsonAsync(problem, problem.GetType());
+        // ProblemDetails simplu si s-ar pierde dictionarul de erori. Tipul standard
+        // application/problem+json se da aici: WriteAsJsonAsync suprascrie ContentType.
+        await context.Response.WriteAsJsonAsync(
+            problem,
+            problem.GetType(),
+            options: null,
+            contentType: "application/problem+json");
     }
 }
