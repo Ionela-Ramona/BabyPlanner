@@ -129,6 +129,46 @@ public class ActivityValidatorTests
     }
 
     [Fact]
+    public void An_unknown_type_is_rejected()
+    {
+        Assert.Contains(
+            "Tipul activitatii nu este valid.",
+            ErrorsFor(Request((ActivityType)42), nameof(CreateActivityRequest.Type)));
+    }
+
+    [Fact]
+    public void The_moment_is_required()
+    {
+        Assert.Contains(
+            "Data si ora sunt obligatorii.",
+            ErrorsFor(new CreateActivityRequest(ActivityType.Other, default, null), nameof(CreateActivityRequest.OccurredAt)));
+    }
+
+    [Fact]
+    public void A_client_clock_up_to_5_minutes_ahead_is_tolerated()
+    {
+        Assert.True(Create.Validate(new CreateActivityRequest(ActivityType.Other, Now.AddMinutes(5), null)).IsValid);
+        Assert.Contains(
+            "Activitatea nu poate fi inregistrata in viitor.",
+            ErrorsFor(
+                new CreateActivityRequest(ActivityType.Other, Now.AddMinutes(6), null),
+                nameof(CreateActivityRequest.OccurredAt)));
+    }
+
+    [Fact]
+    public void Notes_are_limited_to_500_characters()
+    {
+        var at = Now.AddMinutes(-1);
+
+        Assert.True(Create.Validate(new CreateActivityRequest(ActivityType.Other, at, new string('a', 500))).IsValid);
+        Assert.Contains(
+            "Notitele nu pot depasi 500 de caractere.",
+            ErrorsFor(
+                new CreateActivityRequest(ActivityType.Other, at, new string('a', 501)),
+                nameof(CreateActivityRequest.Notes)));
+    }
+
+    [Fact]
     public void Update_uses_the_same_rules()
     {
         var waking = new UpdateActivityRequest(ActivityType.Sleep, Now.AddHours(-1), null, DurationMinutes: 60);
