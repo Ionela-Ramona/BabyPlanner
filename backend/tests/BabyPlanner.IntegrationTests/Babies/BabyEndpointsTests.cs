@@ -18,7 +18,7 @@ public class BabyEndpointsTests : IClassFixture<ApiFactory>
     public BabyEndpointsTests(ApiFactory factory)
     {
         _factory = factory;
-        _client = factory.CreateClient();
+        _client = factory.CreateAuthenticatedClient();
     }
 
     private sealed record BabyResponse(int Id, string Name, DateOnly DateOfBirth);
@@ -117,6 +117,7 @@ public class BabyEndpointsTests : IClassFixture<ApiFactory>
         // Cascada se verifica in baza: prin API activitatile unui bebelus sters dau oricum 404.
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<BabyPlannerDbContext>();
-        Assert.False(await db.Activities.AnyAsync(a => a.BabyId == baby.Id));
+        // IgnoreQueryFilters: aici nu e nimeni logat, deci filtrul de proprietar ar ascunde oricum totul.
+        Assert.False(await db.Activities.IgnoreQueryFilters().AnyAsync(a => a.BabyId == baby.Id));
     }
 }

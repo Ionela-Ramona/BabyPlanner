@@ -17,6 +17,8 @@ dotnet run --project backend/src/BabyPlanner.Api --launch-profile https
 
 The API listens on `https://localhost:7057`, applies migrations and seeds a baby with activities in Development.
 
+Every page except `/login` needs an account. Sign in with the demo account (`demo@babyplanner.local` / `BabyPlanner1`, which owns the seeded baby), or create a new account: it starts empty and goes to `/welcome` to add its baby. Each account sees only its own babies. The JWT signing key for Development is in `appsettings.Development.json`; anywhere else, set the `Jwt__Key` environment variable (at least 32 characters), or the API refuses to start.
+
 In a second terminal, from `frontend/baby-planner/`:
 
 ```bash
@@ -29,6 +31,7 @@ The dev server runs on `http://localhost:4300` and proxies `/api` to the API (`p
 ## Commands
 
 - `npm start` — dev server
+- `npm run start:phone` — dev server reachable from a phone on the same Wi-Fi: open the `Network:` URL it prints. `/api` still goes through the PC's proxy, so the API stays on localhost. The first time, allow Node through the Windows firewall on private networks.
 - `npm test` — unit tests (Vitest), including axe checks via `expectNoAxeViolations`
 - `npm run lint` — ESLint with angular-eslint template accessibility rules
 - `npm run build` — production build (budgets: 500 kB initial, 4 kB per component style)

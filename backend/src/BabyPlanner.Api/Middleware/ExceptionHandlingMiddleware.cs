@@ -32,6 +32,10 @@ public class ExceptionHandlingMiddleware
         {
             await WriteProblemAsync(context, StatusCodes.Status404NotFound, "Resursa nu a fost gasita", ex.Message);
         }
+        catch (UnauthorizedException ex)
+        {
+            await WriteProblemAsync(context, StatusCodes.Status401Unauthorized, "Neautentificat", ex.Message);
+        }
         catch (FluentValidationException ex)
         {
             var errors = ex.Errors

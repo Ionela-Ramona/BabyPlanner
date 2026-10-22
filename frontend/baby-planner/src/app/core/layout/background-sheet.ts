@@ -5,6 +5,7 @@ import { Button } from '../../shared/components/button/button';
 import { Icon } from '../../shared/components/icon/icon';
 import { SheetFooter } from '../../shared/overlays/sheet-footer';
 import { SheetHeader } from '../../shared/overlays/sheet-header';
+import { AuthService } from '../services/auth';
 import { BACKGROUNDS, Background, ThemeService } from '../services/theme';
 import { ThemeToggle } from './theme-toggle';
 
@@ -65,6 +66,13 @@ const LABELS: Readonly<Record<Background, string>> = {
         Acum ești pe tema Noapte, care rămâne întunecată. Culoarea aleasă se vede în tema Luminos.
       </p>
     }
+
+    <!-- Contul sta tot aici: e singura foaie de setari, iar iesirea din cont e la fel de rara. -->
+    <section class="account section" aria-labelledby="account-title">
+      <h3 id="account-title" class="section__title">Cont</h3>
+      <p class="account__email">{{ auth.email() }}</p>
+      <button appButton type="button" variant="secondary" (click)="auth.logout()">Ieși din cont</button>
+    </section>
 
     <app-sheet-footer>
       <button appButton type="button" (click)="dialogRef.close()">Gata</button>
@@ -174,10 +182,27 @@ const LABELS: Readonly<Record<Background, string>> = {
     .backgrounds__note {
       margin: var(--space-4) 0 0;
     }
+
+    .account {
+      padding-top: var(--space-5);
+      border-top: 1px solid var(--color-border);
+
+      .section__title {
+        margin: 0 0 var(--space-1);
+        font-size: var(--text-body);
+      }
+    }
+
+    .account__email {
+      margin: 0 0 var(--space-3);
+      color: var(--color-text-muted);
+      overflow-wrap: anywhere;
+    }
   `,
 })
 export class BackgroundSheet {
   protected readonly theme = inject(ThemeService);
+  protected readonly auth = inject(AuthService);
   protected readonly dialogRef = inject(DialogRef);
 
   protected readonly backgrounds = BACKGROUNDS;

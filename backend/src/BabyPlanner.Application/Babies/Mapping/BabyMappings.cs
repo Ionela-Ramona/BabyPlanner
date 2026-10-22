@@ -13,11 +13,12 @@ public static class BabyMappings
     public static BabyDto ToDto(this Baby baby) =>
         new(baby.Id, baby.Name, baby.DateOfBirth);
 
-    public static Baby ToEntity(this CreateBabyRequest request) =>
+    public static Baby ToEntity(this CreateBabyRequest request, int userId) =>
         new()
         {
             Name = request.Name.Trim(),
-            DateOfBirth = request.DateOfBirth
+            DateOfBirth = request.DateOfBirth,
+            UserId = userId
         };
 
     /// <summary>Copiaza valorile din cerere peste o entitate urmarita de EF Core.</summary>

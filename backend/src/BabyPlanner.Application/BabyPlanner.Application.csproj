@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="8.0.30" />
   </ItemGroup>
 
   <PropertyGroup>

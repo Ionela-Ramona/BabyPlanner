@@ -9,9 +9,12 @@
     <app-wordmark [compact]="narrow()" />
   </a>
 
-  <div class="topbar__tools">
-    <app-baby-switcher />
-  </div>
+  <!-- Pe /login nu exista inca bebelusi sau navigare; nici nu cerem lista fara token. -->
+  @if (auth.isLoggedIn()) {
+    <div class="topbar__tools">
+      <app-baby-switcher />
+    </div>
+  }
 </header>
 
 <!-- tabindex="-1" face <main> focusabil programatic, ca skip-link-ul (si mutarea
@@ -20,6 +23,8 @@
   <router-outlet />
 </main>
 
-<app-main-nav class="app-nav" />
+@if (auth.isLoggedIn()) {
+  <app-main-nav class="app-nav" />
+}
 
 <app-toast-outlet />

@@ -1,5 +1,7 @@
 using BabyPlanner.Application.Common.Interfaces;
+using BabyPlanner.Domain.Entities;
 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -42,7 +44,10 @@ public static class DatabaseInitializer
             }
 
             var seeded = await DbSeeder.SeedAsync(
-                context, provider.GetRequiredService<IDateTimeProvider>(), cancellationToken);
+                context,
+                provider.GetRequiredService<IDateTimeProvider>(),
+                provider.GetRequiredService<IPasswordHasher<User>>(),
+                cancellationToken);
 
             logger.LogInformation(
                 seeded

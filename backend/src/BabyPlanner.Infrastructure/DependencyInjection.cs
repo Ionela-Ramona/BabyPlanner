@@ -41,6 +41,7 @@ public static class DependencyInjection
         // Repository-urile traiesc cat o cerere HTTP, la fel ca DbContext-ul pe care il folosesc.
         services.AddScoped<IBabyRepository, BabyRepository>();
         services.AddScoped<IActivityRepository, ActivityRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
 
         // Sursa de timp nu are stare, deci o singura instanta e suficienta.
         services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();

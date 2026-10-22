@@ -19,7 +19,7 @@ public class ActivityDetailsTests : IClassFixture<ApiFactory>
 
     public ActivityDetailsTests(ApiFactory factory)
     {
-        _client = factory.CreateClient();
+        _client = factory.CreateAuthenticatedClient();
     }
 
     private sealed record BabyResponse(int Id, string Name);

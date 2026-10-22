@@ -1,9 +1,13 @@
 using System.Reflection;
 
 using BabyPlanner.Application.Activities;
+using BabyPlanner.Application.Auth;
 using BabyPlanner.Application.Babies;
+using BabyPlanner.Domain.Entities;
 
 using FluentValidation;
+
+using Microsoft.AspNetCore.Identity;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,6 +22,10 @@ public static class DependencyInjection
     {
         services.AddScoped<IBabyService, BabyService>();
         services.AddScoped<IActivityService, ActivityService>();
+        services.AddScoped<IAuthService, AuthService>();
+
+        // Hash-ul de parola din ASP.NET Identity, fara restul Identity (UserManager, tabele, cookie-uri).
+        services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
 
         // Descopera automat toti validatorii AbstractValidator din acest assembly.
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());

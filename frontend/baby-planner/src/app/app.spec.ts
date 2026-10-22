@@ -6,6 +6,7 @@ import { provideRouter } from '@angular/router';
 import { App } from './app';
 import { routes } from './app.routes';
 import { Baby } from './core/models/baby';
+import { AUTH_STORAGE_KEY } from './core/services/auth';
 
 const MARIA: Baby = { id: 1, name: 'Maria', dateOfBirth: '2026-03-01' };
 const ANDREI: Baby = { id: 2, name: 'Andrei', dateOfBirth: '2025-11-20' };
@@ -14,6 +15,11 @@ describe('App', () => {
   beforeEach(async () => {
     try {
       localStorage.clear();
+      // Bara de sus si navigarea apar doar pentru un parinte logat.
+      localStorage.setItem(
+        AUTH_STORAGE_KEY,
+        JSON.stringify({ token: 't', email: 'ana@test.ro', expiresAt: '2999-01-01T00:00:00Z' }),
+      );
     } catch {
       // jsdom are localStorage; blocul e doar pentru simetrie cu codul de productie.
     }

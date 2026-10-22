@@ -69,9 +69,37 @@ namespace BabyPlanner.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Babies", (string)null);
+                });
+
+            modelBuilder.Entity("BabyPlanner.Domain.Entities.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("BabyPlanner.Domain.Entities.Activity", b =>
@@ -87,7 +115,21 @@ namespace BabyPlanner.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("BabyPlanner.Domain.Entities.Baby", b =>
                 {
+                    b.HasOne("BabyPlanner.Domain.Entities.User", null)
+                        .WithMany("Babies")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BabyPlanner.Domain.Entities.Baby", b =>
+                {
                     b.Navigation("Activities");
+                });
+
+            modelBuilder.Entity("BabyPlanner.Domain.Entities.User", b =>
+                {
+                    b.Navigation("Babies");
                 });
 #pragma warning restore 612, 618
         }

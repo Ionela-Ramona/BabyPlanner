@@ -12,18 +12,26 @@ namespace BabyPlanner.Application.Babies;
 /// Orchestreaza operatiile pe bebelusi: valideaza intrarea, cere datele de la
 /// repository si intoarce DTO-uri. Nu stie nimic despre HTTP sau despre SQL.
 /// </summary>
+/// <remarks>
+/// Bebelusul altui parinte nu exista pentru acest serviciu: filtrul global din
+/// BabyPlannerDbContext il ascunde, deci raspunsul e 404, nu 403 — nu confirmam
+/// nici macar ca id-ul exista.
+/// </remarks>
 public class BabyService : IBabyService
 {
     private readonly IBabyRepository _babies;
+    private readonly ICurrentUser _currentUser;
     private readonly IValidator<CreateBabyRequest> _createValidator;
     private readonly IValidator<UpdateBabyRequest> _updateValidator;
 
     public BabyService(
         IBabyRepository babies,
+        ICurrentUser currentUser,
         IValidator<CreateBabyRequest> createValidator,
         IValidator<UpdateBabyRequest> updateValidator)
     {
         _babies = babies;
+        _currentUser = currentUser;
         _createValidator = createValidator;
         _updateValidator = updateValidator;
     }
@@ -47,7 +55,9 @@ public class BabyService : IBabyService
     {
         await _createValidator.ValidateAndThrowAsync(request, cancellationToken);
 
-        var baby = request.ToEntity();
+        // Citirile nu au nevoie de id (le filtreaza DbContext-ul); la creare insa noi
+        // spunem al cui e bebelusul.
+        var baby = request.ToEntity(_currentUser.UserId ?? throw new UnauthorizedException());
         await _babies.AddAsync(baby, cancellationToken);
 
         return baby.ToDto();

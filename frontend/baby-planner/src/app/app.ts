@@ -15,6 +15,7 @@ import { filter, skip } from 'rxjs';
 
 import { BabySwitcher } from './core/layout/baby-switcher';
 import { MainNav } from './core/layout/main-nav';
+import { AuthService } from './core/services/auth';
 import { QuickLogLauncher } from './core/services/quick-log-launcher';
 import { ThemeService } from './core/services/theme';
 import { Wordmark } from './shared/components/wordmark/wordmark';
@@ -67,6 +68,8 @@ function afterPageSettles(task: () => void): void {
 export class App {
   private readonly main = viewChild.required<ElementRef<HTMLElement>>('main');
   private readonly injector = inject(Injector);
+
+  protected readonly auth = inject(AuthService);
 
   /** Sub 360px wordmark-ul ramane doar steaua; peste, bara de sus are loc de numele intreg. */
   protected readonly narrow = signal(false);

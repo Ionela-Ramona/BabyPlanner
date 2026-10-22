@@ -2,6 +2,7 @@ using BabyPlanner.Application.Common.Interfaces;
 using BabyPlanner.Domain.Entities;
 using BabyPlanner.Domain.Enums;
 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace BabyPlanner.Infrastructure.Persistence;
@@ -13,19 +14,31 @@ namespace BabyPlanner.Infrastructure.Persistence;
 /// </summary>
 public static class DbSeeder
 {
+    /// <summary>Contul demo din Development. Aceleasi date le foloseste si migrarea AddUsers.</summary>
+    public const string DemoEmail = "demo@babyplanner.local";
+
+    public const string DemoPassword = "BabyPlanner1";
+
     /// <returns><c>true</c> daca datele au fost adaugate acum, <c>false</c> daca baza avea deja continut.</returns>
     public static async Task<bool> SeedAsync(
         BabyPlannerDbContext context,
         IDateTimeProvider dateTimeProvider,
+        IPasswordHasher<User> passwordHasher,
         CancellationToken cancellationToken = default)
     {
-        // Orice bebelus existent inseamna ca cineva a lucrat deja cu baza; nu ne atingem de ea.
-        if (await context.Babies.AnyAsync(cancellationToken))
+        // Orice cont sau bebelus existent inseamna ca cineva a lucrat deja cu baza; nu ne
+        // atingem de ea. IgnoreQueryFilters: la pornire nu e nimeni logat, deci filtrul
+        // de proprietar ar ascunde toti bebelusii si am popula baza la fiecare pornire.
+        if (await context.Users.AnyAsync(cancellationToken)
+            || await context.Babies.IgnoreQueryFilters().AnyAsync(cancellationToken))
         {
             return false;
         }
 
         var now = dateTimeProvider.Now;
+
+        var user = new User { Email = DemoEmail, PasswordHash = "" };
+        user.PasswordHash = passwordHasher.HashPassword(user, DemoPassword);
 
         var baby = new Baby
         {
@@ -85,7 +98,9 @@ public static class DbSeeder
         };
 
         // Activitatile se salveaza odata cu bebelusul: EF completeaza singur BabyId din navigare.
-        await context.Babies.AddAsync(baby, cancellationToken);
+        // Si UserId: EF salveaza intai contul, apoi il completeaza singur din colectia Babies.
+        user.Babies.Add(baby);
+        await context.Users.AddAsync(user, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
 
         return true;

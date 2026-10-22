@@ -1,6 +1,6 @@
 import { registerLocaleData } from '@angular/common';
 import localeRo from '@angular/common/locales/ro';
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { ApplicationConfig, LOCALE_ID, provideBrowserGlobalErrorListeners } from '@angular/core';
 import {
   provideRouter,
@@ -9,6 +9,7 @@ import {
 } from '@angular/router';
 
 import { routes } from './app.routes';
+import { authInterceptor } from './core/interceptors/auth.interceptor';
 
 // Fara asta, DatePipe si celelalte pipe-uri de formatare ar folosi en-US:
 // "March 24, 2026" in loc de "24 martie 2026".
@@ -21,7 +22,8 @@ export const appConfig: ApplicationConfig = {
     { provide: LOCALE_ID, useValue: 'ro' },
 
     // withFetch(): HttpClient foloseste Fetch API in loc de XMLHttpRequest.
-    provideHttpClient(withFetch()),
+    // authInterceptor pune token-ul pe fiecare cerere catre /api.
+    provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
 
     provideRouter(
       routes,

@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 
+import { authGuard, guestGuard } from './core/guards/auth.guard';
+import { hasBabiesGuard } from './core/guards/has-babies.guard';
 import { devRoutes } from './dev-routes';
 
 /**
@@ -11,18 +13,39 @@ import { devRoutes } from './dev-routes';
  */
 export const routes: Routes = [
   {
+    path: 'login',
+    canActivate: [guestGuard],
+    loadComponent: () => import('./features/auth/login-page').then((m) => m.LoginPage),
+    title: 'Intră în cont · BabyPlanner',
+  },
+  {
+    // Un parinte fara cont nu vede nimic din aplicatie. Garda sta pe parinte, nu pe
+    // fiecare pagina: o pagina noua adaugata aici e protejata automat. Si ruleaza
+    // inaintea garzii de bebelusi, ca aceasta sa nu ceara lista fara token.
     path: '',
-    pathMatch: 'full',
-    redirectTo: 'dashboard',
-  },
-  {
-    path: 'dashboard',
-    loadChildren: () =>
-      import('./features/dashboard/dashboard.routes').then((m) => m.dashboardRoutes),
-  },
-  {
-    path: 'babies',
-    loadChildren: () => import('./features/babies/babies.routes').then((m) => m.babiesRoutes),
+    canActivateChild: [authGuard],
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'dashboard',
+      },
+      {
+        path: 'dashboard',
+        // Un cont nou (fara bebelusi) ajunge intai la /welcome, sa-si adauge bebelusul.
+        canActivate: [hasBabiesGuard],
+        loadChildren: () =>
+          import('./features/dashboard/dashboard.routes').then((m) => m.dashboardRoutes),
+      },
+      {
+        path: 'welcome',
+        loadChildren: () => import('./features/welcome/welcome.routes').then((m) => m.welcomeRoutes),
+      },
+      {
+        path: 'babies',
+        loadChildren: () => import('./features/babies/babies.routes').then((m) => m.babiesRoutes),
+      },
+    ],
   },
   ...devRoutes,
   {

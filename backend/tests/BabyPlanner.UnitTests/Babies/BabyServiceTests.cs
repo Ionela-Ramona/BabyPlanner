@@ -13,6 +13,7 @@ public class BabyServiceTests
 {
     private static readonly DateTimeOffset Now = new(2026, 9, 25, 16, 0, 0, TimeSpan.Zero);
     private static readonly DateOnly Today = new(2026, 9, 25);
+    private const int UserId = 7;
 
     private readonly InMemoryBabyRepository _babies = new();
     private readonly BabyService _service;
@@ -20,7 +21,7 @@ public class BabyServiceTests
     public BabyServiceTests()
     {
         var clock = new FixedClock(Now);
-        _service = new BabyService(_babies, new CreateBabyRequestValidator(clock), new UpdateBabyRequestValidator(clock));
+        _service = new BabyService(_babies, new FixedCurrentUser(UserId), new CreateBabyRequestValidator(clock), new UpdateBabyRequestValidator(clock));
     }
 
     private Baby Seed(string name = "Maria")
@@ -38,6 +39,24 @@ public class BabyServiceTests
         Assert.Equal("Maria", created.Name);
         Assert.Equal(Today, created.DateOfBirth);
         Assert.Equal(created.Id, Assert.Single(_babies.Babies).Id);
+    }
+
+    [Fact]
+    public async Task Create_gives_the_baby_to_the_logged_in_parent()
+    {
+        await _service.CreateAsync(new CreateBabyRequest("Maria", Today));
+
+        Assert.Equal(UserId, Assert.Single(_babies.Babies).UserId);
+    }
+
+    [Fact]
+    public async Task Create_without_a_parent_is_refused()
+    {
+        var clock = new FixedClock(Now);
+        var anonymous = new BabyService(_babies, new FixedCurrentUser(null), new CreateBabyRequestValidator(clock), new UpdateBabyRequestValidator(clock));
+
+        await Assert.ThrowsAsync<UnauthorizedException>(() => anonymous.CreateAsync(new CreateBabyRequest("Maria", Today)));
+        Assert.Empty(_babies.Babies);
     }
 
     [Theory]

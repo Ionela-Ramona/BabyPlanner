@@ -91,3 +91,9 @@ internal sealed class InMemoryActivityRepository : IActivityRepository
         return Task.CompletedTask;
     }
 }
+
+/// <summary>Parintele "logat" in teste; <c>null</c> = cerere fara token.</summary>
+internal sealed class FixedCurrentUser(int? userId) : ICurrentUser
+{
+    public int? UserId { get; } = userId;
+}

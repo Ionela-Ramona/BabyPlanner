@@ -17,7 +17,7 @@ public class ActivityEndpointsTests : IClassFixture<ApiFactory>
 
     public ActivityEndpointsTests(ApiFactory factory)
     {
-        _client = factory.CreateClient();
+        _client = factory.CreateAuthenticatedClient();
     }
 
     private sealed record BabyResponse(int Id);
